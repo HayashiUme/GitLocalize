@@ -73,6 +73,11 @@ JSON
 }
 
 echo "Applying rulesets to $OWNER/$REPO"
+echo "-- actions workflow permissions"
+# Without this the workflow token may not open the i18n -> main pull request.
+api PUT "/repos/$OWNER/$REPO/actions/permissions/workflow" \
+  '{"default_workflow_permissions":"read","can_approve_pull_request_reviews":true}' | head -c 200
+echo
 echo "-- main"
 api POST "/repos/$OWNER/$REPO/rulesets" "$(main_ruleset)" | head -c 400
 echo
