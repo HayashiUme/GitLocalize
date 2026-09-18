@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '../i18n'
 import { actions, useEditor } from '../state/editorStore'
 
 const { state } = useEditor()
@@ -6,7 +7,7 @@ const { state } = useEditor()
 
 <template>
   <label class="glz-select">
-    <span>File</span>
+    <span>{{ t('toolbar.file') }}</span>
     <select
       :value="state.file"
       :disabled="state.busy"

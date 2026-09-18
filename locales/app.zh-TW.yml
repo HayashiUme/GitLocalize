@@ -1,32 +1,106 @@
 # GitLocalize 介面文案 — 繁體中文。
-app:
-  name: GitLocalize
-  tagline: 就在 GitHub 上一起翻譯
-  menu:
-    settings: 設定
-    about: 關於
-    login: 登入
-    logout: 登出
-    help: 說明
-  editor:
-    title: 翻譯編輯器
-    searchPlaceholder: 搜尋鍵名或文字
-    untranslatedOnly: 只顯示未翻譯項目
-    save: 儲存變更
-    submit: 提交翻譯
-    reload: 從分支重新載入
-    emptyState: 目前篩選條件下沒有項目。
-  status:
-    signedInAs: "已登入為 @{login}"
-    modified: "已修改 {count} 項"
-    untranslated: "未翻譯 {count} 項"
-    branchTip: "提交至 {branch}"
-  welcome: |
-    歡迎，{name}。
-    選擇一種語言即可開始翻譯。
-  legal:
-    notice: 提交翻譯前請閱讀<b>風格指南</b>。
-  limits:
-    maxFiles: 3
-    allowGuest: false
-    timeoutSeconds: 30.5
+name: GitLocalize
+tagline: 就在 GitHub 上一起翻譯
+
+locale:
+  label: 介面語言
+
+login:
+  title: 登入後開始翻譯
+  privacy: |
+    權杖只留在你的瀏覽器裡。除了 api.github.com，它不會被傳送到任何伺服器，
+    不會寫入儲存庫，也不會出現在 URL 中。
+  owner: 儲存庫擁有者
+  repository: 儲存庫名稱
+  branch: 翻譯分支
+  tokenLabel: 個人存取權杖
+  tokenPlaceholder: github_pat_...
+  scopeHint: "只需對此儲存庫授予「Contents: Read and write」。"
+  tokenGuide: 如何取得？
+  remember: 僅在目前分頁保留權杖（sessionStorage）。不勾選則只存在記憶體中。
+  signIn: 登入
+  deviceFlow: 使用 GitHub 裝置流程
+  devicePrompt: 在 GitHub 裝置頁面輸入驗證碼 {code}，然後確認授權。
+  deviceOpenPage: 開啟裝置頁面
+  deviceCancel: 取消
+  mock: 使用模擬資料繼續
+
+status:
+  signedInAs: 已登入為 @{login}
+  branch: 分支
+  head: 提交
+  file: 檔案
+  modified: 已修改
+  untranslated: 未翻譯
+  warnings: 警告
+  reload: 從分支重新載入
+  signOut: 登出
+  mock: 模擬
+
+permission:
+  none: 無權限
+  read: 唯讀
+  triage: 分類
+  write: 寫入
+  maintain: 維護
+  admin: 管理員
+
+toolbar:
+  language: 語言
+  file: 檔案
+  searchPlaceholder: 搜尋鍵名或文字
+  untranslatedOnly: 只顯示未翻譯
+  discard: 捨棄 {count}
+
+table:
+  key: 鍵名
+  source: 英語（來源語言）
+  target: 譯文
+  empty: 目前篩選條件下沒有項目。
+  untranslated: 未翻譯
+  progress: "{visible} / {total} 筆"
+  untranslatedCount: "{count} 筆未翻譯"
+  modifiedCount: 已修改 {count} 筆
+
+qa:
+  empty-translation: 未翻譯
+  placeholder-missing: 缺少佔位符：{detail}
+  placeholder-extra: 多出佔位符：{detail}
+  html-tag-missing: 缺少 HTML 標籤：<{detail}>
+  html-tag-extra: 多出 HTML 標籤：<{detail}>
+
+diff:
+  review:
+    one: 確認 1 處變更
+    other: 確認 {count} 處變更
+  committing: 將以 @{login} 的身分提交至 {branch}
+  oldEmpty: （空）
+  newEmpty: （已刪除）
+  warnings:
+    one: 仍有 {count} 處佔位符或 HTML 標籤警告。
+    other: 仍有 {count} 處佔位符或 HTML 標籤警告。
+  cancel: 取消
+  confirm: 提交至 {branch}
+
+editor:
+  loading: 正在從 GitHub 載入翻譯……
+  submit:
+    one: 提交 1 筆翻譯
+    other: 提交 {count} 筆翻譯
+  progress: 已翻譯 {translated} / {total}（{language}）
+  reloadNow: 立即重新載入
+  viewCommit: 檢視提交
+  pullRequest: "翻譯 PR #{number}"
+  openOnGitHub: 在 GitHub 上開啟
+
+message:
+  nothingToCommit: 沒有需要提交的內容。
+  noContentChange: 內容沒有變化，未建立提交。
+  committed: 已提交 {sha} 至 {branch}。
+  notSignedIn: 尚未登入。
+  tokenEmpty: 請先填寫個人存取權杖。
+  targetFirst: 請先設定目標儲存庫再登入。
+  noLanguages: 找不到目標語言，請檢查 .github/i18n.yml。
+  noSourceFiles: 沒有符合設定的來源語言檔案。
+  noTarget: 無法確定目標儲存庫。請從 GitHub Pages 開啟本頁，或手動填寫 owner 與 repository。
+  sourceMissing: 找不到來源檔案：{path}

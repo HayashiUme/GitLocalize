@@ -40,8 +40,17 @@ GitHub Actions
 | `src/qa/` | Placeholder and HTML tag comparison, empty translation detection |
 | `src/github/` | API client, error taxonomy, auth, permissions, contents, git data, pull requests, mock transport |
 | `src/state/editorStore.ts` | Single reactive store that orchestrates loading, editing and committing |
+| `src/i18n/` | Loads `locales/` at build time and renders the editor in four languages |
 | `src/components/` | Vue 3 components for the editor |
 | `docs/` | VuePress site, published to GitHub Pages |
+
+## The interface catalog
+
+The editor's own strings are ordinary locale files in `locales/`, loaded through the same parser a translator's project would use. `src/i18n/` flattens them at build time and exposes `t(key, params)` and `tp(base, count, params)`; the plural helper picks `base.one` or `base.other` when those keys exist.
+
+Error handling follows the same idea. `GitHubApiError` already carries a code, so the store turns a failure into `{ key, params, detail }` and the component renders the key — no English sentence travels through the state layer. The status code determines the key, `detail` keeps GitHub's own wording for debugging, and `locales/errors.*.json` holds the reader-facing text.
+
+Anything added to the interface needs a key in all four catalogs. `tests/i18n.test.ts` fails otherwise, and it also rejects a translation that drops a `{placeholder}` or an HTML tag.
 
 ## Why the Git database API
 

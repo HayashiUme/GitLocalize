@@ -1,40 +1,37 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { t, tp } from '../i18n'
 import { changes, stats, useEditor } from '../state/editorStore'
 
 const { state } = useEditor()
 const emit = defineEmits<{ cancel: []; confirm: [] }>()
 
-const preview = computed(() =>
-  changes.value.map((change) => ({
-    ...change,
-    lines: state.overrides[change.key]?.split('\n') ?? [],
-  })),
-)
+const preview = computed(() => changes.value)
+const branch = computed(() => state.target?.translationBranch ?? '')
 </script>
 
 <template>
   <div class="glz-modal-backdrop" @click.self="emit('cancel')">
     <div class="glz-modal">
       <header>
-        <h3>Review {{ stats.modified }} change{{ stats.modified === 1 ? '' : 's' }}</h3>
-        <p class="glz-muted">Committing to <code>{{ state.target?.translationBranch }}</code> as @{{ state.user?.login }}</p>
+        <h3>{{ tp('diff.review', stats.modified) }}</h3>
+        <p class="glz-muted">
+          {{ t('diff.committing', { branch, login: state.user?.login ?? '' }) }}
+        </p>
       </header>
       <div class="glz-diff">
         <div v-for="item in preview" :key="item.key" class="glz-diff-item">
           <div class="glz-diff-key">{{ item.key }}</div>
-          <div class="glz-diff-line glz-removed">- {{ item.oldValue || '(empty)' }}</div>
-          <div class="glz-diff-line glz-added">+ {{ item.newValue || '(removed)' }}</div>
+          <div class="glz-diff-line glz-removed">- {{ item.oldValue || t('diff.oldEmpty') }}</div>
+          <div class="glz-diff-line glz-added">+ {{ item.newValue || t('diff.newEmpty') }}</div>
         </div>
         <p v-if="stats.warnings > 0" class="glz-warn">
-          ⚠ {{ stats.warnings }} placeholder or HTML tag warning(s) still present.
+          ⚠ {{ tp('diff.warnings', stats.warnings) }}
         </p>
       </div>
       <footer>
-        <button class="glz-secondary" @click="emit('cancel')">Cancel</button>
-        <button :disabled="state.busy" @click="emit('confirm')">
-          {{ state.busy ? 'Committing...' : `Commit to ${state.target?.translationBranch}` }}
-        </button>
+        <button class="glz-secondary" @click="emit('cancel')">{{ t('diff.cancel') }}</button>
+        <button :disabled="state.busy" @click="emit('confirm')">{{ t('diff.confirm', { branch }) }}</button>
       </footer>
     </div>
   </div>

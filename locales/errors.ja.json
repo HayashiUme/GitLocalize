@@ -6,18 +6,24 @@
   },
   "network": {
     "timeout": "{seconds} 秒後にリクエストがタイムアウトしました。",
-    "rateLimited": "GitHub API のレート制限に達しました。{resetAt} 以降に再試行してください。"
+    "rateLimited": "GitHub API のレート制限に達しました。{resetAt} 以降に再試行してください。",
+    "server": "GitHub がサーバーエラーを返しました。再試行してください。",
+    "unreachable": "api.github.com に接続できません。ネットワークを確認してください。"
+  },
+  "notFound": {
+    "repository": "リポジトリまたはファイルが見つかりません。トークンから参照できない可能性があります。"
   },
   "conflict": {
     "branchMoved": "このファイルを開いてから翻訳ブランチが変更されています。",
     "reloadRequired": "コミットする前に最新版を再読み込みしてください。"
   },
   "validation": {
-    "failed": "一部の項目が検証に失敗しました。",
+    "failed": "GitHub がリクエストを拒否しました。トークンに必要な権限がない可能性があります。",
     "rules": [
       "{0} のようなプレースホルダーは変更しないでください。",
       "<b> のような HTML タグは変更しないでください。",
       "製品名は翻訳しないでください。"
     ]
-  }
+  },
+  "unknown": "GitHub API から想定外のエラーが返されました。"
 }

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { describePermission } from '../github/permissions'
+import { permissionKey } from '../github/permissions'
+import { t } from '../i18n'
 import { actions, stats, targetPath, useEditor } from '../state/editorStore'
 
 const { state } = useEditor()
 const branch = computed(() => state.target?.translationBranch ?? '—')
+const permission = computed(() => t(permissionKey(state.repo?.viewerPermission ?? 'none')))
 </script>
 
 <template>
@@ -13,27 +15,28 @@ const branch = computed(() => state.target?.translationBranch ?? '—')
       <img v-if="state.user?.avatar_url" :src="state.user.avatar_url" alt="" class="glz-avatar" />
       <div>
         <div class="glz-user">
-          Signed in as
-          <a :href="`https://github.com/${state.user?.login}`" target="_blank" rel="noreferrer">@{{ state.user?.login }}</a>
-          <span class="glz-badge">{{ describePermission(state.repo?.viewerPermission ?? 'none') }}</span>
-          <span v-if="state.mock" class="glz-badge glz-badge-warn">mock</span>
+          <a :href="`https://github.com/${state.user?.login}`" target="_blank" rel="noreferrer">
+            {{ t('status.signedInAs', { login: state.user?.login ?? '' }) }}
+          </a>
+          <span class="glz-badge">{{ permission }}</span>
+          <span v-if="state.mock" class="glz-badge glz-badge-warn">{{ t('status.mock') }}</span>
         </div>
         <div class="glz-meta">
           <span>{{ state.target?.owner }}/{{ state.target?.repo }}</span>
-          <span>Branch: {{ branch }}</span>
-          <span>HEAD: {{ state.headSha.slice(0, 7) || '—' }}</span>
+          <span>{{ t('status.branch') }}: {{ branch }}</span>
+          <span>{{ t('status.head') }}: {{ state.headSha.slice(0, 7) || '—' }}</span>
         </div>
       </div>
     </div>
     <dl class="glz-stats">
-      <div><dt>File</dt><dd>{{ targetPath }}</dd></div>
-      <div><dt>Modified</dt><dd class="glz-strong">{{ stats.modified }}</dd></div>
-      <div><dt>Untranslated</dt><dd>{{ stats.untranslated }}</dd></div>
-      <div><dt>Warnings</dt><dd :class="{ 'glz-strong': stats.warnings > 0 }">{{ stats.warnings }}</dd></div>
+      <div><dt>{{ t('status.file') }}</dt><dd>{{ targetPath }}</dd></div>
+      <div><dt>{{ t('status.modified') }}</dt><dd class="glz-strong">{{ stats.modified }}</dd></div>
+      <div><dt>{{ t('status.untranslated') }}</dt><dd>{{ stats.untranslated }}</dd></div>
+      <div><dt>{{ t('status.warnings') }}</dt><dd :class="{ 'glz-strong': stats.warnings > 0 }">{{ stats.warnings }}</dd></div>
     </dl>
     <div class="glz-status-actions">
-      <button class="glz-secondary" :disabled="state.busy" @click="actions.reload">Reload from branch</button>
-      <button class="glz-secondary" @click="actions.signOut">Sign out</button>
+      <button class="glz-secondary" :disabled="state.busy" @click="actions.reload">{{ t('status.reload') }}</button>
+      <button class="glz-secondary" @click="actions.signOut">{{ t('status.signOut') }}</button>
     </div>
   </section>
 </template>

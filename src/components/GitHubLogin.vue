@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { pollDeviceToken, requestDeviceCode } from '../github/auth'
-import { actions, useEditor } from '../state/editorStore'
+import { t } from '../i18n'
+import { actions, errorText, useEditor } from '../state/editorStore'
 
 const { state } = useEditor()
 const token = ref('')
@@ -69,60 +70,63 @@ function cancelDeviceFlow(): void {
 
 <template>
   <section class="glz-login">
-    <h2>Sign in to translate</h2>
-    <p class="glz-muted">
-      The token stays in this browser. It is never sent to any server other than
-      <code>api.github.com</code>, never written to the repository, and never placed in the URL.
-    </p>
+    <h2>{{ t('login.title') }}</h2>
+    <p class="glz-muted">{{ t('login.privacy') }}</p>
 
     <div v-if="state.needsTarget" class="glz-field-group">
       <label>
-        Owner
+        {{ t('login.owner') }}
         <input v-model="owner" placeholder="octocat" />
       </label>
       <label>
-        Repository
+        {{ t('login.repository') }}
         <input v-model="repo" placeholder="hello-world" />
       </label>
       <label>
-        Translation branch
+        {{ t('login.branch') }}
         <input v-model="branch" placeholder="i18n" />
       </label>
     </div>
 
     <label class="glz-field">
-      Personal access token
-      <input v-model="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_..." />
+      {{ t('login.tokenLabel') }}
+      <input
+        v-model="token"
+        type="password"
+        autocomplete="off"
+        spellcheck="false"
+        :placeholder="t('login.tokenPlaceholder')"
+      />
     </label>
     <p class="glz-muted glz-hint">
-      Needs <code>Contents: Read and write</code> on this repository only.
-      <RouterLink to="/guide/token.md">How do I get one?</RouterLink>
+      <span>{{ t('login.scopeHint') }}</span>
+      <RouterLink to="/guide/token.md">{{ t('login.tokenGuide') }}</RouterLink>
     </p>
 
     <label class="glz-checkbox">
       <input v-model="remember" type="checkbox" />
-      Keep the token in this tab only (sessionStorage). Leave off for memory-only sessions.
+      {{ t('login.remember') }}
     </label>
 
     <div class="glz-actions">
-      <button :disabled="!canSignIn || state.busy" @click="signIn">Sign in</button>
+      <button :disabled="!canSignIn || state.busy" @click="signIn">{{ t('login.signIn') }}</button>
       <button v-if="clientId" class="glz-secondary" :disabled="state.busy" @click="startDeviceFlow">
-        Use GitHub device flow
+        {{ t('login.deviceFlow') }}
       </button>
       <button v-if="state.mock" class="glz-secondary" :disabled="state.busy" @click="actions.signIn('mock-token', false)">
-        Continue with mock data
+        {{ t('login.mock') }}
       </button>
     </div>
 
     <div v-if="deviceCode" class="glz-device">
-      <p>
-        Open <a :href="deviceCode.verificationUri" target="_blank" rel="noreferrer">{{ deviceCode.verificationUri }}</a>
-        and enter <strong>{{ deviceCode.userCode }}</strong>
-      </p>
-      <button class="glz-secondary" @click="cancelDeviceFlow">Cancel</button>
+      <p>{{ t('login.devicePrompt', { code: deviceCode.userCode }) }}</p>
+      <div class="glz-device-actions">
+        <a :href="deviceCode.verificationUri" target="_blank" rel="noreferrer">{{ t('login.deviceOpenPage') }}</a>
+        <button class="glz-secondary" @click="cancelDeviceFlow">{{ t('login.deviceCancel') }}</button>
+      </div>
     </div>
     <p v-if="deviceMessage" class="glz-muted">{{ deviceMessage }}</p>
-    <p v-if="state.error" class="glz-error">{{ state.error }}</p>
+    <p v-if="errorText" class="glz-error">{{ errorText }}</p>
   </section>
 </template>
 
@@ -181,5 +185,16 @@ function cancelDeviceFlow(): void {
   border: 1px dashed var(--glz-border);
   border-radius: 8px;
   font-size: 13px;
+}
+.glz-device-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.glz-error {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #8a2c2c;
 }
 </style>

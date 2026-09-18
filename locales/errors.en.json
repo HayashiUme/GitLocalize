@@ -6,18 +6,24 @@
   },
   "network": {
     "timeout": "The request timed out after {seconds}s.",
-    "rateLimited": "GitHub API rate limit reached. Try again at {resetAt}."
+    "rateLimited": "GitHub API rate limit reached. Try again at {resetAt}.",
+    "server": "GitHub returned a server error. Please retry.",
+    "unreachable": "Could not reach api.github.com. Check your connection."
+  },
+  "notFound": {
+    "repository": "The repository or file was not found, or your token cannot see it."
   },
   "conflict": {
     "branchMoved": "The translation branch has changed since you opened this file.",
     "reloadRequired": "Please reload the latest version before committing."
   },
   "validation": {
-    "failed": "Some entries failed validation.",
+    "failed": "GitHub rejected the request. The token may be missing a required permission.",
     "rules": [
       "Keep placeholders such as {0} unchanged.",
       "Keep HTML tags such as <b> unchanged.",
       "Do not translate product names."
     ]
-  }
+  },
+  "unknown": "Unexpected error from the GitHub API."
 }

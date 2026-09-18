@@ -6,18 +6,24 @@
   },
   "network": {
     "timeout": "{seconds} 秒後請求逾時。",
-    "rateLimited": "已觸發 GitHub API 速率限制，請在 {resetAt} 後重試。"
+    "rateLimited": "已觸發 GitHub API 速率限制，請在 {resetAt} 後重試。",
+    "server": "GitHub 回應了伺服器錯誤，請重試。",
+    "unreachable": "無法連線 api.github.com，請檢查網路。"
+  },
+  "notFound": {
+    "repository": "找不到該儲存庫或檔案，或你的權杖無權存取。"
   },
   "conflict": {
     "branchMoved": "自你開啟該檔案以來，翻譯分支已發生變化。",
     "reloadRequired": "請先重新載入最新版本再提交。"
   },
   "validation": {
-    "failed": "部分項目未通過驗證。",
+    "failed": "GitHub 拒絕了該請求，權杖可能缺少所需權限。",
     "rules": [
       "請保持 {0} 這類佔位符不變。",
       "請保持 <b> 這類 HTML 標籤不變。",
       "請勿翻譯產品名稱。"
     ]
-  }
+  },
+  "unknown": "GitHub API 回應了預期之外的錯誤。"
 }

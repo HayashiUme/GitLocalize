@@ -86,14 +86,7 @@ export async function getCollaboratorPermission(
   }
 }
 
-export function describePermission(level: PermissionLevel): string {
-  const labels: Record<PermissionLevel, string> = {
-    none: 'No access',
-    read: 'Read',
-    triage: 'Triage',
-    write: 'Write',
-    maintain: 'Maintain',
-    admin: 'Admin',
-  }
-  return labels[level]
+/* Returns an interface key rather than a label so the caller can render it in any language. */
+export function permissionKey(level: PermissionLevel): string {
+  return `permission.${ORDER.includes(level) ? level : 'none'}`
 }

@@ -6,7 +6,9 @@ import GitHubLogin from './GitHubLogin.vue'
 import LanguageSelector from './LanguageSelector.vue'
 import StatusPanel from './StatusPanel.vue'
 import TranslationTable from './TranslationTable.vue'
-import { actions, stats, useEditor } from '../state/editorStore'
+import LocaleSwitcher from '../i18n/LocaleSwitcher.vue'
+import { t, tp } from '../i18n'
+import { actions, errorText, noticeText, stats, useEditor } from '../state/editorStore'
 
 const { state } = useEditor()
 const showDiff = ref(false)
@@ -36,46 +38,64 @@ async function confirmSubmit(): Promise<void> {
 
 <template>
   <div class="glz-editor">
+    <div class="glz-editor-head">
+      <LocaleSwitcher />
+    </div>
+
     <GitHubLogin v-if="!state.user" />
 
     <template v-else>
       <StatusPanel />
 
       <div v-if="state.error" class="glz-banner glz-banner-error">
-        <span>{{ state.error }}</span>
-        <button v-if="state.branchMoved" class="glz-secondary" @click="actions.reload">Reload now</button>
+        <span>
+          {{ errorText }}
+          <em v-if="state.branchMoved">{{ t('error.conflict.reloadRequired') }}</em>
+          <small v-if="state.error.detail">{{ state.error.detail }}</small>
+        </span>
+        <button v-if="state.branchMoved" class="glz-secondary" @click="actions.reload">
+          {{ t('editor.reloadNow') }}
+        </button>
       </div>
       <div v-else-if="state.notice" class="glz-banner glz-banner-notice">
-        <span>{{ state.notice }}</span>
-        <a v-if="state.lastCommitUrl" :href="state.lastCommitUrl" target="_blank" rel="noreferrer">View commit</a>
+        <span>{{ noticeText }}</span>
+        <a v-if="state.lastCommitUrl" :href="state.lastCommitUrl" target="_blank" rel="noreferrer">
+          {{ t('editor.viewCommit') }}
+        </a>
       </div>
       <div v-if="state.pullRequest" class="glz-banner glz-banner-notice">
-        <span>Translation pull request #{{ state.pullRequest.number }}</span>
-        <a :href="state.pullRequest.htmlUrl" target="_blank" rel="noreferrer">Open on GitHub</a>
+        <span>{{ t('editor.pullRequest', { number: state.pullRequest.number }) }}</span>
+        <a :href="state.pullRequest.htmlUrl" target="_blank" rel="noreferrer">{{ t('editor.openOnGitHub') }}</a>
       </div>
 
       <div class="glz-toolbar">
         <LanguageSelector />
         <FileSelector />
-        <input v-model="state.search" class="glz-search" type="search" placeholder="Search keys or text" spellcheck="false" />
+        <input
+          v-model="state.search"
+          class="glz-search"
+          type="search"
+          :placeholder="t('toolbar.searchPlaceholder')"
+          spellcheck="false"
+        />
         <label class="glz-toggle">
           <input v-model="state.untranslatedOnly" type="checkbox" />
-          Untranslated only
+          {{ t('toolbar.untranslatedOnly') }}
         </label>
         <button class="glz-secondary" :disabled="stats.modified === 0" @click="actions.revertAll">
-          Discard {{ stats.modified || '' }}
+          {{ t('toolbar.discard', { count: stats.modified }) }}
         </button>
       </div>
 
-      <p v-if="state.busy && state.status === 'loading'" class="glz-muted">Loading translations from GitHub...</p>
+      <p v-if="state.busy && state.status === 'loading'" class="glz-muted">{{ t('editor.loading') }}</p>
       <TranslationTable v-else />
 
       <div class="glz-footer">
         <span class="glz-muted">
-          {{ stats.translated }} / {{ stats.total }} translated in {{ state.language }}
+          {{ t('editor.progress', { translated: stats.translated, total: stats.total, language: state.language }) }}
         </span>
         <button :disabled="stats.modified === 0 || state.busy" @click="showDiff = true">
-          Submit {{ stats.modified }} translation{{ stats.modified === 1 ? '' : 's' }}
+          {{ tp('editor.submit', stats.modified) }}
         </button>
       </div>
 
@@ -90,6 +110,22 @@ async function confirmSubmit(): Promise<void> {
   flex-direction: column;
   gap: 12px;
   margin: 24px 0;
+}
+.glz-editor-head {
+  display: flex;
+  justify-content: flex-end;
+}
+.glz-banner em {
+  display: block;
+  font-style: normal;
+  opacity: 0.85;
+}
+.glz-banner small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  opacity: 0.7;
+  word-break: break-word;
 }
 .glz-toolbar {
   display: flex;

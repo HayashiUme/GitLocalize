@@ -1,32 +1,106 @@
-# GitLocalize interface strings — source language (English).
-app:
-  name: GitLocalize
-  tagline: Translate together, right inside GitHub
-  menu:
-    settings: Settings
-    about: About
-    login: Login
-    logout: Logout
-    help: Help
-  editor:
-    title: Translation Editor
-    searchPlaceholder: Search keys or text
-    untranslatedOnly: Show untranslated only
-    save: Save changes
-    submit: Submit translations
-    reload: Reload from branch
-    emptyState: No entries match the current filter.
-  status:
-    signedInAs: "Signed in as @{login}"
-    modified: "{count} entries modified"
-    untranslated: "{count} entries untranslated"
-    branchTip: "Committing to {branch}"
-  welcome: |
-    Welcome, {name}.
-    Pick a language and start translating.
-  legal:
-    notice: Read the <b>style guide</b> before submitting translations.
-  limits:
-    maxFiles: 3
-    allowGuest: false
-    timeoutSeconds: 30.5
+# GitLocalize interface strings — source language for the editor's own UI.
+name: GitLocalize
+tagline: Translate together, right inside GitHub
+
+locale:
+  label: Interface language
+
+login:
+  title: Sign in to translate
+  privacy: |
+    The token stays in this browser. It is never sent to any server other than api.github.com,
+    never written to the repository, and never placed in the URL.
+  owner: Owner
+  repository: Repository
+  branch: Translation branch
+  tokenLabel: Personal access token
+  tokenPlaceholder: github_pat_...
+  scopeHint: "Needs Contents: Read and write on this repository only."
+  tokenGuide: How do I get one?
+  remember: Keep the token in this tab only (sessionStorage). Leave off for memory-only sessions.
+  signIn: Sign in
+  deviceFlow: Use GitHub device flow
+  devicePrompt: "Enter the code {code} on the GitHub device page, then approve."
+  deviceOpenPage: Open the device page
+  deviceCancel: Cancel
+  mock: Continue with mock data
+
+status:
+  signedInAs: "Signed in as @{login}"
+  branch: Branch
+  head: HEAD
+  file: File
+  modified: Modified
+  untranslated: Untranslated
+  warnings: Warnings
+  reload: Reload from branch
+  signOut: Sign out
+  mock: mock
+
+permission:
+  none: No access
+  read: Read
+  triage: Triage
+  write: Write
+  maintain: Maintain
+  admin: Admin
+
+toolbar:
+  language: Language
+  file: File
+  searchPlaceholder: Search keys or text
+  untranslatedOnly: Untranslated only
+  discard: "Discard {count}"
+
+table:
+  key: Key
+  source: English (source)
+  target: Translation
+  empty: No entries match the current filter.
+  untranslated: Untranslated
+  progress: "{visible} / {total} entries"
+  untranslatedCount: "{count} untranslated"
+  modifiedCount: "{count} modified"
+
+qa:
+  empty-translation: Untranslated
+  placeholder-missing: "Missing placeholder: {detail}"
+  placeholder-extra: "Unexpected placeholder: {detail}"
+  html-tag-missing: "Missing HTML tag: <{detail}>"
+  html-tag-extra: "Unexpected HTML tag: <{detail}>"
+
+diff:
+  review:
+    one: Review 1 change
+    other: Review {count} changes
+  committing: "Committing to {branch} as @{login}"
+  oldEmpty: (empty)
+  newEmpty: (removed)
+  warnings:
+    one: "{count} placeholder or HTML tag warning is still present."
+    other: "{count} placeholder or HTML tag warnings are still present."
+  cancel: Cancel
+  confirm: "Commit to {branch}"
+
+editor:
+  loading: Loading translations from GitHub...
+  submit:
+    one: Submit 1 translation
+    other: Submit {count} translations
+  progress: "{translated} / {total} translated in {language}"
+  reloadNow: Reload now
+  viewCommit: View commit
+  pullRequest: "Translation pull request #{number}"
+  openOnGitHub: Open on GitHub
+
+message:
+  nothingToCommit: Nothing to commit.
+  noContentChange: No content changes detected, nothing was committed.
+  committed: "Committed {sha} to {branch}."
+  notSignedIn: You are not signed in.
+  tokenEmpty: Enter a personal access token first.
+  targetFirst: Set the target repository before signing in.
+  noLanguages: No target languages found. Check .github/i18n.yml.
+  noSourceFiles: No source translation files matched the configured patterns.
+  noTarget: Could not determine the repository. Open this page from GitHub Pages, or fill in owner and repository.
+  sourceMissing: "Source file not found: {path}"

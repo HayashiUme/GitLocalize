@@ -13,21 +13,51 @@ import {
 import { GitHubClient, type ClientTransport } from '../github/api'
 import { noreplyEmail, signInWithToken, signOut, tokenStore } from '../github/auth'
 import { listDirectory, readFile } from '../github/contents'
-import { toApiError } from '../github/errors'
+import { toApiError, type GitHubApiError, type GitHubErrorCode } from '../github/errors'
 import { commitFiles, getRefSha } from '../github/gitData'
 import { createMockTransport } from '../github/mockTransport'
 import { getRepository, type RepositoryInfo } from '../github/permissions'
 import { ensurePullRequest, findOpenPullRequest, type PullRequestInfo } from '../github/pullRequests'
 import { cloneDocument, deletePath, flatten, getParser, setPath, splitPath, type FlatEntry } from '../parser'
 import { groupIssuesByKey, qaCheckEntries } from '../qa'
+import { initialiseUiLocale, t } from '../i18n'
 import { clearDraft, loadDraft, saveDraft } from '../storage/drafts'
 
 export type EditorStatus = 'signed-out' | 'loading' | 'ready' | 'error'
 
+export interface EditorMessage {
+  key: string
+  params?: Record<string, string | number>
+  detail?: string
+}
+
+/* Internal failures travel as keys so the interface can render them in the reader's language. */
+class EditorError extends Error {
+  constructor(
+    readonly key: string,
+    readonly params?: Record<string, string | number>,
+  ) {
+    super(key)
+    this.name = 'EditorError'
+  }
+}
+
+const ERROR_KEYS: Record<GitHubErrorCode, string> = {
+  unauthorized: 'error.auth.expired',
+  forbidden: 'error.auth.forbidden',
+  'not-found': 'error.notFound.repository',
+  conflict: 'error.conflict.branchMoved',
+  validation: 'error.validation.failed',
+  'rate-limited': 'error.network.rateLimited',
+  server: 'error.network.server',
+  network: 'error.network.unreachable',
+  unknown: 'error.unknown',
+}
+
 interface EditorState {
   status: EditorStatus
-  error: string | null
-  notice: string | null
+  error: EditorMessage | null
+  notice: EditorMessage | null
   busy: boolean
   user: GitHubUser | null
   token: string
@@ -99,9 +129,32 @@ function makeClient(token: string): GitHubClient {
 }
 
 function apiClient(): GitHubClient {
-  if (!client) throw new Error('Not signed in.')
+  if (!client) throw new EditorError('message.notSignedIn')
   return client
 }
+
+function fail(error: unknown): void {
+  if (error instanceof EditorError) {
+    state.error = { key: error.key, params: error.params }
+    return
+  }
+  const apiError = toApiError(error)
+  state.error = { key: ERROR_KEYS[apiError.code], params: errorParams(apiError), detail: apiError.detail }
+}
+
+function errorParams(apiError: GitHubApiError): Record<string, string> {
+  if (apiError.code === 'forbidden') {
+    return { repo: state.target ? `${state.target.owner}/${state.target.repo}` : '—' }
+  }
+  if (apiError.code === 'rate-limited') {
+    return { resetAt: new Date(client?.lastRateLimit?.resetAt ?? Date.now()).toLocaleTimeString() }
+  }
+  return {}
+}
+
+export const errorText = computed(() => (state.error ? t(state.error.key, state.error.params) : ''))
+
+export const noticeText = computed(() => (state.notice ? t(state.notice.key, state.notice.params) : ''))
 
 export const targetPath = computed(() =>
   state.file.replace(/\.([A-Za-z]{2}(?:-[A-Za-z]{2,4})?)\.(ya?ml|json)$/, `.${state.language}.$2`),
@@ -170,6 +223,7 @@ async function resolveTarget(): Promise<boolean> {
   const detected = detectSiteTarget(globalThis.location?.href ?? '')
   if (!detected) {
     state.needsTarget = true
+    state.error = { key: 'message.noTarget' }
     return false
   }
   state.target = detected
@@ -179,6 +233,7 @@ async function resolveTarget(): Promise<boolean> {
 async function bootstrap(): Promise<void> {
   if (bootstrapped) return
   bootstrapped = true
+  initialiseUiLocale(globalThis.location?.href ?? '')
   state.mock = new URLSearchParams(globalThis.location?.search ?? '').has('mock')
   const resolved = await resolveTarget()
   if (!resolved) {
@@ -195,11 +250,11 @@ async function bootstrap(): Promise<void> {
 async function openSession(token: string, persist: boolean): Promise<void> {
   const trimmed = token.trim()
   if (!trimmed) {
-    state.error = 'Enter a personal access token first.'
+    state.error = { key: 'message.tokenEmpty' }
     return
   }
   if (!(await resolveTarget())) {
-    state.error = 'Set the target repository before signing in.'
+    state.error = { key: 'message.targetFirst' }
     return
   }
   state.busy = true
@@ -217,9 +272,8 @@ async function openSession(token: string, persist: boolean): Promise<void> {
     state.user = null
     state.token = ''
     tokenStore.clear()
-    const apiError = toApiError(error)
     state.status = 'error'
-    state.error = apiError.code === 'network' ? apiError.detail : apiError.message
+    fail(error)
   } finally {
     state.busy = false
   }
@@ -256,8 +310,8 @@ async function loadAll(): Promise<void> {
     const allFiles = candidates.map(toTranslationFile).filter((file): file is TranslationFile => file !== null)
     state.files = allFiles.filter((file) => file.language === state.config.source.language)
     state.languages = deriveLanguages(allFiles, state.config)
-    if (state.languages.length === 0) throw new Error('No target languages found. Check .github/i18n.yml.')
-    if (state.files.length === 0) throw new Error('No source translation files matched the configured patterns.')
+    if (state.languages.length === 0) throw new EditorError('message.noLanguages')
+    if (state.files.length === 0) throw new EditorError('message.noSourceFiles')
 
     state.language = state.languages.includes(state.language) ? state.language : state.languages[0]
     const preferred = state.files.find((file) => file.path === state.file) ?? state.files[0]
@@ -265,9 +319,8 @@ async function loadAll(): Promise<void> {
     await loadFile()
     state.status = 'ready'
   } catch (error) {
-    const apiError = toApiError(error)
     state.status = 'error'
-    state.error = apiError.code === 'network' ? apiError.detail : apiError.message
+    fail(error)
   } finally {
     state.busy = false
   }
@@ -279,7 +332,7 @@ async function loadFile(): Promise<void> {
   const api = apiClient()
   const branch = target.translationBranch
   const sourceFile = await readFile(api, target.owner, target.repo, state.file, branch)
-  if (!sourceFile) throw new Error(`Source file not found: ${state.file}`)
+  if (!sourceFile) throw new EditorError('message.sourceMissing', { path: state.file })
 
   state.sourceEntries = flatten(getParser(state.file).parse(sourceFile.content))
 
@@ -355,7 +408,7 @@ async function submit(): Promise<void> {
   const user = state.user
   if (!target || !user) return
   if (Object.keys(state.overrides).length === 0) {
-    state.notice = 'Nothing to commit.'
+    state.notice = { key: 'message.nothingToCommit' }
     return
   }
   state.busy = true
@@ -377,7 +430,7 @@ async function submit(): Promise<void> {
 
     if (result.unchanged || !result.commitSha) {
       state.overrides = {}
-      state.notice = 'No content changes detected, nothing was committed.'
+      state.notice = { key: 'message.noContentChange' }
       return
     }
 
@@ -393,15 +446,13 @@ async function submit(): Promise<void> {
       (await findOpenPullRequest(api, target.owner, target.repo, target.translationBranch, target.mainBranch).catch(
         () => null,
       )) ?? null
-    state.notice = `Committed ${result.commitSha.slice(0, 7)} to ${target.translationBranch}.`
-  } catch (error) {
-    const apiError = toApiError(error)
-    if (apiError.code === 'conflict') {
-      state.branchMoved = true
-      state.error = `${apiError.message} Someone else has submitted changes. Please reload before committing.`
-    } else {
-      state.error = apiError.message
+    state.notice = {
+      key: 'message.committed',
+      params: { sha: result.commitSha.slice(0, 7), branch: target.translationBranch },
     }
+  } catch (error) {
+    if (toApiError(error).code === 'conflict') state.branchMoved = true
+    fail(error)
   } finally {
     state.busy = false
   }
@@ -456,5 +507,5 @@ export const actions = {
 }
 
 export function useEditor() {
-  return { state, entries, filteredEntries, changes, issuesByKey, stats, targetPath, actions }
+  return { state, entries, filteredEntries, changes, issuesByKey, stats, targetPath, errorText, noticeText, actions }
 }

@@ -6,18 +6,24 @@
   },
   "network": {
     "timeout": "{seconds} 秒后请求超时。",
-    "rateLimited": "已触发 GitHub API 速率限制，请在 {resetAt} 后重试。"
+    "rateLimited": "已触发 GitHub API 速率限制，请在 {resetAt} 后重试。",
+    "server": "GitHub 返回了服务器错误，请重试。",
+    "unreachable": "无法连接 api.github.com，请检查网络。"
+  },
+  "notFound": {
+    "repository": "找不到该仓库或文件，或者你的令牌无权访问。"
   },
   "conflict": {
     "branchMoved": "自你打开该文件以来，翻译分支已发生变化。",
     "reloadRequired": "请先重新加载最新版本再提交。"
   },
   "validation": {
-    "failed": "部分条目未通过校验。",
+    "failed": "GitHub 拒绝了该请求，令牌可能缺少所需权限。",
     "rules": [
       "请保持 {0} 这类占位符不变。",
       "请保持 <b> 这类 HTML 标签不变。",
       "请勿翻译产品名称。"
     ]
-  }
+  },
+  "unknown": "GitHub API 返回了预期之外的错误。"
 }

@@ -1,32 +1,106 @@
 # GitLocalize インターフェース文言 — 日本語。
-app:
-  name: GitLocalize
-  tagline: GitHub の中でそのまま翻訳する
-  menu:
-    settings: 設定
-    about: このアプリについて
-    login: ログイン
-    logout: ログアウト
-    help: ヘルプ
-  editor:
-    title: 翻訳エディター
-    searchPlaceholder: キーまたはテキストを検索
-    untranslatedOnly: 未翻訳のみ表示
-    save: 変更を保存
-    submit: 翻訳を送信
-    reload: ブランチから再読み込み
-    emptyState: 現在の絞り込みに一致する項目はありません。
-  status:
-    signedInAs: "@{login} としてログイン中"
-    modified: "{count} 件を変更しました"
-    untranslated: "{count} 件が未翻訳です"
-    branchTip: "{branch} にコミットします"
-  welcome: |
-    ようこそ、{name} さん。
-    言語を選んで翻訳を始めましょう。
-  legal:
-    notice: 翻訳を送信する前に<b>スタイルガイド</b>をお読みください。
-  limits:
-    maxFiles: 3
-    allowGuest: false
-    timeoutSeconds: 30.5
+name: GitLocalize
+tagline: GitHub の中でそのまま翻訳する
+
+locale:
+  label: 表示言語
+
+login:
+  title: ログインして翻訳を始める
+  privacy: |
+    トークンはブラウザー内にのみ保持されます。api.github.com 以外のサーバーには送信されず、
+    リポジトリに書き込まれることも、URL に含まれることもありません。
+  owner: オーナー
+  repository: リポジトリ
+  branch: 翻訳ブランチ
+  tokenLabel: 個人アクセストークン
+  tokenPlaceholder: github_pat_...
+  scopeHint: "このリポジトリに対して「Contents: Read and write」だけが必要です。"
+  tokenGuide: 取得方法は？
+  remember: このタブに限りトークンを保持します（sessionStorage）。オフの場合はメモリ上のみです。
+  signIn: ログイン
+  deviceFlow: GitHub デバイスフローを使う
+  devicePrompt: GitHub のデバイスページでコード {code} を入力し、承認してください。
+  deviceOpenPage: デバイスページを開く
+  deviceCancel: キャンセル
+  mock: モックデータで続ける
+
+status:
+  signedInAs: "@{login} としてログイン中"
+  branch: ブランチ
+  head: コミット
+  file: ファイル
+  modified: 変更済み
+  untranslated: 未翻訳
+  warnings: 警告
+  reload: ブランチから再読み込み
+  signOut: ログアウト
+  mock: モック
+
+permission:
+  none: 権限なし
+  read: 読み取り
+  triage: トリアージ
+  write: 書き込み
+  maintain: メンテナンス
+  admin: 管理者
+
+toolbar:
+  language: 言語
+  file: ファイル
+  searchPlaceholder: キーまたはテキストを検索
+  untranslatedOnly: 未翻訳のみ表示
+  discard: "{count} 件を破棄"
+
+table:
+  key: キー
+  source: 英語（原文）
+  target: 翻訳
+  empty: 現在の絞り込みに一致する項目はありません。
+  untranslated: 未翻訳
+  progress: "{visible} / {total} 件"
+  untranslatedCount: "{count} 件が未翻訳"
+  modifiedCount: "{count} 件を変更"
+
+qa:
+  empty-translation: 未翻訳
+  placeholder-missing: "プレースホルダーがありません: {detail}"
+  placeholder-extra: "想定外のプレースホルダー: {detail}"
+  html-tag-missing: "HTML タグがありません: <{detail}>"
+  html-tag-extra: "想定外の HTML タグ: <{detail}>"
+
+diff:
+  review:
+    one: 1 件の変更を確認
+    other: "{count} 件の変更を確認"
+  committing: "@{login} として {branch} にコミットします"
+  oldEmpty: （空）
+  newEmpty: （削除）
+  warnings:
+    one: プレースホルダーまたは HTML タグの警告が {count} 件残っています。
+    other: プレースホルダーまたは HTML タグの警告が {count} 件残っています。
+  cancel: キャンセル
+  confirm: "{branch} にコミット"
+
+editor:
+  loading: GitHub から翻訳を読み込んでいます...
+  submit:
+    one: 翻訳を 1 件送信
+    other: "翻訳を {count} 件送信"
+  progress: "{translated} / {total} 件翻訳済み（{language}）"
+  reloadNow: 今すぐ再読み込み
+  viewCommit: コミットを表示
+  pullRequest: "翻訳 PR #{number}"
+  openOnGitHub: GitHub で開く
+
+message:
+  nothingToCommit: コミットする内容がありません。
+  noContentChange: 内容に変更がないため、コミットは作成されませんでした。
+  committed: "{sha} を {branch} にコミットしました。"
+  notSignedIn: ログインしていません。
+  tokenEmpty: 個人アクセストークンを入力してください。
+  targetFirst: ログインする前に対象リポジトリを設定してください。
+  noLanguages: 対象言語が見つかりません。.github/i18n.yml を確認してください。
+  noSourceFiles: 設定に一致する原文ファイルがありません。
+  noTarget: 対象リポジトリを特定できません。GitHub Pages から開くか、owner と repository を入力してください。
+  sourceMissing: "原文ファイルが見つかりません: {path}"

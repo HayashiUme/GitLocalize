@@ -31,8 +31,9 @@ GitHub Actions
     sync-main-to-i18n.yml     main push  → merge into i18n
     deploy-pages.yml          i18n push  → build and publish Pages
 docs/                         VuePress site (published)
-locales/                      sample translation files in YAML and JSON
+locales/                      the editor's own interface strings, in YAML and JSON
 src/                          editor, parsers, GitHub API client, QA checks
+src/i18n/                     loads locales/ and renders the editor in four languages
 tests/                        unit tests for the non-UI layers
 scripts/setup-repo.sh         branch rulesets for main and i18n
 ```
@@ -58,8 +59,25 @@ Then open the published editor at `https://<owner>.github.io/<repository>/editor
 - Warns about missing `{placeholders}` and dropped `<b>` tags as you type.
 - Commits every changed file as **one** commit through the Git database API, with the translator as the commit author.
 - Refuses to commit when the branch head changed underneath you; the ref update is `force: false`.
+- Renders its own interface from `locales/`, so the platform is translated with the platform. Switch language in the editor header, or pass `?lang=zh-CN`.
 
 ![Diff preview](docs/public/diff-preview.png)
+
+## The editor translates itself
+
+`locales/app.*.yml` and `locales/errors.*.json` are not samples: they are the strings the editor renders. Change `locales/app.zh-CN.yml`, open the editor in Chinese, and the interface follows. That makes the repository a working example of the thing it hosts — and it means a translator can learn the workflow by translating the tool they are looking at.
+
+```yaml
+# locales/app.zh-CN.yml
+login:
+  title: 登录后开始翻译
+  tokenLabel: 个人访问令牌
+
+status:
+  signedInAs: 已登录为 @{login}
+```
+
+Resolution order for the interface language is `?lang=` → stored choice → browser language → English. `tests/i18n.test.ts` keeps the four catalogs honest: identical key sets, identical placeholders and HTML tags, paired plural keys, and no string the components ask for left undefined.
 
 ## Design constraints
 

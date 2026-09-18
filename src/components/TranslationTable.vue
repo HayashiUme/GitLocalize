@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { t } from '../i18n'
 import { actions, filteredEntries, issuesByKey, stats, useEditor } from '../state/editorStore'
+import type { QaIssue } from '../types'
 
 const { state } = useEditor()
+
+function issueText(issue: QaIssue): string {
+  return t(`qa.${issue.code}`, { detail: issue.detail ?? '' })
+}
 </script>
 
 <template>
@@ -9,9 +15,9 @@ const { state } = useEditor()
     <table class="glz-table">
       <thead>
         <tr>
-          <th class="glz-col-key">Key</th>
-          <th class="glz-col-source">English (source)</th>
-          <th class="glz-col-target">Translation</th>
+          <th class="glz-col-key">{{ t('table.key') }}</th>
+          <th class="glz-col-source">{{ t('table.source') }}</th>
+          <th class="glz-col-target">{{ t('table.target') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -37,21 +43,21 @@ const { state } = useEditor()
             />
             <div v-if="issuesByKey.get(entry.key)?.length" class="glz-issues">
               <span v-for="issue in issuesByKey.get(entry.key)" :key="issue.code + issue.message" class="glz-issue">
-                ⚠ {{ issue.message }}
+                ⚠ {{ issueText(issue) }}
               </span>
             </div>
-            <span v-else-if="!entry.translated" class="glz-untranslated">未翻译</span>
+            <span v-else-if="!entry.translated" class="glz-untranslated">{{ t('table.untranslated') }}</span>
           </td>
         </tr>
         <tr v-if="filteredEntries.length === 0">
-          <td colspan="3" class="glz-empty">No entries match the current filter.</td>
+          <td colspan="3" class="glz-empty">{{ t('table.empty') }}</td>
         </tr>
       </tbody>
     </table>
     <footer class="glz-table-footer">
-      <span>{{ filteredEntries.length }} / {{ stats.total }} entries</span>
-      <span v-if="stats.untranslated > 0">{{ stats.untranslated }} untranslated</span>
-      <span v-if="stats.modified > 0">{{ stats.modified }} modified</span>
+      <span>{{ t('table.progress', { visible: filteredEntries.length, total: stats.total }) }}</span>
+      <span v-if="stats.untranslated > 0">{{ t('table.untranslatedCount', { count: stats.untranslated }) }}</span>
+      <span v-if="stats.modified > 0">{{ t('table.modifiedCount', { count: stats.modified }) }}</span>
     </footer>
   </div>
 </template>

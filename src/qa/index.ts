@@ -35,7 +35,7 @@ export function qaCheckEntry(entry: TranslationEntry): QaIssue[] {
     issues.push({ key: entry.key, code: 'html-tag-missing', message: `Missing HTML tag: <${tag}>`, detail: tag })
   }
   for (const tag of tags.extra) {
-    issues.push({ key: entry.key, code: 'html-tag-missing', message: `Unexpected HTML tag: <${tag}>`, detail: tag })
+    issues.push({ key: entry.key, code: 'html-tag-extra', message: `Unexpected HTML tag: <${tag}>`, detail: tag })
   }
   return issues
 }
