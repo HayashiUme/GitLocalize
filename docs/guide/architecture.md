@@ -71,7 +71,8 @@ These are properties of the platform, not bugs in this project:
 4. **The Contents API caps files at 1 MB.** Locale files that large need the blob API for reads as well; the editor currently reads through the Contents API.
 5. **A repository must be public for GitHub Pages on a free plan.** A private repository needs a paid plan for Pages.
 6. **CORS.** `api.github.com` serves CORS headers, so the browser can call it directly. The device flow endpoints on `github.com` are intended for public clients; if a browser blocks them, the personal access token path always works.
-7. **`GITHUB_TOKEN` cannot create a Pages site.** It carries `pages: write`, which is enough to publish, but creating the site needs repository administration. Run `scripts/setup-repo.sh` once, or create the site through the API, before the deployment workflow can succeed. A failing `actions/configure-pages` step with "Resource not accessible by integration" means exactly this.
+7. **`GITHUB_TOKEN` cannot create a Pages site.** It carries `pages: write`, which is enough to publish, but creating the site needs repository administration. A failing `actions/configure-pages` step with "Resource not accessible by integration" means exactly this.
+8. **The `github-pages` environment only trusts the default branch by default.** A deployment from `i18n` is rejected before any step runs, which shows up as a job with no steps and a bare failure. Adding `i18n` as a custom deployment branch policy fixes it. `scripts/setup-repo.sh` performs both this and the step above.
 
 ## Extending the parser layer
 

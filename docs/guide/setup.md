@@ -72,17 +72,27 @@ The default `GITHUB_TOKEN` needs no setup.
 
 ## 6. Pages
 
-Enable Pages once with a token that has repository administration, because the workflow token holds `pages: write` but cannot create the site itself:
+Two things need administration rights and cannot be done by the workflow token:
+
+1. **Create the Pages site.** The workflow token holds `pages: write`, which publishes, but creating the site needs administration.
+2. **Allow the translation branch to deploy.** The `github-pages` environment trusts only the default branch until you say otherwise, and a deployment from `i18n` is rejected before any step runs.
+
+`scripts/setup-repo.sh` does both along with the rulesets. Equivalently, through the API:
 
 ```bash
-curl -X POST \
-  -H "Authorization: Bearer $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github+json" \
-  https://api.github.com/repos/<owner>/<repo>/pages \
-  -d '{"build_type":"workflow"}'
+curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/<owner>/<repo>/pages -d '{"build_type":"workflow"}'
+
+curl -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/<owner>/<repo>/environments/github-pages \
+  -d '{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}'
+
+curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/<owner>/<repo>/environments/github-pages/deployment-branch-policies \
+  -d '{"name":"i18n","type":"branch"}'
 ```
 
-`scripts/setup-repo.sh` does this along with the rulesets. After that, `deploy-pages.yml` builds the VuePress site from `docs/` on every push to `i18n` and publishes it.
+After that, `deploy-pages.yml` builds the VuePress site from `docs/` on every push to `i18n` and publishes it.
 
 The published URL is `https://<owner>.github.io/<repository>/`.
 

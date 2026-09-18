@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Creates the branch rulesets that act as the real security boundary.
+# Creates the branch rulesets that act as the real security boundary, enables Pages,
+# and allows the translation branch to deploy to the github-pages environment.
 # Requires a token with repository administration permission.
 #   GITHUB_TOKEN=... ./scripts/setup-repo.sh HayashiUme GitLocalize
 
 OWNER="${1:-${GITHUB_REPOSITORY%%/*}}"
 REPO="${2:-${GITHUB_REPOSITORY##*/}}"
+TRANSLATION_BRANCH="${TRANSLATION_BRANCH:-i18n}"
 TOKEN="${GITHUB_TOKEN:?set GITHUB_TOKEN to a token with repository administration}"
 
 api() {
@@ -80,5 +82,13 @@ echo
 echo "-- pages"
 # The workflow token holds pages:write but cannot create the site, so do it once from here.
 api POST "/repos/$OWNER/$REPO/pages" '{"build_type":"workflow"}' | head -c 300
+echo
+echo "-- github-pages environment"
+# Without this the deployment is rejected: the environment only trusts the default branch.
+api PUT "/repos/$OWNER/$REPO/environments/github-pages" \
+  '{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' | head -c 200
+echo
+api POST "/repos/$OWNER/$REPO/environments/github-pages/deployment-branch-policies" \
+  "{\"name\":\"$TRANSLATION_BRANCH\",\"type\":\"branch\"}" | head -c 300
 echo
 echo "Done. Add the automation account as a bypass actor if it ever needs to push to main."
