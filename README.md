@@ -50,12 +50,16 @@ Then open the published editor at `https://<owner>.github.io/<repository>/editor
 
 ## What the editor does
 
+![Translation editor](docs/public/editor.png)
+
 - Lists source and target files, discovers languages from `app.zh-CN.yml` style names.
 - Flattens nested YAML and JSON into key / source / translation rows.
 - Preserves comments in YAML by editing the original document instead of re-emitting it.
 - Warns about missing `{placeholders}` and dropped `<b>` tags as you type.
 - Commits every changed file as **one** commit through the Git database API, with the translator as the commit author.
 - Refuses to commit when the branch head changed underneath you; the ref update is `force: false`.
+
+![Diff preview](docs/public/diff-preview.png)
 
 ## Design constraints
 
