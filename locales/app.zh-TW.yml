@@ -25,7 +25,7 @@ app:
     歡迎，{name}。
     選擇一種語言即可開始翻譯。
   legal:
-    notice: Read the <b>style guide</b> before submitting translations.
+    notice: 提交翻譯前請閱讀<b>風格指南</b>。
   limits:
     maxFiles: 3
     allowGuest: false
