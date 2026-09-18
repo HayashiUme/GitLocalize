@@ -61,6 +61,7 @@ export function createMockTransport(): ClientTransport {
 
   let headSha = fakeSha('mock-head-0')
   let treeSha = fakeSha('mock-tree-0')
+  let pendingCommitSha: string | null = null
   let version = 0
 
   const json = (status: number, body: unknown): Response =>
@@ -136,10 +137,14 @@ export function createMockTransport(): ClientTransport {
       }
       if (route === '/git/commits' && method === 'POST') {
         version += 1
-        headSha = fakeSha(`mock-head-${version}`)
-        return json(201, { sha: headSha, tree: { sha: treeSha } })
+        pendingCommitSha = fakeSha(`mock-head-${version}`)
+        return json(201, { sha: pendingCommitSha, tree: { sha: treeSha } })
       }
       if (route.startsWith('/git/refs/heads/')) {
+        if (method === 'PATCH' && pendingCommitSha) {
+          headSha = pendingCommitSha
+          pendingCommitSha = null
+        }
         return json(200, { ref: 'refs/heads/i18n', object: { sha: headSha, type: 'commit' } })
       }
       if (route.startsWith('/pulls')) {
