@@ -65,7 +65,11 @@ Then open the published editor at `https://<owner>.github.io/<repository>/editor
 
 ## The editor translates itself
 
-`locales/app.*.yml` and `locales/errors.*.json` are not samples: they are the strings the editor renders. Change `locales/app.zh-CN.yml`, open the editor in Chinese, and the interface follows. That makes the repository a working example of the thing it hosts — and it means a translator can learn the workflow by translating the tool they are looking at.
+![The editor rendering its own Chinese strings](docs/public/editor-zh-CN.png)
+
+`locales/app.*.yml` and `locales/errors.*.json` are not samples: they are the strings the editor renders. The screenshot above is the editor editing `locales/app.zh-CN.yml` while displaying itself in Chinese — the row `locale.label` reads "Interface language" on the left and "界面语言" on the right, and the header above it is rendered from that same file.
+
+Change `locales/app.zh-CN.yml`, open the editor in Chinese, and the interface follows. That makes the repository a working example of the thing it hosts, and it means a translator can learn the workflow by translating the tool they are looking at.
 
 ```yaml
 # locales/app.zh-CN.yml

@@ -63,6 +63,22 @@ const permission = computed(() => t(permissionKey(state.repo?.viewerPermission ?
   height: 36px;
   border-radius: 50%;
 }
+.glz-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px solid var(--glz-border);
+  border-radius: 10px;
+  background: var(--glz-surface-alt);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--glz-text-muted);
+}
+.glz-badge-warn {
+  border-color: #f0d9a8;
+  background: #fdf6e3;
+  color: var(--glz-warn);
+}
 .glz-user {
   font-size: 13px;
   font-weight: 600;
