@@ -1,3 +1,5 @@
+<img src="docs/.vuepress/public/logo-full.png" alt="GitLocalize" width="360">
+
 # GitLocalize
 
 A translation collaboration platform that runs entirely on GitHub. No VPS, no application server, no database, no OAuth broker.
@@ -51,7 +53,7 @@ Then open the published editor at `https://<owner>.github.io/<repository>/editor
 
 ## What the editor does
 
-![Translation editor](docs/public/editor.png)
+![Translation editor](docs/.vuepress/public/editor.png)
 
 - Lists source and target files, discovers languages from `app.zh-CN.yml` style names.
 - Flattens nested YAML and JSON into key / source / translation rows.
@@ -61,11 +63,11 @@ Then open the published editor at `https://<owner>.github.io/<repository>/editor
 - Refuses to commit when the branch head changed underneath you; the ref update is `force: false`.
 - Renders its own interface from `locales/`, so the platform is translated with the platform. Switch language in the editor header, or pass `?lang=zh-CN`.
 
-![Diff preview](docs/public/diff-preview.png)
+![Diff preview](docs/.vuepress/public/diff-preview.png)
 
 ## The editor translates itself
 
-![The editor rendering its own Chinese strings](docs/public/editor-zh-CN.png)
+![The editor rendering its own Chinese strings](docs/.vuepress/public/editor-zh-CN.png)
 
 `locales/app.*.yml` and `locales/errors.*.json` are not samples: they are the strings the editor renders. The screenshot above is the editor editing `locales/app.zh-CN.yml` while displaying itself in Chinese — the row `locale.label` reads "Interface language" on the left and "界面语言" on the right, and the header above it is rendered from that same file.
 
