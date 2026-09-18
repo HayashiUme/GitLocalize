@@ -46,7 +46,7 @@ npm test
 npm run build
 ```
 
-Then open the published editor at `https://<owner>.github.io/<repository>/editor.html`, paste a fine-grained personal access token scoped to that repository, and start translating. See [docs/guide/setup.md](docs/guide/setup.md).
+Then open the published editor at `https://<owner>.github.io/<repository>/editor.html`, paste a fine-grained personal access token scoped to that repository, and start translating. [Getting a token](docs/guide/token.md) explains how to create one; [docs/guide/setup.md](docs/guide/setup.md) covers the repository settings.
 
 ## What the editor does
 

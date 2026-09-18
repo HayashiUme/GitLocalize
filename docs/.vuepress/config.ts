@@ -43,13 +43,14 @@ export default defineUserConfig({
     colorModeSwitch: false,
     navbar: [
       { text: 'Editor', link: '/editor.md' },
+      { text: 'Get a token', link: '/guide/token.md' },
       { text: 'Architecture', link: '/guide/architecture.md' },
       { text: 'Setup', link: '/guide/setup.md' },
       { text: 'Security', link: '/guide/security.md' },
       { text: 'Repository', link: `https://github.com/${siteTarget.owner}/${siteTarget.repo}` },
     ],
     sidebar: {
-      '/guide/': ['/guide/architecture.md', '/guide/setup.md', '/guide/security.md'],
+      '/guide/': ['/guide/token.md', '/guide/architecture.md', '/guide/setup.md', '/guide/security.md'],
     },
   }),
 })

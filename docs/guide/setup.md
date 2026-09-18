@@ -112,11 +112,11 @@ Open `http://localhost:8080/editor.html?mock=1` to exercise the editor against t
 
 ## 8. Token scopes
 
-A fine-grained personal access token scoped to the single repository is enough:
+Each translator brings their own credential. The walkthrough lives in [Getting a token](/guide/token.md); the short version is a fine-grained personal access token limited to this one repository:
 
 ```text
 Contents:      Read and write
 Pull requests: Read and write   (optional, for the editor to show the PR link)
 ```
 
-Do not grant administration, secrets, actions or workflow permissions to translators.
+Do not grant administration, secrets, actions or workflow permissions to translators, and do not hand out the GitHub CLI's own `gho_…` token — it is account-wide.

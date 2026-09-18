@@ -94,6 +94,10 @@ function cancelDeviceFlow(): void {
       Personal access token
       <input v-model="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_..." />
     </label>
+    <p class="glz-muted glz-hint">
+      Needs <code>Contents: Read and write</code> on this repository only.
+      <RouterLink to="/guide/token.md">How do I get one?</RouterLink>
+    </p>
 
     <label class="glz-checkbox">
       <input v-model="remember" type="checkbox" />
@@ -161,6 +165,10 @@ function cancelDeviceFlow(): void {
   font-size: 12px;
   color: var(--glz-text-muted);
   margin-bottom: 14px;
+}
+.glz-hint {
+  margin: -6px 0 14px;
+  line-height: 1.6;
 }
 .glz-actions {
   display: flex;
