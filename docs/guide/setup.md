@@ -72,7 +72,17 @@ The default `GITHUB_TOKEN` needs no setup.
 
 ## 6. Pages
 
-`deploy-pages.yml` builds the VuePress site from `docs/` on every push to `i18n` and publishes it. The workflow calls `actions/configure-pages` with `enablement: true`, so Pages does not need to be switched on by hand first.
+Enable Pages once with a token that has repository administration, because the workflow token holds `pages: write` but cannot create the site itself:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/<owner>/<repo>/pages \
+  -d '{"build_type":"workflow"}'
+```
+
+`scripts/setup-repo.sh` does this along with the rulesets. After that, `deploy-pages.yml` builds the VuePress site from `docs/` on every push to `i18n` and publishes it.
 
 The published URL is `https://<owner>.github.io/<repository>/`.
 

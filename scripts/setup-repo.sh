@@ -77,4 +77,8 @@ echo
 echo "-- i18n"
 api POST "/repos/$OWNER/$REPO/rulesets" "$(i18n_ruleset)" | head -c 400
 echo
+echo "-- pages"
+# The workflow token holds pages:write but cannot create the site, so do it once from here.
+api POST "/repos/$OWNER/$REPO/pages" '{"build_type":"workflow"}' | head -c 300
+echo
 echo "Done. Add the automation account as a bypass actor if it ever needs to push to main."
