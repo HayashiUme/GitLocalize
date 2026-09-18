@@ -73,6 +73,7 @@ These are properties of the platform, not bugs in this project:
 6. **CORS.** `api.github.com` serves CORS headers, so the browser can call it directly. The device flow endpoints on `github.com` are intended for public clients; if a browser blocks them, the personal access token path always works.
 7. **`GITHUB_TOKEN` cannot create a Pages site.** It carries `pages: write`, which is enough to publish, but creating the site needs repository administration. A failing `actions/configure-pages` step with "Resource not accessible by integration" means exactly this.
 8. **The `github-pages` environment only trusts the default branch by default.** A deployment from `i18n` is rejected before any step runs, which shows up as a job with no steps and a bare failure. Adding `i18n` as a custom deployment branch policy fixes it. `scripts/setup-repo.sh` performs both this and the step above.
+9. **GitHub Actions is not allowed to open pull requests by default.** The repository setting `can_approve_pull_request_reviews` must be switched on, otherwise `gh pr create` fails with "GitHub Actions is not permitted to create or approve pull requests". `scripts/setup-repo.sh` sets it. The alternative is an `I18N_BOT_TOKEN` secret.
 
 ## Extending the parser layer
 

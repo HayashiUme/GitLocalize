@@ -39,15 +39,16 @@ When `languages` is omitted, languages are inferred from file names such as `app
 
 ## 3. Repository settings
 
-Search for a file, paste a snippet into the commit message and save — several settings are one commit away:
-
 | Setting | Value |
 | --- | --- |
 | Default branch | `main` |
 | Merge commits | Allowed (the sync workflow relies on merges) |
 | Squash merges | Allowed |
 | Delete branch on merge | Off for `i18n` |
-| Pages source | GitHub Actions |
+| Actions → Allow GitHub Actions to create and approve pull requests | On |
+| Pages → Source | GitHub Actions |
+
+The Actions setting is required, not cosmetic: without it the workflow token cannot open the `i18n → main` pull request and `translation-pr.yml` fails with "GitHub Actions is not permitted to create or approve pull requests". `scripts/setup-repo.sh` switches it on through the API.
 
 ## 4. Rulesets
 
@@ -60,7 +61,9 @@ Attach the rulesets before inviting translators. `main` at minimum needs:
 
 `i18n` needs force push and deletion blocked, and nothing else — a pull request requirement there would stop translators from committing at all.
 
-Both rulesets are created by the bootstrap script in `scripts/setup-repo.sh` when a token with repository administration is available.
+Both rulesets come from `scripts/setup-repo.sh`, which needs a token with repository administration.
+
+Note that a ruleset applies to the repository owner too. The script therefore records the owner as a bypass actor, so a single maintainer can still merge and push while everybody else is held to the pull request rule. Remove the bypass actor once more than one maintainer exists.
 
 ## 5. Secrets
 
