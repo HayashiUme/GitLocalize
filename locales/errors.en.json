@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "expired": "Your GitHub session expired. Please sign in again.",
+    "forbidden": "You do not have permission to modify {repo}.",
+    "missingToken": "No access token is available for this request."
+  },
+  "network": {
+    "timeout": "The request timed out after {seconds}s.",
+    "rateLimited": "GitHub API rate limit reached. Try again at {resetAt}."
+  },
+  "conflict": {
+    "branchMoved": "The translation branch has changed since you opened this file.",
+    "reloadRequired": "Please reload the latest version before committing."
+  },
+  "validation": {
+    "failed": "Some entries failed validation.",
+    "rules": [
+      "Keep placeholders such as {0} unchanged.",
+      "Keep HTML tags such as <b> unchanged.",
+      "Do not translate product names."
+    ]
+  }
+}

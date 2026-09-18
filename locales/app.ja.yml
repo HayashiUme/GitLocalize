@@ -1,0 +1,31 @@
+# GitLocalize インターフェース文言 — 日本語。
+app:
+  name: GitLocalize
+  tagline: GitHub の中でそのまま翻訳する
+  menu:
+    settings: 設定
+    about: このアプリについて
+    login: ログイン
+    logout: ログアウト
+  editor:
+    title: 翻訳エディター
+    searchPlaceholder: キーまたはテキストを検索
+    untranslatedOnly: 未翻訳のみ表示
+    save: 変更を保存
+    submit: 翻訳を送信
+    reload: ブランチから再読み込み
+    emptyState: 現在の絞り込みに一致する項目はありません。
+  status:
+    signedInAs: "@{login} としてログイン中"
+    modified: "{count} 件を変更しました"
+    untranslated: "{count} 件が未翻訳です"
+    branchTip: "{branch} にコミットします"
+  welcome: |
+    ようこそ、{name} さん。
+    言語を選んで翻訳を始めましょう。
+  legal:
+    notice: 翻訳を送信する前に<b>スタイルガイド</b>をお読みください。
+  limits:
+    maxFiles: 3
+    allowGuest: false
+    timeoutSeconds: 30.5

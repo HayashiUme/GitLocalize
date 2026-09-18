@@ -1,0 +1,42 @@
+:root {
+  --glz-border: #d8dee6;
+  --glz-border-soft: #eceff3;
+  --glz-surface: #ffffff;
+  --glz-surface-alt: #f6f8fa;
+  --glz-text: #1f2328;
+  --glz-text-muted: #656d76;
+  --glz-accent: #2458c4;
+  --glz-warn: #9a6700;
+  --glz-modified: #fff9e6;
+}
+
+.glz-editor button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: var(--glz-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.glz-editor button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.glz-editor button.glz-secondary {
+  background: var(--glz-surface);
+  color: var(--glz-text);
+  border-color: var(--glz-border);
+}
+
+.glz-editor .glz-muted {
+  color: var(--glz-text-muted);
+  font-size: 12px;
+}
+
+.glz-editor a {
+  color: var(--glz-accent);
+}

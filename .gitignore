@@ -1,0 +1,17 @@
+node_modules/
+coverage/
+
+docs/.vuepress/dist/
+docs/.vuepress/.temp/
+docs/.vuepress/.cache/
+
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+.env
+.env.*
+!.env.example

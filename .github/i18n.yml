@@ -1,0 +1,22 @@
+source:
+  language: en
+  directory: locales
+
+languages:
+  - zh-CN
+  - zh-TW
+  - ja
+
+files:
+  - "locales/*.yml"
+  - "locales/*.json"
+
+branch:
+  translation: i18n
+  main: main
+
+pullRequest:
+  title: "i18n: update translations"
+
+editor:
+  rememberToken: false

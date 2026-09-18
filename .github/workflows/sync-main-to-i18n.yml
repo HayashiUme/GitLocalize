@@ -1,0 +1,85 @@
+name: Sync main to i18n
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: sync-main-to-i18n
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    outputs:
+      pushed: ${{ steps.merge.outputs.pushed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.I18N_BOT_TOKEN || github.token }}
+
+      - name: Merge main into i18n
+        id: merge
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --quiet origin main
+          echo "pushed=false" >> "$GITHUB_OUTPUT"
+
+          if git ls-remote --exit-code --heads origin i18n >/dev/null 2>&1; then
+            git checkout -B i18n origin/i18n
+          else
+            echo "The i18n branch does not exist yet, creating it from main."
+            git checkout -B i18n origin/main
+            git push origin i18n
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "i18n already contains every commit from main. Nothing to do."
+            exit 0
+          fi
+
+          if git merge-base --is-ancestor HEAD origin/main; then
+            git merge --ff-only origin/main
+          else
+            if ! git merge --no-commit --no-edit origin/main; then
+              echo "::error::Merging main into i18n conflicts. Nothing was overwritten; resolve it by hand."
+              git diff --name-only --diff-filter=U || true
+              git merge --abort || true
+              exit 1
+            fi
+            if git diff --cached --quiet; then
+              git merge --abort
+              echo "The merge result would be identical to the current i18n tree. Skipping."
+              exit 0
+            fi
+            git commit --no-edit
+          fi
+
+          git push origin HEAD:i18n
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger follow-up workflows
+        if: steps.merge.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BOT_TOKEN: ${{ secrets.I18N_BOT_TOKEN }}
+        run: |
+          if [ -n "$BOT_TOKEN" ]; then
+            echo "A bot token performed the push, so GitHub already started the dependent workflows."
+            exit 0
+          fi
+          echo "Pushes made with the default token do not start workflow runs, dispatching them explicitly."
+          gh workflow run translation-pr.yml --ref i18n || true
+          gh workflow run deploy-pages.yml --ref i18n || true

@@ -1,0 +1,32 @@
+# GitLocalize 介面文案 — 繁體中文。
+app:
+  name: GitLocalize
+  tagline: 就在 GitHub 上一起翻譯
+  menu:
+    settings: 設定
+    about: 關於
+    login: 登入
+    logout: 登出
+    help: 說明
+  editor:
+    title: 翻譯編輯器
+    searchPlaceholder: 搜尋鍵名或文字
+    untranslatedOnly: 只顯示未翻譯項目
+    save: 儲存變更
+    submit: 提交翻譯
+    reload: 從分支重新載入
+    emptyState: 目前篩選條件下沒有項目。
+  status:
+    signedInAs: "已登入為 @{login}"
+    modified: "已修改 {count} 項"
+    untranslated: "未翻譯 {count} 項"
+    branchTip: "提交至 {branch}"
+  welcome: |
+    歡迎，{name}。
+    選擇一種語言即可開始翻譯。
+  legal:
+    notice: Read the <b>style guide</b> before submitting translations.
+  limits:
+    maxFiles: 3
+    allowGuest: false
+    timeoutSeconds: 30.5

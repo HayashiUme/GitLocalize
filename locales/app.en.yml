@@ -1,0 +1,32 @@
+# GitLocalize interface strings — source language (English).
+app:
+  name: GitLocalize
+  tagline: Translate together, right inside GitHub
+  menu:
+    settings: Settings
+    about: About
+    login: Login
+    logout: Logout
+    help: Help
+  editor:
+    title: Translation Editor
+    searchPlaceholder: Search keys or text
+    untranslatedOnly: Show untranslated only
+    save: Save changes
+    submit: Submit translations
+    reload: Reload from branch
+    emptyState: No entries match the current filter.
+  status:
+    signedInAs: "Signed in as @{login}"
+    modified: "{count} entries modified"
+    untranslated: "{count} entries untranslated"
+    branchTip: "Committing to {branch}"
+  welcome: |
+    Welcome, {name}.
+    Pick a language and start translating.
+  legal:
+    notice: Read the <b>style guide</b> before submitting translations.
+  limits:
+    maxFiles: 3
+    allowGuest: false
+    timeoutSeconds: 30.5

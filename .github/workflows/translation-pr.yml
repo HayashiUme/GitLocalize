@@ -1,0 +1,67 @@
+name: Translation PR
+
+on:
+  push:
+    branches:
+      - i18n
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: translation-pr
+  cancel-in-progress: false
+
+jobs:
+  pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compare main and i18n
+        id: compare
+        run: |
+          git fetch --quiet origin main i18n
+          if git diff --quiet origin/main origin/i18n; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "i18n matches main, nothing to review."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --name-only origin/main origin/i18n
+          fi
+
+      - name: Ensure pull request exists
+        if: steps.compare.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.I18N_BOT_TOKEN || github.token }}
+        run: |
+          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head i18n --state open --json number --jq '.[0].number')"
+          if [ -n "$existing" ]; then
+            echo "Pull request #$existing already covers this branch. Not creating another one."
+            exit 0
+          fi
+
+          changed="$(git diff --name-only origin/main origin/i18n | sed 's/^/- `/; s/$/`/')"
+          languages="$(git diff --name-only origin/main origin/i18n | grep -oE '\.[A-Za-z]{2}(-[A-Za-z]{2,4})?\.(ya?ml|json)$' | sed 's/^\.//; s/\.\(ya\?ml\|json\)$//' | sort -u | sed 's/^/- /')"
+
+          {
+            echo "## Translation Update"
+            echo
+            echo "This PR was automatically created from the \`i18n\` branch."
+            echo
+            echo "### Languages"
+            echo "${languages:-- unknown}"
+            echo
+            echo "### Files"
+            echo "${changed:-- no file list}"
+            echo
+            echo "Please review before merging."
+          } > pr-body.md
+
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head i18n \
+            --title "i18n: update translations" --body-file pr-body.md

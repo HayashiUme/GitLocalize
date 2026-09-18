@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "expired": "你的 GitHub 登录已过期，请重新登录。",
+    "forbidden": "你没有修改 {repo} 的权限。",
+    "missingToken": "本次请求没有可用的访问令牌。"
+  },
+  "network": {
+    "timeout": "{seconds} 秒后请求超时。",
+    "rateLimited": "已触发 GitHub API 速率限制，请在 {resetAt} 后重试。"
+  },
+  "conflict": {
+    "branchMoved": "自你打开该文件以来，翻译分支已发生变化。",
+    "reloadRequired": "请先重新加载最新版本再提交。"
+  },
+  "validation": {
+    "failed": "部分条目未通过校验。",
+    "rules": [
+      "请保持 {0} 这类占位符不变。",
+      "请保持 <b> 这类 HTML 标签不变。",
+      "请勿翻译产品名称。"
+    ]
+  }
+}
