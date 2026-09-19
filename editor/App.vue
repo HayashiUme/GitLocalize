@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { AVAILABLE_UI_LOCALES, setUiLocale, t, uiLocale } from '@/i18n'
-import { getParser } from '@/parser'
+import { flatten, getParser } from '@/parser'
 import { translate, type MtSettings } from '@/mt'
 import { remember, suggest } from '@/mt/memory'
 import { downloadTextFile } from '@/storage/download'
@@ -360,7 +360,7 @@ async function loadOverview(): Promise<void> {
             `/repos/${state.target!.owner}/${state.target!.repo}/contents/${file.path}?ref=${state.target!.translationBranch}`,
             { accept: 'application/vnd.github.raw', raw: true },
           )
-          const parsed = getParser(file.path).parse(raw)
+          const parsed = flatten(getParser(file.path).parse(raw))
           for (const item of parsed) {
             const value = (item.value ?? '').trim()
             strings += 1
