@@ -11,7 +11,6 @@ import type { TranslationEntry } from '@/types'
 
 const { state, entries, filteredEntries, issuesByKey, stats, errorText, noticeText, actions } = useEditor()
 
-const ownerInput = ref('')
 const repoInput = ref('')
 const tokenInput = ref('')
 const rememberToken = ref(false)
@@ -188,7 +187,12 @@ async function runMt(): Promise<void> {
 }
 
 async function signIn(): Promise<void> {
-  actions.setTarget(ownerInput.value.trim(), repoInput.value.trim())
+  /* The deployment hostname normally resolves the repository; the manual field is
+     only shown when resolveTarget could not (local development, root pages). */
+  if (state.needsTarget) {
+    const [owner, repo] = repoInput.value.trim().split('/')
+    actions.setTarget(owner ?? '', repo ?? '')
+  }
   await actions.signIn(tokenInput.value.trim(), rememberToken.value)
 }
 
@@ -351,7 +355,7 @@ watch(() => state.status, (status) => {
         <span>GitHub</span>
         <input v-model="tokenInput" type="password" autocomplete="off" spellcheck="false" :placeholder="t('login.tokenPlaceholder')" />
       </label>
-      <label class="wz-field">
+      <label v-if="state.needsTarget" class="wz-field">
         <span>{{ t('login.branch') }}</span>
         <input v-model="repoInput" autocapitalize="off" spellcheck="false" placeholder="owner/repo" />
       </label>
