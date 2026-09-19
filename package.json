@@ -12,12 +12,22 @@
     "build": "vuepress build docs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vuepress build docs && npx serve docs/.vuepress/dist"
+    "preview": "vuepress build docs && npx serve docs/.vuepress/dist",
+    "app:dev": "vite --config app/vite.config.ts",
+    "app:build": "vite build --config app/vite.config.ts",
+    "app:sync": "npm run app:build && cap sync android",
+    "app:apk": "npm run app:sync && cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/filesystem": "^8.1.3",
+    "buffer": "^6.0.3",
+    "isomorphic-git": "^1.42.2",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
     "@vuepress/bundler-vite": "2.0.0-rc.31",
     "@vuepress/theme-default": "2.0.0-rc.134",
     "sass": "^1.104.1",

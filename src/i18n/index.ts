@@ -48,7 +48,8 @@ export function hasKey(key: string): boolean {
 }
 
 export function t(key: string, params: Record<string, string | number> = {}): string {
-  const template = resolve(state.locale, key) ?? resolve(DEFAULT_UI_LOCALE, key) ?? key
+  /* A blank value counts as untranslated, so it falls back to the source language instead of rendering empty. */
+  const template = resolve(state.locale, key) || resolve(DEFAULT_UI_LOCALE, key) || key
   return template.replace(/\{(\w+)\}/g, (match, name: string) => (name in params ? String(params[name]) : match))
 }
 

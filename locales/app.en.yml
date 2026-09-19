@@ -104,3 +104,41 @@ message:
   noSourceFiles: No source translation files matched the configured patterns.
   noTarget: Could not determine the repository. Open this page from GitHub Pages, or fill in owner and repository.
   sourceMissing: "Source file not found: {path}"
+
+onboarding:
+  title: Connect a repository
+  repositoryLabel: Repository
+  repositoryPlaceholder: owner/repo or a GitHub URL
+  connect: Connect
+  connecting: Downloading...
+  guideTitle: Three steps to a token
+  guideStep1: "GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens."
+  guideStep2: Limit it to this repository only.
+  guideStep3: "Grant Contents: Read and write, then paste it above."
+  guideLink: How do I get a token?
+
+connect:
+  connected: Repository ready.
+  warning:
+    largeRepository: This repository is large, and the whole clone is kept on this device.
+  error:
+    repository: Enter owner/repo or a github.com URL.
+    token: A personal access token is required.
+    noLocales: No locales/en.* files were found in this repository.
+    noLanguages: This repository has no target languages yet.
+
+app:
+  commit: Commit and push
+  pushed: "Pushed to {branch}."
+  signOut: Disconnect
+  settings: Settings
+  restored: Local edits were restored.
+
+settings:
+  title: Settings
+  appearance: Appearance
+  theme: Theme
+  themeLight: Light
+  themeDark: Dark
+  themeSystem: Follow the system
+  close: Close

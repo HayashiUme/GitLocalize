@@ -104,3 +104,41 @@ message:
   noSourceFiles: 設定に一致する原文ファイルがありません。
   noTarget: 対象リポジトリを特定できません。GitHub Pages から開くか、owner と repository を入力してください。
   sourceMissing: "原文ファイルが見つかりません: {path}"
+
+onboarding:
+  title: リポジトリを接続
+  repositoryLabel: リポジトリ
+  repositoryPlaceholder: owner/repo または GitHub の URL
+  connect: 接続
+  connecting: ダウンロード中...
+  guideTitle: トークンを取得する 3 ステップ
+  guideStep1: "GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens。"
+  guideStep2: 権限はこのリポジトリだけに限定します。
+  guideStep3: "「Contents: Read and write」を選び、上に貼り付けます。"
+  guideLink: トークンの取得方法
+
+connect:
+  connected: リポジトリの準備ができました。
+  warning:
+    largeRepository: このリポジトリは大きいため、クローン全体が端末に保存されます。
+  error:
+    repository: owner/repo または github.com の URL を入力してください。
+    token: 個人アクセストークンが必要です。
+    noLocales: locales/en.* ファイルが見つかりませんでした。
+    noLanguages: このリポジトリには対象言語がまだありません。
+
+app:
+  commit: コミットしてプッシュ
+  pushed: "{branch} にプッシュしました。"
+  signOut: 接続を解除
+  settings: 設定
+  restored: 未コミットの変更を復元しました。
+
+settings:
+  title: 設定
+  appearance: 外観
+  theme: テーマ
+  themeLight: ライト
+  themeDark: ダーク
+  themeSystem: システムに従う
+  close: 閉じる
