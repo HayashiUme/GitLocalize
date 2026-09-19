@@ -36,8 +36,12 @@ jobs:
 
       - name: Build the site and the standalone editor
         run: |
-          npm run build
+          npm ci
           npm run editor:build
+          cd docs
+          npm ci
+          npx vuepress build
+          cd ../..
           cp -r editor/dist "docs/.vuepress/dist/Editor"
 
       - name: Upload artifact
