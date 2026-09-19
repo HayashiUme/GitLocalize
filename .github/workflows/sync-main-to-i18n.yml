@@ -18,7 +18,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     outputs:
-      pushed: ${{ steps.merge.outputs.pushed }}
+      pushed: ${{ steps.sync.outputs.pushed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,8 +26,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.I18N_BOT_TOKEN || github.token }}
 
-      - name: Merge main into i18n
-        id: merge
+      # main is the source of truth for the app and its locale files only. The docs live
+      # on the i18n branch and are built there from docs/package.json; a plain merge
+      # would clobber them, so the sync copies the listed paths instead of merging.
+      - name: Copy app paths from main into i18n
+        id: sync
+        env:
+          SYNC_PATHS: '.github app android editor locales scripts src tests capacitor.config.ts package.json package-lock.json tsconfig.json README.md LICENSE .gitignore'
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -45,33 +50,24 @@ jobs:
             exit 0
           fi
 
-          if git merge-base --is-ancestor origin/main HEAD; then
-            echo "i18n already contains every commit from main. Nothing to do."
+          git checkout origin/main -- $SYNC_PATHS
+          git ls-tree -r --name-only origin/main -- $SYNC_PATHS | sort > /tmp/main-files
+          git ls-tree -r --name-only HEAD -- $SYNC_PATHS | sort > /tmp/i18n-files
+          comm -13 /tmp/main-files /tmp/i18n-files > /tmp/removed-files
+          if [ -s /tmp/removed-files ]; then
+            xargs -a /tmp/removed-files git rm --quiet --
+          fi
+
+          if git diff --cached --quiet; then
+            echo "The synced paths already match main. Nothing to do."
             exit 0
           fi
-
-          if git merge-base --is-ancestor HEAD origin/main; then
-            git merge --ff-only origin/main
-          else
-            if ! git merge --no-commit --no-edit origin/main; then
-              echo "::error::Merging main into i18n conflicts. Nothing was overwritten; resolve it by hand."
-              git diff --name-only --diff-filter=U || true
-              git merge --abort || true
-              exit 1
-            fi
-            if git diff --cached --quiet; then
-              git merge --abort
-              echo "The merge result would be identical to the current i18n tree. Skipping."
-              exit 0
-            fi
-            git commit --no-edit
-          fi
-
+          git commit -m "chore: sync app sources from main"
           git push origin HEAD:i18n
           echo "pushed=true" >> "$GITHUB_OUTPUT"
 
       - name: Trigger follow-up workflows
-        if: steps.merge.outputs.pushed == 'true'
+        if: steps.sync.outputs.pushed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           BOT_TOKEN: ${{ secrets.I18N_BOT_TOKEN }}
