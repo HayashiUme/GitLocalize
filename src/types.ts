@@ -50,7 +50,13 @@ export type QaCode =
   | 'html-tag-missing'
   | 'html-tag-extra'
   | 'empty-translation'
-  | 'length-out-of-range'
+  | 'punctuation-missing'
+  | 'newline-count'
+  | 'space-mismatch'
+  | 'zero-width-space'
+  | 'repeated-word'
+  | 'same-as-source'
+  | 'inconsistent'
 
 export interface QaIssue {
   key: string

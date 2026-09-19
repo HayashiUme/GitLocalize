@@ -68,6 +68,13 @@ qa:
   placeholder-extra: "想定外のプレースホルダー: {detail}"
   html-tag-missing: "HTML タグがありません: <{detail}>"
   html-tag-extra: "想定外の HTML タグ: <{detail}>"
+  punctuation-missing: "文末の句読点が原文と一致しません（{detail}）"
+  newline-count: "改行数が原文と一致しません（原文 {detail} 個）"
+  space-mismatch: "前後の空白が原文と一致しません（{detail}）"
+  zero-width-space: "翻訳に不可視のゼロ幅文字が含まれています"
+  repeated-word: "翻訳に繰り返しの単語があります：{detail}"
+  same-as-source: "翻訳が原文と同一です。未翻訳の可能性があります"
+  inconsistent: "同じ原文に {detail} 通りの翻訳があります"
 
 diff:
   review:

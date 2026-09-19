@@ -66,4 +66,56 @@ describe('qaCheckEntries', () => {
     const issues = qaCheckEntries([entry('a', 'a'), entry('b', ''), entry('c', '')])
     expect(issues.filter((issue) => issue.code === 'empty-translation')).toHaveLength(2)
   })
+
+  it('flags the same source string translated differently', () => {
+    const first = { ...entry('Open file', '打开文件'), key: 'first' }
+    const second = { ...entry('Open file', '开启文件'), key: 'second' }
+    const issues = qaCheckEntries([first, second])
+    expect(issues.filter((issue) => issue.code === 'inconsistent')).toHaveLength(2)
+  })
+
+  it('accepts one consistent translation for a repeated source', () => {
+    const first = { ...entry('Open file', '打开文件'), key: 'first' }
+    const second = { ...entry('Open file', '打开文件'), key: 'second' }
+    expect(qaCheckEntries([first, second]).filter((issue) => issue.code === 'inconsistent')).toHaveLength(0)
+  })
+})
+
+describe('weblate-style checks', () => {
+  it('flags a dropped question mark', () => {
+    expect(qaCheckEntry(entry('Are you sure?', '确定'))[0]).toMatchObject({ code: 'punctuation-missing' })
+  })
+
+  it('accepts the CJK counterpart of the punctuation', () => {
+    expect(qaCheckEntry(entry('Are you sure?', '确定吗？'))).toEqual([])
+  })
+
+  it('flags a changed line-break count', () => {
+    const issues = qaCheckEntry(entry('Line one\nLine two', '第一行第二行'))
+    expect(issues.some((issue) => issue.code === 'newline-count')).toBe(true)
+  })
+
+  it('flags edge whitespace differences', () => {
+    const issues = qaCheckEntry(entry(' Settings ', '设置'))
+    expect(issues.some((issue) => issue.code === 'space-mismatch')).toBe(true)
+  })
+
+  it('flags invisible zero-width characters', () => {
+    const issues = qaCheckEntry(entry('Settings', '设\u200B置'))
+    expect(issues.some((issue) => issue.code === 'zero-width-space')).toBe(true)
+  })
+
+  it('flags a translation identical to the source', () => {
+    expect(qaCheckEntry(entry('Save changes', 'Save changes'))[0]).toMatchObject({ code: 'same-as-source' })
+  })
+
+  it('keeps proper-noun phrases and identifiers out of the identical check', () => {
+    expect(qaCheckEntry(entry('GitHub Actions', 'GitHub Actions'))).toEqual([])
+    expect(qaCheckEntry(entry('OK', 'OK'))).toEqual([])
+  })
+
+  it('flags a repeated word in the translation', () => {
+    const issues = qaCheckEntry(entry('Save changes', 'Save changes changes'))
+    expect(issues.some((issue) => issue.code === 'repeated-word')).toBe(true)
+  })
 })
