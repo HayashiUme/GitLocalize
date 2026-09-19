@@ -93,7 +93,6 @@ editor:
   pullRequest: "翻訳 PR #{number}"
   openOnGitHub: GitHub で開く
 
-editor:
   rememberToken: この端末で記憶する
   pro:
     translate: 翻訳

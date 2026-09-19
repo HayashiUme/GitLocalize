@@ -93,7 +93,6 @@ editor:
   pullRequest: "翻譯 PR #{number}"
   openOnGitHub: 在 GitHub 上開啟
 
-editor:
   rememberToken: 在此裝置上記住
   pro:
     translate: 翻譯

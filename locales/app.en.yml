@@ -93,7 +93,6 @@ editor:
   pullRequest: "Translation pull request #{number}"
   openOnGitHub: Open on GitHub
 
-editor:
   rememberToken: Remember on this device
   pro:
     translate: Translate
