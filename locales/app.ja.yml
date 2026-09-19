@@ -71,7 +71,7 @@ qa:
 
 diff:
   review:
-    one: 1 件の変更を確認.
+    one: 1 件の変更を確認
     other: "{count} 件の変更を確認"
   committing: "@{login} として {branch} にコミットします"
   oldEmpty: （空）
