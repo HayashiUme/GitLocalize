@@ -22,11 +22,59 @@ const base = isBuild ? `/${siteTarget.repo}/` : '/'
 const siteUrl = (process.env.GITLOCALIZE_SITE_URL ?? `https://${siteTarget.owner.toLowerCase()}.github.io/${siteTarget.repo}/`).replace(/\/$/, '')
 const description = 'A translation platform with no server, no database and no backend. GitHub is the backend.'
 
+/* The docs are hosted from this branch, so translated pages live under a per-language prefix. */
+const LANGS = [
+  { path: '/', lang: 'en-US', label: 'English' },
+  { path: '/zh/', lang: 'zh-CN', label: '简体中文' },
+  { path: '/zh-tw/', lang: 'zh-TW', label: '繁體中文' },
+  { path: '/ja/', lang: 'ja', label: '日本語' },
+  { path: '/ko/', lang: 'ko', label: '한국어' },
+  { path: '/es/', lang: 'es', label: 'Español' },
+  { path: '/fr/', lang: 'fr', label: 'Français' },
+  { path: '/de/', lang: 'de', label: 'Deutsch' },
+  { path: '/pt/', lang: 'pt-BR', label: 'Português' },
+  { path: '/it/', lang: 'it', label: 'Italiano' },
+  { path: '/ru/', lang: 'ru', label: 'Русский' },
+  { path: '/ar/', lang: 'ar', label: 'العربية' },
+  { path: '/hi/', lang: 'hi', label: 'हिन्दी' },
+  { path: '/id/', lang: 'id', label: 'Bahasa Indonesia' },
+  { path: '/tr/', lang: 'tr', label: 'Türkçe' },
+  { path: '/vi/', lang: 'vi', label: 'Tiếng Việt' },
+  { path: '/th/', lang: 'th', label: 'ไทย' },
+  { path: '/nl/', lang: 'nl', label: 'Nederlands' },
+  { path: '/pl/', lang: 'pl', label: 'Polski' },
+  { path: '/sv/', lang: 'sv', label: 'Svenska' },
+  { path: '/uk/', lang: 'uk', label: 'Українська' },
+  { path: '/cs/', lang: 'cs', label: 'Čeština' },
+]
+
+const navbarFor = (prefix: string) => [
+  { text: 'Editor', link: '/editor.md' },
+  { text: 'Guide', link: `${prefix}guide/index.md` },
+  { text: 'Get a token', link: '/guide/token.md' },
+  { text: 'Deploy', link: '/guide/deploy.md' },
+  { text: 'Repository', link: `https://github.com/${siteTarget.owner}/${siteTarget.repo}` },
+]
+
+const locales = Object.fromEntries(
+  LANGS.map(({ path: prefix, lang }) => [
+    prefix,
+    {
+      lang,
+      title: 'GitLocalize',
+      description,
+      navbar: navbarFor(prefix),
+      sidebar: { [`${prefix}guide/`]: [`${prefix}guide/index.md`] },
+    },
+  ]),
+)
+
 export default defineUserConfig({
   lang: 'en-US',
   title: 'GitLocalize',
   description,
   base,
+  locales,
   head: [
     ['script', {}, `window.__GITLOCALIZE_CONFIG__=${JSON.stringify(siteTarget)}`],
     ['meta', { name: 'color-scheme', content: 'light' }],
@@ -60,23 +108,6 @@ export default defineUserConfig({
     logo: '/logo.png',
     colorMode: 'light',
     colorModeSwitch: false,
-    navbar: [
-      { text: 'Editor', link: '/editor.md' },
-      { text: 'Get a token', link: '/guide/token.md' },
-      { text: 'Deploy', link: '/guide/deploy.md' },
-      { text: 'Architecture', link: '/guide/architecture.md' },
-      { text: 'Setup', link: '/guide/setup.md' },
-      { text: 'Security', link: '/guide/security.md' },
-      { text: 'Repository', link: `https://github.com/${siteTarget.owner}/${siteTarget.repo}` },
-    ],
-    sidebar: {
-      '/guide/': [
-        '/guide/token.md',
-        '/guide/deploy.md',
-        '/guide/architecture.md',
-        '/guide/setup.md',
-        '/guide/security.md',
-      ],
-    },
+    locales,
   }),
 })
