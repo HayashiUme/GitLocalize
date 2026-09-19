@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { t } from '@/i18n'
+import { AVAILABLE_UI_LOCALES, setUiLocale, t, uiLocale } from '@/i18n'
 import { getParser } from '@/parser'
 import { translate, type MtSettings } from '@/mt'
 import { remember, suggest } from '@/mt/memory'
@@ -13,6 +13,32 @@ const { state, entries, filteredEntries, issuesByKey, stats, errorText, noticeTe
 const repoInput = ref('')
 const tokenInput = ref('')
 const rememberToken = ref(false)
+
+/* ---- Theme (dark/light) and editor UI language ---- */
+const THEME_KEY = 'gitlocalize.editor.theme'
+const theme = ref<'light' | 'dark'>(loadTheme())
+
+function loadTheme(): 'light' | 'dark' {
+  try {
+    return (globalThis.localStorage?.getItem(THEME_KEY) as 'light' | 'dark') ?? 'light'
+  } catch {
+    return 'light'
+  }
+}
+
+function applyTheme(value: 'light' | 'dark'): void {
+  theme.value = value
+  document.documentElement.dataset.theme = value
+  globalThis.localStorage?.setItem(THEME_KEY, value)
+}
+
+onMounted(() => {
+  document.documentElement.dataset.theme = theme.value
+})
+
+function switchUiLocale(event: Event): void {
+  setUiLocale((event.target as HTMLSelectElement).value)
+}
 
 /* ---- Weblate flow: language overview -> language dashboard -> translate ---- */
 type View = 'overview' | 'dashboard' | 'translate'
@@ -59,6 +85,7 @@ const MT_KEY = 'gitlocalize.editor.mt'
 const mt = ref<MtSettings>(loadMt())
 const mtBusy = ref(false)
 const mtResult = ref<string | null>(null)
+const mtError = ref('')
 
 function loadMt(): MtSettings {
   try {
@@ -79,7 +106,94 @@ const translatedRatio = computed(() =>
   stats.value.total > 0 ? Math.round((stats.value.translated / stats.value.total) * 100) : 0,
 )
 
-const memoryHit = computed(() => (current.value ? suggest(current.value.source, state.language) : null))
+/* ---- Overview loading errors: silently swallowed ones made counters read zero ---- */
+const overviewErrors = ref<string[]>([])
+const overviewFailures = ref<string[]>([])
+
+/* ---- History: recent commits touching the current translation file ---- */
+const historyEntries = ref<CommitInfo[]>([])
+const historyLoading = ref(false)
+
+async function loadHistory(): Promise<void> {
+  const target = state.target
+  if (!target || !state.file || historyLoading.value) return
+  historyLoading.value = true
+  try {
+    const client = makeClient(state.token)
+    const commits = await client.get<{ sha: string; html_url: string; commit: { message: string; author?: { name?: string; date?: string } } }[]>(
+      `/repos/${target.owner}/${target.repo}/commits?sha=${target.translationBranch}&path=${encodeURIComponent(state.file)}&per_page=10`,
+    )
+    historyEntries.value = (Array.isArray(commits) ? commits : []).map((entry) => ({
+      sha: entry.sha.slice(0, 7),
+      message: (entry.commit.message ?? '').split('\n')[0],
+      author: entry.commit.author?.name ?? '',
+      date: entry.commit.author?.date ?? '',
+      url: entry.html_url,
+    }))
+  } catch {
+    historyEntries.value = []
+  } finally {
+    historyLoading.value = false
+  }
+}
+
+/* ---- Comments: GitHub review comments on the standing translation pull request ---- */
+const prComments = ref<PullComment[]>([])
+const commentText = ref('')
+const commentBusy = ref(false)
+const commentsLoading = ref(false)
+
+async function loadComments(): Promise<void> {
+  const target = state.target
+  if (!target || commentsLoading.value) return
+  commentsLoading.value = true
+  try {
+    const client = makeClient(state.token)
+    if (!state.pullRequest) await actions.ensureTranslationPullRequest()
+    const number = state.pullRequest?.number
+    if (!number) return
+    const comments = await client.get<{ id: number; body: string; path: string; html_url: string; user?: { login?: string }; updated_at?: string }[]>(
+      `/repos/${target.owner}/${target.repo}/pulls/${number}/comments?per_page=50`,
+    )
+    prComments.value = (Array.isArray(comments) ? comments : [])
+      .filter((entry) => !state.file || entry.path === state.file)
+      .map((entry) => ({
+        id: entry.id,
+        user: entry.user?.login ?? '',
+        body: entry.body ?? '',
+        path: entry.path,
+        updated: (entry.updated_at ?? '').slice(0, 10),
+        url: entry.html_url,
+      }))
+  } catch {
+    prComments.value = []
+  } finally {
+    commentsLoading.value = false
+  }
+}
+
+async function postComment(): Promise<void> {
+  const target = state.target
+  const focus = current.value
+  if (!target || !focus || commentBusy.value || commentText.value.trim() === '') return
+  commentBusy.value = true
+  try {
+    const client = makeClient(state.token)
+    if (!state.pullRequest) await actions.ensureTranslationPullRequest()
+    const number = state.pullRequest?.number
+    if (!number || !state.headSha) return
+    await client.post(`/repos/${target.owner}/${target.repo}/pulls/${number}/comments`, {
+      body: `[${focus.key}] ${commentText.value.trim()}`,
+      commit_id: state.headSha,
+      path: state.file,
+      position: 1,
+    })
+    commentText.value = ''
+    await loadComments()
+  } finally {
+    commentBusy.value = false
+  }
+}
 
 const twinHit = computed(() => {
   const entry = current.value
@@ -93,7 +207,7 @@ const nearby = computed(() => {
   if (!focus) return []
   const index = entries.value.findIndex((item) => item.key === focus.key)
   if (index < 0) return []
-  return entries.value.slice(Math.max(0, index - 2), index + 3)
+  return entries.value.slice(Math.max(0, index - 5), index + 6)
 })
 
 /* Keys sharing the most path tokens with the current key. */
@@ -138,6 +252,11 @@ const historyUrl = computed(() => {
   return `https://github.com/${state.target.owner}/${state.target.repo}/commits/${state.target.translationBranch}/${state.file}`
 })
 
+/* Keep the pager inside the filtered list: filters can shrink it at any time. */
+watch(filteredEntries, (list) => {
+  if (position.value >= list.length) position.value = Math.max(list.length - 1, 0)
+})
+
 watch(current, (entry) => {
   draft.value = entry?.translation ?? ''
   mtResult.value = null
@@ -178,8 +297,10 @@ async function runMt(): Promise<void> {
   mtBusy.value = true
   try {
     mtResult.value = await translate(entry.source, state.language, mt.value)
-  } catch {
+    mtError.value = ''
+  } catch (error) {
     mtResult.value = null
+    mtError.value = error instanceof Error ? error.message : String(error)
   } finally {
     mtBusy.value = false
   }
@@ -205,6 +326,7 @@ async function openDashboard(language: string): Promise<void> {
    "other languages" panel inside the translate view. */
 async function loadOverview(): Promise<void> {
   if (!state.target || overviewLoaded.value) return
+  overviewFailures.value = []
   const client = makeClient(state.token)
   const sourceLanguage = state.config.source.language
   const target = state.target
@@ -247,8 +369,8 @@ async function loadOverview(): Promise<void> {
             if (value !== '') translated += 1
             keyMap.set(item.key, item.value ?? '')
           }
-        } catch {
-          /* A single unreadable file should not sink the overview. */
+        } catch (error) {
+          overviewFailures.value.push(`${file.path}: ${error instanceof Error ? error.message : String(error)}`)
         }
       }
       entryCache.set(language, keyMap)
@@ -305,6 +427,12 @@ async function signOut(): Promise<void> {
   langStats.value = []
   entryCache.clear()
 }
+
+/* Panel tabs load their data on first visit. */
+watch(panelTab, (tab) => {
+  if (tab === 'history') void loadHistory()
+  if (tab === 'comments') void loadComments()
+})
 
 /* ---- Network diagnostics on the gate: api.github.com is frequently blocked locally ---- */
 interface Probe {
@@ -402,9 +530,17 @@ watch(() => state.status, (status) => {
       <header class="wz-topbar">
         <span class="wz-topbar__brand">GitLocalize</span>
         <span class="wz-topbar__crumbs">
-          {{ state.target?.owner }} / {{ state.target?.repo }}
+          {{ state.repo?.owner ?? state.target?.owner }} / {{ state.repo?.name ?? state.target?.repo }}
           <template v-if="view !== 'overview'"> / {{ langName(activeLang || state.config.source.language) }}</template>
           <template v-if="view === 'translate'"> / {{ t('editor.pro.translate') }}</template>
+        </span>
+        <span class="wz-topbar__tools">
+          <select class="wz-topbar__select" :value="uiLocale" @change="switchUiLocale" :title="t('editor.pro.uiLocale')">
+            <option v-for="locale in AVAILABLE_UI_LOCALES" :key="locale" :value="locale">{{ locale }}</option>
+          </select>
+          <button class="wz-topbar__theme" @click="applyTheme(theme === 'dark' ? 'light' : 'dark')" :title="t('editor.pro.theme')">
+            {{ theme === 'dark' ? '☀' : '☾' }}
+          </button>
         </span>
         <span class="wz-topbar__badge">{{ translatedRatio }}%</span>
       </header>
@@ -432,6 +568,9 @@ watch(() => state.status, (status) => {
                 </span>
               </button>
               <p v-if="overviewLoaded && langStats.length === 0" class="wz-side__muted">{{ t('editor.pro.noLangs') }}</p>
+              <ul v-if="overviewFailures.length" class="wz-diag">
+                <li v-for="failure in overviewFailures" :key="failure" class="wz-diag--fail">{{ failure }}</li>
+              </ul>
             </div>
           </section>
         </main>
@@ -632,7 +771,26 @@ watch(() => state.status, (status) => {
                 </tbody>
               </table>
 
-              <p v-else-if="panelTab === 'comments'" class="wz-side__muted">{{ t('editor.pro.commentsPlaceholder') }}</p>
+              <div v-else-if="panelTab === 'comments'" class="wz-comments">
+                <p class="wz-side__muted">{{ t('editor.pro.commentsIntro') }}</p>
+                <p v-if="commentsLoading" class="wz-side__muted">{{ t('editor.pro.loadingComments') }}</p>
+                <p v-else-if="prComments.length === 0" class="wz-side__muted">{{ t('editor.pro.noComments') }}</p>
+                <div v-for="comment in prComments" :key="comment.id" class="wz-comment">
+                  <div class="wz-comment__meta">
+                    <strong>{{ comment.user }}</strong>
+                    <span>{{ comment.updated }}</span>
+                    <a :href="comment.url" target="_blank" rel="noopener">GitHub ↗</a>
+                  </div>
+                  <p class="wz-comment__body">{{ comment.body }}</p>
+                </div>
+                <label class="wz-field">
+                  <span>{{ t('editor.pro.commentNew') }}</span>
+                  <textarea v-model="commentText" class="wz-input" rows="2" :placeholder="t('editor.pro.commentPlaceholder')"></textarea>
+                </label>
+                <button class="wz-button wz-button--primary" :disabled="commentBusy || commentText.trim() === ''" @click="postComment">
+                  {{ commentBusy ? t('editor.loading') : t('editor.pro.commentPost') }}
+                </button>
+              </div>
 
               <div v-else-if="panelTab === 'suggestions'" class="wz-suggest">
                 <button class="wz-button wz-button--suggest" :disabled="mtBusy" @click="runMt">
@@ -643,6 +801,7 @@ watch(() => state.status, (status) => {
                   <p>{{ mtResult }}</p>
                   <button class="wz-minibtn" @click="draft = mtResult">{{ t('editor.pro.useMt') }}</button>
                 </div>
+                <p v-if="mtError" class="wz-qa">{{ t('editor.pro.mtFailed', { detail: mtError }) }}</p>
                 <div v-if="memoryHit" class="wz-suggest__card">
                   <span class="wz-suggest__tag">Translation memory</span>
                   <p>{{ memoryHit }}</p>
@@ -665,9 +824,16 @@ watch(() => state.status, (status) => {
                 </tbody>
               </table>
 
-              <p v-else-if="panelTab === 'history'" class="wz-side__muted">
-                <a :href="historyUrl" target="_blank" rel="noopener">{{ t('editor.pro.openHistory') }}</a>
-              </p>
+              <div v-else-if="panelTab === 'history'" class="wz-history">
+                <p v-if="historyLoading" class="wz-side__muted">{{ t('editor.pro.loadingHistory') }}</p>
+                <p v-else-if="historyEntries.length === 0" class="wz-side__muted">{{ t('editor.pro.noHistory') }}</p>
+                <div v-for="entry in historyEntries" :key="entry.sha" class="wz-history__row">
+                  <a :href="entry.url" target="_blank" rel="noopener"><code>{{ entry.sha }}</code></a>
+                  <span class="wz-history__msg">{{ entry.message }}</span>
+                  <span class="wz-history__meta">{{ entry.author }} · {{ entry.date.slice(0, 10) }}</span>
+                </div>
+                <a v-if="historyUrl" :href="historyUrl" target="_blank" rel="noopener" class="wz-history__all">{{ t('editor.pro.openHistory') }}</a>
+              </div>
             </section>
           </main>
 
