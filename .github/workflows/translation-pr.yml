@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 concurrency:
@@ -22,37 +22,51 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.I18N_BOT_TOKEN || github.token }}
 
-      - name: Compare main and i18n
-        id: compare
+      # The pull request carries translations only. The docs live on the i18n branch and are
+      # never meant to land on main, so the export branch starts from main and takes locales/.
+      - name: Export the locales from i18n onto a branch off main
+        id: export
         run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --quiet origin main i18n
-          if git diff --quiet origin/main origin/i18n; then
+
+          git checkout -B translation-export origin/main
+          rm -rf locales
+          git checkout origin/i18n -- locales
+          git add locales
+
+          if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "i18n matches main, nothing to review."
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            git diff --name-only origin/main origin/i18n
+            echo "The locales on i18n already match main, nothing to review."
+            exit 0
           fi
+          git diff --cached --name-only
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Ensure pull request exists
-        if: steps.compare.outputs.changed == 'true'
+        if: steps.export.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.I18N_BOT_TOKEN || github.token }}
         run: |
-          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head i18n --state open --json number --jq '.[0].number')"
+          git push --force origin HEAD:translation-export
+
+          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head translation-export --state open --json number --jq '.[0].number')"
           if [ -n "$existing" ]; then
-            echo "Pull request #$existing already covers this branch. Not creating another one."
+            echo "Pull request #$existing already covers this branch; the force push refreshed it."
             exit 0
           fi
 
-          changed="$(git diff --name-only origin/main origin/i18n | sed 's/^/- `/; s/$/`/')"
-          languages="$(git diff --name-only origin/main origin/i18n | grep -oE '\.[A-Za-z]{2}(-[A-Za-z]{2,4})?\.(ya?ml|json)$' | sed 's/^\.//; s/\.\(ya\?ml\|json\)$//' | sort -u | sed 's/^/- /')"
+          changed="$(git diff --name-only origin/main...HEAD | sed 's/^/- `/; s/$/`/')"
+          languages="$(git diff --name-only origin/main...HEAD | grep -oE '\.[A-Za-z]{2}(-[A-Za-z]{2,4})?\.(ya?ml|json)$' | sed 's/^\.//; s/\.\(ya\?ml\|json\)$//' | sort -u | sed 's/^/- /')"
 
           {
             echo "## Translation Update"
             echo
-            echo "This PR was automatically created from the \`i18n\` branch."
+            echo "This PR was automatically exported from the \`i18n\` branch and carries the \`locales/\` files only."
             echo
             echo "### Languages"
             echo "${languages:-- unknown}"
@@ -63,5 +77,5 @@ jobs:
             echo "Please review before merging."
           } > pr-body.md
 
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head i18n \
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head translation-export \
             --title "i18n: update translations" --body-file pr-body.md
