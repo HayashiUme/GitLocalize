@@ -63,7 +63,12 @@ async function googleTranslate(text: string, target: string): Promise<string> {
   const url =
     'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t' +
     `&sl=auto&tl=${encodeURIComponent(target)}&q=${encodeURIComponent(text)}`
-  const data = (await requestJson(url, {})) as unknown
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`HTTP ${response.status}`)
+  /* Interception pages (proxies, bot checks) answer with HTTP 200 + HTML. */
+  const contentType = response.headers.get('content-type') ?? ''
+  if (!contentType.includes('json')) throw new Error('translate service returned a non-JSON page (a proxy may be intercepting it)')
+  const data = (await response.json()) as unknown
   const segments = (data as unknown[][][])[0]
   if (!Array.isArray(segments)) throw new Error('unexpected Google response')
   return segments.map((segment) => String(segment?.[0] ?? '')).join('')

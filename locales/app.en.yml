@@ -137,6 +137,18 @@ editor:
       suggestions: Automatic suggestions
       otherLangs: Other languages
       history: History
+    theme: Toggle dark mode
+    uiLocale: Interface language
+    mtFailed: "Machine translation failed: {detail}"
+    loadingHistory: Loading history…
+    noHistory: No commits touch this file yet.
+    loadingComments: Loading comments…
+    noComments: No comments on this file yet. Write one below - it becomes a GitHub
+      comment on the translation pull request.
+    commentsIntro: Comments live on the translation pull request as GitHub review comments.
+    commentNew: New comment (the current key is added as a prefix)
+    commentPlaceholder: Your comment
+    commentPost: Post comment
 message:
   nothingToCommit: Nothing to commit.
   noContentChange: No content changes detected, nothing was committed.
