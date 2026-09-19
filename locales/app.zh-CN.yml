@@ -134,6 +134,17 @@ editor:
       suggestions: 自动建议
       otherLangs: 其它语言
       history: 历史记录
+    theme: 切换深色模式
+    uiLocale: 界面语言
+    mtFailed: 机器翻译失败：{detail}
+    loadingHistory: 正在加载历史……
+    noHistory: 此文件暂无提交记录。
+    loadingComments: 正在加载评论……
+    noComments: 此文件暂无评论。在下方撰写，将以 GitHub 评论形式发表到翻译 PR。
+    commentsIntro: 评论以 GitHub 代码评论的形式保存在翻译 PR 上。
+    commentNew: 写评论（自动带上当前键名前缀）
+    commentPlaceholder: 评论内容
+    commentPost: 发表
 message:
   nothingToCommit: 没有需要提交的内容。
   noContentChange: 内容没有变化，未创建提交。
