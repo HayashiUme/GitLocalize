@@ -133,6 +133,11 @@ app:
   signOut: 接続を解除
   settings: 設定
   restored: 未コミットの変更を復元しました。
+  download: ファイルをダウンロード
+  downloaded: "{path} に保存しました"
+  machineTranslate: 機械翻訳
+  mtBusy: 翻訳中...
+  useSuggestion: 提案を使用
 
 settings:
   title: 設定
@@ -142,3 +147,15 @@ settings:
   themeDark: ダーク
   themeSystem: システムに従う
   close: 閉じる
+
+mt:
+  title: 機械翻訳
+  provider: プロバイダー
+  providerGoogle: Google 翻訳（無料エンドポイント）
+  providerDeepl: DeepL（無料 API キー）
+  providerNone: オフ
+  deeplKey: DeepL API キー
+  deeplKeyPlaceholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx
+  deeplKeyHint: deepl.com/pro#developer で無料取得。この端末にのみ保存されます。
+  error:
+    noKey: DeepL API キーが必要です。設定で入力してください。

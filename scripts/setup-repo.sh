@@ -57,12 +57,12 @@ JSON
 }
 
 i18n_ruleset() {
-  cat <<'JSON'
+  cat <<JSON
 {
   "name": "i18n-workspace",
   "target": "branch",
   "enforcement": "active",
-  "conditions": { "ref_name": { "include": ["refs/heads/i18n"], "exclude": [] } },
+  "conditions": { "ref_name": { "include": ["refs/heads/$TRANSLATION_BRANCH"], "exclude": [] } },
   "bypass_actors": [],
   "rules": [
     { "type": "deletion" },
@@ -72,18 +72,28 @@ i18n_ruleset() {
 JSON
 }
 
+# Rulesets are unique by name; skipping existing ones makes the whole script re-runnable.
+apply_ruleset() {
+  local name="$1" body="$2"
+  if echo "$existing_rulesets" | grep -q "\"name\":\"$name\""; then
+    echo "   ruleset $name already exists, skipping"
+  else
+    api POST "/repos/$OWNER/$REPO/rulesets" "$body" | head -c 400
+    echo
+  fi
+}
+
 echo "Applying rulesets to $OWNER/$REPO"
+existing_rulesets="$(api GET "/repos/$OWNER/$REPO/rulesets?per_page=100" || true)"
 echo "-- actions workflow permissions"
 # Without this the workflow token may not open the i18n -> main pull request.
 api PUT "/repos/$OWNER/$REPO/actions/permissions/workflow" \
   '{"default_workflow_permissions":"read","can_approve_pull_request_reviews":true}' | head -c 200
 echo
 echo "-- main"
-api POST "/repos/$OWNER/$REPO/rulesets" "$(main_ruleset)" | head -c 400
-echo
-echo "-- i18n"
-api POST "/repos/$OWNER/$REPO/rulesets" "$(i18n_ruleset)" | head -c 400
-echo
+apply_ruleset main-protection "$(main_ruleset)"
+echo "-- $TRANSLATION_BRANCH"
+apply_ruleset i18n-workspace "$(i18n_ruleset)"
 echo "-- pages"
 # The workflow token holds pages:write but cannot create the site, so do it once from here.
 api POST "/repos/$OWNER/$REPO/pages" '{"build_type":"workflow"}' | head -c 300
@@ -97,3 +107,9 @@ api POST "/repos/$OWNER/$REPO/environments/github-pages/deployment-branch-polici
   "{\"name\":\"$TRANSLATION_BRANCH\",\"type\":\"branch\"}" | head -c 300
 echo
 echo "Done. Add the automation account as a bypass actor if it ever needs to push to main."
+
+if [ "${MARK_TEMPLATE:-false}" = "true" ]; then
+  echo "-- marking the repository as a template"
+  api PATCH "/repos/$OWNER/$REPO" '{"is_template":true}' | head -c 200
+  echo
+fi

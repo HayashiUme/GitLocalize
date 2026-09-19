@@ -133,6 +133,11 @@ app:
   signOut: 断开连接
   settings: 设置
   restored: 已恢复本地未提交的改动。
+  download: 下载文件
+  downloaded: 已保存到 {path}
+  machineTranslate: 机器翻译
+  mtBusy: 翻译中……
+  useSuggestion: 采用建议
 
 settings:
   title: 设置
@@ -142,3 +147,15 @@ settings:
   themeDark: 深色
   themeSystem: 跟随系统
   close: 关闭
+
+mt:
+  title: 机器翻译
+  provider: 服务商
+  providerGoogle: 谷歌翻译（免费接口）
+  providerDeepl: DeepL（免费 API 密钥）
+  providerNone: 关闭
+  deeplKey: DeepL API 密钥
+  deeplKeyPlaceholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx
+  deeplKeyHint: 在 deepl.com/pro#developer 免费申请，仅保存在本机。
+  error:
+    noKey: 需要填写 DeepL API 密钥，请在设置中填写。

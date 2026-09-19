@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { t } from '@/i18n'
-import { actions, hasChanges, issuesByKey, repoLabel, state, stats, visibleEntries } from '../store'
+import {
+  actions,
+  hasChanges,
+  issuesByKey,
+  repoLabel,
+  state,
+  stats,
+  suggestions,
+  visibleEntries,
+} from '../store'
 
 const progress = computed(() =>
   t('editor.progress', {
@@ -35,7 +44,12 @@ function onEdit(key: string, event: Event): void {
         <h1 class="glz-app__title">{{ repoLabel }}</h1>
         <p class="glz-app__subtitle">{{ state.target?.branch }}</p>
       </div>
-      <button class="glz-icon" @click="actions.toggleSettings(true)">{{ t('app.settings') }}</button>
+      <div>
+        <button class="glz-icon" :disabled="state.busy" @click="actions.downloadFile()">
+          {{ t('app.download') }}
+        </button>
+        <button class="glz-icon" @click="actions.toggleSettings(true)">{{ t('app.settings') }}</button>
+      </div>
     </header>
 
     <p v-if="state.restored" class="glz-notice glz-notice--warn">{{ t('app.restored') }}</p>
@@ -84,6 +98,18 @@ function onEdit(key: string, event: Event): void {
         <p v-for="issue in issuesFor(entry.key)" :key="issue.code" class="glz-entry__issue">
           {{ t(`qa.${issue.code}`, { detail: issue.detail ?? '' }) }}
         </p>
+        <div class="glz-entry__actions">
+          <button
+            v-if="suggestions.has(entry.key)"
+            class="glz-mini"
+            @click="actions.applySuggestion(entry.key)"
+          >
+            {{ t('app.useSuggestion') }}：{{ suggestions.get(entry.key) }}
+          </button>
+          <button class="glz-mini" :disabled="state.mtBusy !== null" @click="actions.applyMt(entry.key)">
+            {{ state.mtBusy === entry.key ? t('app.mtBusy') : t('app.machineTranslate') }}
+          </button>
+        </div>
       </article>
       <p v-if="visibleEntries.length === 0" class="glz-note">{{ t('table.empty') }}</p>
     </section>

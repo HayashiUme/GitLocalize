@@ -133,6 +133,11 @@ app:
   signOut: 中斷連線
   settings: 設定
   restored: 已還原本機未提交的變更。
+  download: 下載檔案
+  downloaded: 已儲存到 {path}
+  machineTranslate: 機器翻譯
+  mtBusy: 翻譯中……
+  useSuggestion: 採用建議
 
 settings:
   title: 設定
@@ -142,3 +147,15 @@ settings:
   themeDark: 深色
   themeSystem: 跟隨系統
   close: 關閉
+
+mt:
+  title: 機器翻譯
+  provider: 服務商
+  providerGoogle: 谷歌翻譯（免費介面）
+  providerDeepl: DeepL（免費 API 金鑰）
+  providerNone: 關閉
+  deeplKey: DeepL API 金鑰
+  deeplKeyPlaceholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx
+  deeplKeyHint: 在 deepl.com/pro#developer 免費申請，僅保存在本機。
+  error:
+    noKey: 需要填寫 DeepL API 金鑰，請在設定中填寫。

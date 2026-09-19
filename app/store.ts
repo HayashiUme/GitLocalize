@@ -1,7 +1,11 @@
 import { computed, reactive } from 'vue'
 import { toTranslationFile } from '@/config'
+import { t } from '@/i18n'
 import { GitHubClient } from '@/github/api'
 import { fetchViewer } from '@/github/auth'
+import { DEFAULT_MT_SETTINGS, translate, type MtSettings } from '@/mt'
+import { remember, suggest } from '@/mt/memory'
+import { downloadTextFile } from '@/storage/download'
 import { cloneDocument, deletePath, flatten, getParser, setPath, splitPath, type FlatEntry } from '@/parser'
 import { groupIssuesByKey, qaCheckEntries } from '@/qa'
 import { createLocalGitRepository } from '@/repository/localGit'
@@ -19,6 +23,7 @@ const STORAGE = {
   target: 'gitlocalize.mobile.target',
   draft: 'gitlocalize.mobile.draft',
   settings: 'gitlocalize.mobile.settings',
+  mt: 'gitlocalize.mobile.mt',
 }
 
 export interface Settings {
@@ -93,6 +98,8 @@ interface State {
   lastCommitSha: string | null
   settings: Settings
   showSettings: boolean
+  mt: MtSettings
+  mtBusy: string | null
   restored: boolean
 }
 
@@ -120,6 +127,8 @@ export const state = reactive<State>({
   lastCommitSha: null,
   settings: readJson<Settings>(STORAGE.settings, DEFAULT_SETTINGS),
   showSettings: false,
+  mt: readJson<MtSettings>(STORAGE.mt, DEFAULT_MT_SETTINGS),
+  mtBusy: null,
   restored: false,
 })
 
@@ -184,6 +193,27 @@ export const stats = computed(() => {
 })
 
 export const hasChanges = computed(() => Object.keys(state.overrides).length > 0)
+
+/* For each untranslated key: the translation memory first, then a twin source from this file. */
+export const suggestions = computed<Map<string, string>>(() => {
+  const map = new Map<string, string>()
+  const bySource = new Map<string, string>()
+  for (const entry of entries.value) {
+    if (entry.translated && entry.source.trim() !== '' && !bySource.has(entry.source)) {
+      bySource.set(entry.source, entry.translation)
+    }
+  }
+  for (const entry of entries.value) {
+    if (entry.translated || entry.source.trim() === '') continue
+    const memory = suggest(entry.source, state.language)
+    if (memory) map.set(entry.key, memory)
+    else {
+      const twin = bySource.get(entry.source)
+      if (twin) map.set(entry.key, twin)
+    }
+  }
+  return map
+})
 
 export const repoLabel = computed(() => (state.target ? `${state.target.owner}/${state.target.repo}` : ''))
 
@@ -358,6 +388,11 @@ async function submit(): Promise<void> {
     state.lastCommitSha = result.sha
     await repository.push()
     writeJson(STORAGE.draft, null)
+    /* Landed translations feed the memory that powers suggestions on the next run. */
+    for (const [key, value] of Object.entries(state.overrides)) {
+      const source = state.sourceEntries.find((item) => item.key === key)?.value
+      if (source) remember(source, state.language, value)
+    }
     state.notice = 'app.pushed'
     await loadFile()
   } catch (error) {
@@ -390,6 +425,48 @@ function toggleSettings(open?: boolean): void {
   state.showSettings = open ?? !state.showSettings
 }
 
+function updateMt(patch: Partial<MtSettings>): void {
+  state.mt = { ...state.mt, ...patch }
+  writeJson(STORAGE.mt, state.mt)
+}
+
+async function applyMt(key: string): Promise<void> {
+  const entry = entries.value.find((item) => item.key === key)
+  if (!entry || state.mtBusy) return
+  state.mtBusy = key
+  state.error = ''
+  try {
+    const value = await translate(entry.source, state.language, state.mt)
+    setTranslation(key, value)
+  } catch (error) {
+    state.error = describe(error)
+  } finally {
+    state.mtBusy = null
+  }
+}
+
+function applySuggestion(key: string): void {
+  const value = suggestions.value.get(key)
+  if (value !== undefined) setTranslation(key, value)
+}
+
+async function downloadFile(): Promise<void> {
+  const repository = state.repository
+  if (!repository || !state.file) return
+  state.busy = true
+  state.error = ''
+  try {
+    const content =
+      (hasChanges.value ? buildTargetContent() : null) ?? (await repository.readFile(targetPath.value)) ?? ''
+    const where = await downloadTextFile(targetPath.value, content)
+    state.notice = t('app.downloaded', { path: where })
+  } catch (error) {
+    state.error = describe(error)
+  } finally {
+    state.busy = false
+  }
+}
+
 export const savedTarget = readJson<Target | null>(STORAGE.target, null)
 
 export const actions = {
@@ -402,6 +479,10 @@ export const actions = {
   disconnect,
   updateSettings,
   toggleSettings,
+  updateMt,
+  applyMt,
+  applySuggestion,
+  downloadFile,
 }
 
 export function useApp() {
