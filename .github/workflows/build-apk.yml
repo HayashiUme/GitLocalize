@@ -1,0 +1,62 @@
+name: Build Android APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apk
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build the web bundle and sync it into the shell
+        run: npm run app:sync
+
+      - name: Assemble the APK
+        run: cd android && ./gradlew assembleDebug --no-daemon
+
+      - name: Rename the artifact
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk GitLocalize-debug.apk
+
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: GitLocalize-debug.apk
+          fail_on_unmatched_files: true
+
+      - name: Keep the artifact for manual download
+        uses: actions/upload-artifact@v4
+        with:
+          name: GitLocalize-debug
+          path: GitLocalize-debug.apk
+          retention-days: 14

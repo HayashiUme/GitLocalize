@@ -104,3 +104,41 @@ message:
   noSourceFiles: 沒有符合設定的來源語言檔案。
   noTarget: 無法確定目標儲存庫。請從 GitHub Pages 開啟本頁，或手動填寫 owner 與 repository。
   sourceMissing: 找不到來源檔案：{path}
+
+onboarding:
+  title: 連接一個儲存庫
+  repositoryLabel: 儲存庫
+  repositoryPlaceholder: owner/repo 或完整的 GitHub 連結
+  connect: 連接
+  connecting: 正在下載……
+  guideTitle: 三步拿到權杖
+  guideStep1: "GitHub → 設定 → 開發者設定 → 個人存取權杖 → 精細權杖。"
+  guideStep2: 把權限限定在這一個儲存庫。
+  guideStep3: "勾選「Contents: Read and write」，再貼到上面。"
+  guideLink: 怎麼取得權杖？
+
+connect:
+  connected: 儲存庫已就緒。
+  warning:
+    largeRepository: 這個儲存庫比較大，完整複製會佔用裝置儲存空間。
+  error:
+    repository: 請輸入 owner/repo 或 github.com 連結。
+    token: 需要填寫個人存取權杖。
+    noLocales: 這個儲存庫裡沒有找到 locales/en.* 檔案。
+    noLanguages: 這個儲存庫還沒有宣告目標語言。
+
+app:
+  commit: 提交並推送
+  pushed: 已推送到 {branch}。
+  signOut: 中斷連線
+  settings: 設定
+  restored: 已還原本機未提交的變更。
+
+settings:
+  title: 設定
+  appearance: 外觀
+  theme: 主題
+  themeLight: 淺色
+  themeDark: 深色
+  themeSystem: 跟隨系統
+  close: 關閉

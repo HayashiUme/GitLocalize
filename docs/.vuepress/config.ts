@@ -63,13 +63,20 @@ export default defineUserConfig({
     navbar: [
       { text: 'Editor', link: '/editor.md' },
       { text: 'Get a token', link: '/guide/token.md' },
+      { text: 'Deploy', link: '/guide/deploy.md' },
       { text: 'Architecture', link: '/guide/architecture.md' },
       { text: 'Setup', link: '/guide/setup.md' },
       { text: 'Security', link: '/guide/security.md' },
       { text: 'Repository', link: `https://github.com/${siteTarget.owner}/${siteTarget.repo}` },
     ],
     sidebar: {
-      '/guide/': ['/guide/token.md', '/guide/architecture.md', '/guide/setup.md', '/guide/security.md'],
+      '/guide/': [
+        '/guide/token.md',
+        '/guide/deploy.md',
+        '/guide/architecture.md',
+        '/guide/setup.md',
+        '/guide/security.md',
+      ],
     },
   }),
 })

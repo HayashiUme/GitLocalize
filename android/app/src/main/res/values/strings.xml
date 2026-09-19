@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GitLocalize</string>
+    <string name="title_activity_main">GitLocalize</string>
+    <string name="package_name">io.github.hayashiume.gitlocalize</string>
+    <string name="custom_url_scheme">io.github.hayashiume.gitlocalize</string>
+</resources>

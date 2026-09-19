@@ -17,3 +17,12 @@ Thumbs.db
 !.env.example
 
 .workbuddy/
+
+# The mobile shell. app/dist is built, and Gradle output is per-machine.
+app/dist/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/capacitor-cordova-android-plugins/

@@ -47,12 +47,14 @@ function walk(directory: string, extension: RegExp): string[] {
 function keysUsedInSource(): { plain: Set<string>; plural: Set<string> } {
   const plain = new Set<string>()
   const plural = new Set<string>()
-  for (const file of walk(join(process.cwd(), 'src'), /\.(ts|vue)$/)) {
-    const text = readFileSync(file, 'utf8')
-    for (const match of text.matchAll(/(?<![\w$.])(t|tp)\(\s*'([^']+)'/g)) {
-      ;(match[1] === 'tp' ? plural : plain).add(match[2])
+  for (const root of ['src', 'app']) {
+    for (const file of walk(join(process.cwd(), root), /\.(ts|vue)$/)) {
+      const text = readFileSync(file, 'utf8')
+      for (const match of text.matchAll(/(?<![\w$.])(t|tp)\(\s*'([^']+)'/g)) {
+        ;(match[1] === 'tp' ? plural : plain).add(match[2])
+      }
+      for (const match of text.matchAll(/'((?:error)\.[\w.]+)'/g)) plain.add(match[1])
     }
-    for (const match of text.matchAll(/'((?:error)\.[\w.]+)'/g)) plain.add(match[1])
   }
   return { plain, plural }
 }
@@ -62,14 +64,16 @@ function lookup(key: string): string | undefined {
 }
 
 describe('interface catalogs', () => {
-  it('defines exactly the same keys in every language', () => {
+  /* Translations may lag behind English — that is what the i18n branch is for. Stray keys are not. */
+  it('keeps every language a subset of the source catalog', () => {
     for (const [name, catalogs] of [
       ['app', APP],
       ['errors', ERRORS],
     ] as const) {
-      const reference = [...catalogs.en.keys()].sort()
-      for (const language of Object.keys(catalogs)) {
-        expect([...catalogs[language].keys()].sort(), `${name}.${language}`).toEqual(reference)
+      const reference = new Set(catalogs.en.keys())
+      for (const [language, catalog] of Object.entries(catalogs)) {
+        const extra = [...catalog.keys()].filter((key) => !reference.has(key)).sort()
+        expect(extra, `${name}.${language} defines keys absent from ${name}.en`).toEqual([])
       }
     }
   })
@@ -88,7 +92,8 @@ describe('interface catalogs', () => {
       for (const [language, catalog] of Object.entries(catalogs)) {
         if (language === 'en') continue
         for (const [key, source] of catalogs.en) {
-          const translation = catalog.get(key) ?? ''
+          const translation = catalog.get(key)
+          if (translation === undefined) continue
           const placeholders = diffPlaceholders(source, translation)
           const tags = diffTags(source, translation)
           expect(placeholders.missing, `${language} ${key}: missing placeholder`).toEqual([])

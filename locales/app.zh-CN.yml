@@ -104,3 +104,41 @@ message:
   noSourceFiles: 没有匹配配置的源语言文件。
   noTarget: 无法确定目标仓库。请从 GitHub Pages 打开本页，或手动填写 owner 与 repository。
   sourceMissing: 找不到源文件：{path}
+
+onboarding:
+  title: 连接一个仓库
+  repositoryLabel: 仓库
+  repositoryPlaceholder: owner/repo 或完整的 GitHub 链接
+  connect: 连接
+  connecting: 正在下载……
+  guideTitle: 三步拿到令牌
+  guideStep1: "GitHub → 设置 → 开发者设置 → 个人访问令牌 → 细粒度令牌。"
+  guideStep2: 把权限限定在这一个仓库。
+  guideStep3: "勾选「Contents: Read and write」，再粘贴到上面。"
+  guideLink: 怎么获取令牌？
+
+connect:
+  connected: 仓库已就绪。
+  warning:
+    largeRepository: 这个仓库比较大，完整克隆会占用设备存储。
+  error:
+    repository: 请输入 owner/repo 或 github.com 链接。
+    token: 需要填写个人访问令牌。
+    noLocales: 这个仓库里没有找到 locales/en.* 文件。
+    noLanguages: 这个仓库还没有声明目标语言。
+
+app:
+  commit: 提交并推送
+  pushed: 已推送到 {branch}。
+  signOut: 断开连接
+  settings: 设置
+  restored: 已恢复本地未提交的改动。
+
+settings:
+  title: 设置
+  appearance: 外观
+  theme: 主题
+  themeLight: 浅色
+  themeDark: 深色
+  themeSystem: 跟随系统
+  close: 关闭
