@@ -33,6 +33,8 @@ interface Draft {
   language: string
   file: string
   overrides: Record<string, string>
+  /* What each key read when it was stashed, so incoming translations can win over stale drafts. */
+  base: Record<string, string>
 }
 
 function readJson<T>(key: string, fallback: T): T {
@@ -85,6 +87,7 @@ interface State {
   targetDocument: RawDocument
   targetContent: string | undefined
   overrides: Record<string, string>
+  draftBase: Record<string, string>
   search: string
   untranslatedOnly: boolean
   lastCommitSha: string | null
@@ -111,6 +114,7 @@ export const state = reactive<State>({
   targetDocument: {},
   targetContent: undefined,
   overrides: {},
+  draftBase: {},
   search: '',
   untranslatedOnly: false,
   lastCommitSha: null,
@@ -213,12 +217,24 @@ async function loadFile(): Promise<void> {
     state.targetContent = target
   }
 
-  /* Local edits survive the app being killed, so nothing is lost by switching away. */
+  /* Local edits survive the app being killed. A key whose file value changed upstream is dropped:
+     incoming translations win over stale drafts, exactly as the product intends. */
   const draft = readJson<Draft | null>(STORAGE.draft, null)
-  const resumable =
-    draft && draft.file === state.file && draft.language === state.language ? draft.overrides : {}
-  state.overrides = { ...resumable }
-  state.restored = Object.keys(resumable).length > 0
+  const usable = draft && draft.file === state.file && draft.language === state.language ? draft : null
+  const current = new Map(flatten(state.targetDocument).map((entry) => [entry.key, entry.value]))
+  const overrides: Record<string, string> = {}
+  const bases: Record<string, string> = {}
+  if (usable) {
+    for (const [key, value] of Object.entries(usable.overrides)) {
+      const base = usable.base?.[key] ?? (current.get(key) ?? '')
+      if (base !== (current.get(key) ?? '')) continue
+      overrides[key] = value
+      bases[key] = base
+    }
+  }
+  state.overrides = overrides
+  state.draftBase = bases
+  state.restored = Object.keys(overrides).length > 0
 }
 
 function persistDraft(): void {
@@ -228,6 +244,7 @@ function persistDraft(): void {
     language: state.language,
     file: state.file,
     overrides: state.overrides,
+    base: state.draftBase,
   } satisfies Draft)
 }
 
@@ -302,13 +319,19 @@ async function selectFile(file: string): Promise<void> {
 
 function setTranslation(key: string, value: string): void {
   const original = translationValues.value.get(key) ?? ''
-  if (value === original) delete state.overrides[key]
-  else state.overrides[key] = value
+  if (value === original) {
+    delete state.overrides[key]
+    delete state.draftBase[key]
+  } else {
+    if (state.draftBase[key] === undefined) state.draftBase[key] = original
+    state.overrides[key] = value
+  }
   persistDraft()
 }
 
 function revert(): void {
   state.overrides = {}
+  state.draftBase = {}
   state.restored = false
   writeJson(STORAGE.draft, null)
 }
