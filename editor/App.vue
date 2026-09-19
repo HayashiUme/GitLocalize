@@ -320,6 +320,22 @@ async function runDiagnostics(): Promise<void> {
         return 'reachable'
       },
     },
+    {
+      name: 'authenticated /user',
+      run: async () => {
+        const response = await fetch('https://api.github.com/user', {
+          headers: {
+            Authorization: 'Bearer ' + tokenInput.value.trim(),
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+          signal: AbortSignal.timeout(8000),
+        })
+        if (response.status === 401) return 'token rejected (401)'
+        if (!response.ok) return 'HTTP ' + response.status
+        return 'reachable with credentials'
+      },
+    },
   ]
   diagnostics.value = probes.map((probe) => ({ name: probe.name, status: 'pending', note: 'testing…' }))
   for (let index = 0; index < probes.length; index += 1) {
@@ -369,7 +385,7 @@ watch(() => state.status, (status) => {
           <code>{{ probe.name }}</code> — {{ probe.note }}
         </li>
       </ul>
-      <p v-if="state.error" class="wz-error">{{ t(state.error.key, state.error.params) }}</p>
+      <p v-if="state.error" class="wz-error">{{ t(state.error.key, state.error.params) }}<code v-if="state.error.detail" class="wz-diag__detail">{{ state.error.detail }}</code></p>
     </div>
 
     <template v-else>
