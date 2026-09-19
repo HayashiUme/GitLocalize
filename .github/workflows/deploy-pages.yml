@@ -34,8 +34,11 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Build the site
-        run: npm run build
+      - name: Build the site and the standalone editor
+        run: |
+          npm run build
+          npm run editor:build
+          cp -r editor/dist "docs/.vuepress/dist/Editor"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
