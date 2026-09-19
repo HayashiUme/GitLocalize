@@ -85,7 +85,12 @@ function onEdit(key: string, event: Event): void {
     <p class="glz-progress">{{ progress }}</p>
 
     <section class="glz-entries">
-      <article v-for="entry in visibleEntries" :key="entry.key" class="glz-entry">
+      <article
+        v-for="entry in visibleEntries"
+        :key="entry.key"
+        class="glz-entry"
+        :class="{ 'glz-entry--done': entry.translated, 'glz-entry--touched': state.overrides[entry.key] !== undefined }"
+      >
         <p class="glz-entry__key">{{ entry.key }}</p>
         <p class="glz-entry__source">{{ entry.source }}</p>
         <textarea

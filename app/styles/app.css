@@ -264,8 +264,23 @@ body {
 .glz-entry {
   background: var(--glz-surface);
   border: 1px solid var(--glz-border);
+  border-left: 4px solid var(--glz-warn);
   border-radius: var(--glz-radius);
   padding: 14px;
+  transition: border-color 0.2s ease, transform 0.1s ease;
+}
+
+.glz-entry--done {
+  border-left-color: var(--glz-brand);
+}
+
+.glz-entry--touched {
+  border-left-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+}
+
+.glz-entry:active {
+  transform: scale(0.995);
 }
 
 .glz-entry__key {
