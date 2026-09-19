@@ -138,6 +138,8 @@ app:
   machineTranslate: 机器翻译
   mtBusy: 翻译中……
   useSuggestion: 采用建议
+  mtAll: 机翻全部未翻译
+  mtAllDone: 已机翻 {count} 条。
 
 settings:
   title: 设置
