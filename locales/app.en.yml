@@ -68,6 +68,13 @@ qa:
   placeholder-extra: "Unexpected placeholder: {detail}"
   html-tag-missing: "Missing HTML tag: <{detail}>"
   html-tag-extra: "Unexpected HTML tag: <{detail}>"
+  punctuation-missing: "The sentence-ending punctuation does not match the source ({detail})"
+  newline-count: "The number of line breaks differs from the source (source has {detail})"
+  space-mismatch: "Edge whitespace differs from the source ({detail})"
+  zero-width-space: "The translation contains invisible zero-width characters"
+  repeated-word: "The translation repeats a word: {detail}"
+  same-as-source: "The translation is identical to the source - possibly untranslated"
+  inconsistent: "The same source string is translated {detail} different ways in this file"
 
 diff:
   review:

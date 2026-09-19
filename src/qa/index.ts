@@ -1,6 +1,9 @@
 import type { QaIssue, TranslationEntry } from '../types'
 import { diffTags } from './htmlTags'
 import { diffPlaceholders } from './placeholders'
+import { diffEndingPunctuation } from './punctuation'
+import { findTextIssues, isLikelyIdentifier } from './textQuality'
+import { diffWhitespace } from './whitespace'
 
 export function qaCheckEntry(entry: TranslationEntry): QaIssue[] {
   const issues: QaIssue[] = []
@@ -38,22 +41,72 @@ export function qaCheckEntry(entry: TranslationEntry): QaIssue[] {
     issues.push({ key: entry.key, code: 'html-tag-extra', message: `Unexpected HTML tag: <${tag}>`, detail: tag })
   }
 
-  /* Short strings scale wildly in translation; only flag prose where a wild ratio means trouble. */
-  const ratio = translation.length / Math.max(entry.source.length, 1)
-  const textual = /[\p{L}]/u.test(entry.source) && entry.source.length >= 20
-  if (textual && (ratio > 3 || ratio < 1 / 3)) {
+  const punctuation = diffEndingPunctuation(entry.source, translation)
+  if (punctuation) {
     issues.push({
       key: entry.key,
-      code: 'length-out-of-range',
-      message: `Length looks off: source ${entry.source.length} chars, translation ${translation.length}`,
-      detail: String(Math.round(ratio * 100) / 100),
+      code: 'punctuation-missing',
+      message: `The sentence-ending punctuation does not match the source (${punctuation})`,
+      detail: punctuation,
     })
+  }
+
+  for (const finding of diffWhitespace(entry.source, translation)) {
+    issues.push({
+      key: entry.key,
+      code: finding.code,
+      message: `Whitespace mismatch: ${finding.detail ?? 'invisible character'}`,
+      detail: finding.detail,
+    })
+  }
+
+  for (const finding of findTextIssues(entry.source, translation)) {
+    issues.push({
+      key: entry.key,
+      code: finding.code,
+      message: `Suspect content: ${finding.detail ?? 'identical to the source'}`,
+      detail: finding.detail,
+    })
+  }
+
+  return issues
+}
+
+/* Weblate's inconsistency check: one source translated differently within the same file. */
+function consistencyIssues(entries: TranslationEntry[]): QaIssue[] {
+  const variants = new Map<string, Map<string, string[]>>()
+  for (const entry of entries) {
+    if (!entry.translated) continue
+    const source = entry.source.trim()
+    if (!source || isLikelyIdentifier(source)) continue
+    const translation = (entry.translation ?? '').trim()
+    if (!translation) continue
+    const bucket = variants.get(source) ?? new Map<string, string[]>()
+    const keys = bucket.get(translation) ?? []
+    keys.push(entry.key)
+    bucket.set(translation, keys)
+    variants.set(source, bucket)
+  }
+
+  const issues: QaIssue[] = []
+  for (const bucket of variants.values()) {
+    if (bucket.size < 2) continue
+    for (const keys of bucket.values()) {
+      for (const key of keys) {
+        issues.push({
+          key,
+          code: 'inconsistent',
+          message: `The same source string is translated ${bucket.size} different ways in this file`,
+          detail: String(bucket.size),
+        })
+      }
+    }
   }
   return issues
 }
 
 export function qaCheckEntries(entries: TranslationEntry[]): QaIssue[] {
-  return entries.flatMap(qaCheckEntry)
+  return [...entries.flatMap(qaCheckEntry), ...consistencyIssues(entries)]
 }
 
 export function groupIssuesByKey(issues: QaIssue[]): Map<string, QaIssue[]> {

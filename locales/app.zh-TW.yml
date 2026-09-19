@@ -68,6 +68,13 @@ qa:
   placeholder-extra: 多出佔位符：{detail}
   html-tag-missing: 缺少 HTML 標籤：<{detail}>
   html-tag-extra: 多出 HTML 標籤：<{detail}>
+  punctuation-missing: "句尾標點與原文不一致（{detail}）"
+  newline-count: "換行數與原文不一致（原文 {detail} 個）"
+  space-mismatch: "首尾空格與原文不一致（{detail}）"
+  zero-width-space: "譯文中含有不可見的零寬字元"
+  repeated-word: "譯文中出現連續重複的詞：{detail}"
+  same-as-source: "譯文與原文完全相同，疑似未翻譯"
+  inconsistent: "同一原文在本檔案中有 {detail} 種不同譯文"
 
 diff:
   review:
