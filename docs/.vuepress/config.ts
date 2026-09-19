@@ -54,6 +54,13 @@ const navbarFor = (prefix: string) => [
   { text: 'Get a token', link: '/guide/token.md' },
   { text: 'Deploy', link: '/guide/deploy.md' },
   { text: 'Repository', link: `https://github.com/${siteTarget.owner}/${siteTarget.repo}` },
+  {
+    text: LANGS.find((entry) => entry.path === prefix)?.label ?? 'Language',
+    children: LANGS.map(({ path: target, label }) => ({
+      text: label,
+      link: `${target}guide/index.md`,
+    })),
+  },
 ]
 
 const locales = Object.fromEntries(
@@ -77,7 +84,6 @@ export default defineUserConfig({
   locales,
   head: [
     ['script', {}, `window.__GITLOCALIZE_CONFIG__=${JSON.stringify(siteTarget)}`],
-    ['meta', { name: 'color-scheme', content: 'light' }],
     ['meta', { name: 'theme-color', content: '#226d4e' }],
     ['link', { rel: 'icon', href: `${base}favicon.ico`, sizes: 'any' }],
     ['link', { rel: 'icon', type: 'image/png', href: `${base}logo.png` }],
@@ -106,8 +112,8 @@ export default defineUserConfig({
   }),
   theme: defaultTheme({
     logo: '/logo.png',
-    colorMode: 'light',
-    colorModeSwitch: false,
+    colorMode: 'auto',
+    colorModeSwitch: true,
     locales,
   }),
 })
