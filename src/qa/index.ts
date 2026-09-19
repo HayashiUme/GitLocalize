@@ -37,6 +37,18 @@ export function qaCheckEntry(entry: TranslationEntry): QaIssue[] {
   for (const tag of tags.extra) {
     issues.push({ key: entry.key, code: 'html-tag-extra', message: `Unexpected HTML tag: <${tag}>`, detail: tag })
   }
+
+  /* Short strings scale wildly in translation; only flag prose where a wild ratio means trouble. */
+  const ratio = translation.length / Math.max(entry.source.length, 1)
+  const textual = /[\p{L}]/u.test(entry.source) && entry.source.length >= 20
+  if (textual && (ratio > 3 || ratio < 1 / 3)) {
+    issues.push({
+      key: entry.key,
+      code: 'length-out-of-range',
+      message: `Length looks off: source ${entry.source.length} chars, translation ${translation.length}`,
+      detail: String(Math.round(ratio * 100) / 100),
+    })
+  }
   return issues
 }
 
