@@ -145,6 +145,7 @@ editor:
     commentNew: 写评论（自动带上当前键名前缀）
     commentPlaceholder: 评论内容
     commentPost: 发表
+    langTotal: 语言合计：{total}
 message:
   nothingToCommit: 没有需要提交的内容。
   noContentChange: 内容没有变化，未创建提交。
