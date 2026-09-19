@@ -93,6 +93,24 @@ editor:
   pullRequest: "翻譯 PR #{number}"
   openOnGitHub: 在 GitHub 上開啟
 
+editor:
+  rememberToken: 在此裝置上記住
+  pro:
+    translate: 翻譯
+    chars: 字元
+    saveAndStay: 儲存不跳轉
+    saveAndNext: 儲存並繼續
+    suggest: 建議
+    skip: 略過
+    nearby: 鄰近字串
+    suggestions: 自動建議
+    checks: 品質檢查
+    noChecks: 沒有警告
+    stringInfo: 字串資訊
+    mtGenerate: 機器翻譯
+    useMt: 採用
+    translated: 已翻譯
+    untranslated: 未翻譯
 message:
   nothingToCommit: 沒有需要提交的內容。
   noContentChange: 內容沒有變化，未建立提交。

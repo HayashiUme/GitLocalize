@@ -93,6 +93,24 @@ editor:
   pullRequest: "翻訳 PR #{number}"
   openOnGitHub: GitHub で開く
 
+editor:
+  rememberToken: この端末で記憶する
+  pro:
+    translate: 翻訳
+    chars: 文字
+    saveAndStay: 保存して留まる
+    saveAndNext: 保存して次へ
+    suggest: 提案
+    skip: スキップ
+    nearby: 近くの文字列
+    suggestions: 自動提案
+    checks: 品質チェック
+    noChecks: 警告なし
+    stringInfo: 文字列情報
+    mtGenerate: 機械翻訳
+    useMt: 使用
+    translated: 翻訳済み
+    untranslated: 未翻訳
 message:
   nothingToCommit: コミットする内容がありません。
   noContentChange: 内容に変更がないため、コミットは作成されませんでした。

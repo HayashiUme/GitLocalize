@@ -93,6 +93,24 @@ editor:
   pullRequest: "Translation pull request #{number}"
   openOnGitHub: Open on GitHub
 
+editor:
+  rememberToken: Remember on this device
+  pro:
+    translate: Translate
+    chars: chars
+    saveAndStay: Save and stay
+    saveAndNext: Save and continue
+    suggest: Suggest
+    skip: Skip
+    nearby: Nearby strings
+    suggestions: Automatic suggestions
+    checks: Things to check
+    noChecks: No warnings
+    stringInfo: String information
+    mtGenerate: Machine translate
+    useMt: Use
+    translated: Translated
+    untranslated: Untranslated
 message:
   nothingToCommit: Nothing to commit.
   noContentChange: No content changes detected, nothing was committed.
