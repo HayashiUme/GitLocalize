@@ -138,6 +138,8 @@ app:
   machineTranslate: 機器翻譯
   mtBusy: 翻譯中……
   useSuggestion: 採用建議
+  mtAll: 機翻全部未翻譯
+  mtAllDone: 已機翻 {count} 條。
 
 settings:
   title: 設定
