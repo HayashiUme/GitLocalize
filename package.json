@@ -16,7 +16,8 @@
     "app:dev": "vite --config app/vite.config.ts",
     "app:build": "vite build --config app/vite.config.ts",
     "app:sync": "npm run app:build && cap sync android",
-    "app:apk": "npm run app:sync && cd android && ./gradlew assembleDebug"
+    "app:apk": "npm run app:sync && cd android && ./gradlew assembleDebug",
+    "editor:build": "vite build --config editor/vite.config.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
