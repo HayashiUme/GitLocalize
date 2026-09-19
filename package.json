@@ -14,7 +14,10 @@
     "app:build": "vite build --config app/vite.config.ts",
     "app:sync": "npm run app:build && cap sync android",
     "app:apk": "npm run app:sync && cd android && ./gradlew assembleDebug",
-    "editor:build": "vite build --config editor/vite.config.ts"
+    "editor:build": "vite build --config editor/vite.config.ts",
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs",
+    "preview": "vuepress build docs && npx serve docs/.vuepress/dist"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
@@ -28,6 +31,12 @@
     "@capacitor/cli": "^8.5.2",
     "typescript": "^5.9.3",
     "vitest": "^5.0.1",
-    "vue": "^3.5.43"
+    "vue": "^3.5.43",
+    "@vuepress/bundler-vite": "2.0.0-rc.31",
+    "@vuepress/theme-default": "2.0.0-rc.134",
+    "sass": "^1.104.1",
+    "sass-embedded": "^1.104.1",
+    "sass-loader": "^17.0.1",
+    "vuepress": "2.0.0-rc.31"
   }
 }
