@@ -120,7 +120,8 @@ let bootstrapped = false
 let targetDocument: Record<string, unknown> = {}
 let targetContent: string | undefined
 
-function makeClient(token: string): GitHubClient {
+/** Mock-aware client factory, exported for editor views that need extra API calls. */
+export function makeClient(token: string): GitHubClient {
   if (state.mock) {
     mockTransport = mockTransport ?? createMockTransport()
     return new GitHubClient(token, { transport: mockTransport })

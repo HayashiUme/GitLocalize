@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { t } from '@/i18n'
-import { createClient } from '@/github/api'
 import { getParser } from '@/parser'
 import { translate, type MtSettings } from '@/mt'
 import { remember, suggest } from '@/mt/memory'
 import { downloadTextFile } from '@/storage/download'
-import { useEditor } from '@/state/editorStore'
+import { makeClient, useEditor } from '@/state/editorStore'
 import type { TranslationEntry } from '@/types'
 
 const { state, entries, filteredEntries, issuesByKey, stats, errorText, noticeText, actions } = useEditor()
@@ -206,16 +205,27 @@ async function openDashboard(language: string): Promise<void> {
    "other languages" panel inside the translate view. */
 async function loadOverview(): Promise<void> {
   if (!state.target || overviewLoaded.value) return
-  const client = createClient(state.token)
+  const client = makeClient(state.token)
   const sourceLanguage = state.config.source.language
-  const langs = state.languages.length > 0 ? state.languages : [sourceLanguage]
+  const target = state.target
   const jobs: (() => Promise<void>)[] = []
   const results = new Map<string, LangStat>()
   let finished = 0
 
-  for (const language of langs) {
-    const files = state.files.filter((file) => file.language === language)
-    if (files.length === 0) continue
+  /* state.files only ever holds source-language files, so the language set comes
+     from listing the locales directory on the translation branch instead. */
+  const listing = await client.get<{ name: string; path: string; type: string }[]>(
+    `/repos/${target.owner}/${target.repo}/contents/${state.config.source.directory}?ref=${target.translationBranch}`,
+  )
+  const byLang = new Map<string, { path: string }[]>()
+  for (const item of listing) {
+    if (item.type !== 'file') continue
+    const match = item.name.match(/^(?:app|errors)\.([A-Za-z]{2}(?:-[A-Za-z]{2,4})?)\.(?:ya?ml|json)$/)
+    if (!match) continue
+    byLang.set(match[1], [...(byLang.get(match[1]) ?? []), { path: item.path }])
+  }
+
+  for (const [language, files] of byLang) {
     jobs.push(async () => {
       let strings = 0
       let words = 0
