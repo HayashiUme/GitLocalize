@@ -32,7 +32,7 @@ jobs:
       - name: Copy app paths from main into i18n
         id: sync
         env:
-          SYNC_PATHS: '.github app android editor locales scripts src tests capacitor.config.ts package.json package-lock.json tsconfig.json README.md LICENSE .gitignore'
+          SYNC_PATHS: '.github app android editor locales scripts src tests capacitor.config.ts tsconfig.json README.md LICENSE .gitignore'
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
