@@ -25,6 +25,8 @@ const NATIVE_NAMES: Record<string, string> = {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 0 0 auto;
+  white-space: nowrap;
   font-size: 12px;
   color: var(--glz-text-muted);
 }
@@ -33,7 +35,7 @@ const NATIVE_NAMES: Record<string, string> = {
   border: 1px solid var(--glz-border);
   border-radius: 6px;
   font-size: 12px;
-  background: #fff;
+  background: var(--glz-surface);
   color: var(--glz-text);
 }
 </style>
