@@ -33,10 +33,21 @@
     "vitest": "^5.0.1",
     "vue": "^3.5.43",
     "@vuepress/bundler-vite": "2.0.0-rc.31",
-    "@vuepress/theme-default": "2.0.0-rc.134",
+    "@vuepress/theme-default": "2.0.0-rc.31",
     "sass": "^1.104.1",
     "sass-embedded": "^1.104.1",
     "sass-loader": "^17.0.1",
     "vuepress": "2.0.0-rc.31"
+  },
+  "overrides": {
+    "@vuepress/cli": "2.0.0-rc.31",
+    "@vuepress/core": "2.0.0-rc.31",
+    "@vuepress/utils": "2.0.0-rc.31",
+    "@vuepress/shared": "2.0.0-rc.31",
+    "@vuepress/markdown": "2.0.0-rc.31",
+    "@vuepress/client": "2.0.0-rc.31",
+    "@vuepress/markdown-tab": "2.0.0-rc.31",
+    "@vuepress/bundler-vite": "2.0.0-rc.31",
+    "@vuepress/theme-default": "2.0.0-rc.31"
   }
 }
