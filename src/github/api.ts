@@ -2,6 +2,9 @@ import { GitHubApiError, classifyError, toApiError } from './errors'
 
 export const GITHUB_API_BASE = 'https://api.github.com'
 const API_VERSION = '2022-11-28'
+const REQUEST_TIMEOUT_MS = 15000
+const RETRY_DELAY_MS = 600
+const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
