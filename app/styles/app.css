@@ -54,8 +54,14 @@ body {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   margin-bottom: 20px;
+}
+
+.glz-app__header > div {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .glz-app__title {
