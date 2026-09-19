@@ -50,14 +50,14 @@ the source of truth.
 
 ```bash
 npm install
-npm run dev      # local site, use /editor.html?mock=1 to work without a token
+npm run dev      # local docs site; the editor runs separately via npm run editor:build
 npm test
 npm run app:build  # build the Android web bundle into app/dist
 ```
 
 `npm run build` (the docs site) only works on a checkout of the `i18n` branch, where `docs/` lives.
 
-Then open the published editor at `https://<owner>.github.io/<repository>/editor.html`, paste a fine-grained personal access token scoped to that repository, and start translating. [Getting a token](https://hayashiume.github.io/GitLocalize/guide/token.html) explains how to create one; [the setup guide](https://hayashiume.github.io/GitLocalize/guide/setup.html) covers the repository settings.
+Then open the published editor at `https://<owner>.github.io/<repository>/Editor/`, paste a fine-grained personal access token scoped to that repository, and start translating. [Getting a token](https://hayashiume.github.io/GitLocalize/guide/token.html) explains how to create one; [the setup guide](https://hayashiume.github.io/GitLocalize/guide/setup.html) covers the repository settings.
 
 ## What the editor does
 

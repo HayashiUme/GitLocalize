@@ -108,7 +108,7 @@ npm test         # parser, flatten and QA unit tests
 npm run build    # static output in docs/.vuepress/dist
 ```
 
-Open `http://localhost:8080/editor.html?mock=1` to exercise the editor against the in-memory GitHub stand-in.
+Open `http://localhost:4173/?mock=1` to exercise the editor against the in-memory GitHub stand-in.
 
 ## 8. Token scopes
 

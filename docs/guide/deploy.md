@@ -41,7 +41,7 @@ need. Re-running it is safe; each step checks before it changes.
 - A push to `main` is merged into `i18n` by `sync-main-to-i18n.yml`.
 - A push to `i18n` opens or refreshes one pull request back to `main`
   (`translation-pr.yml`), and rebuilds the Pages site (`deploy-pages.yml`).
-- Translators only ever need the editor at `https://<owner>.github.io/<repo>/editor.html`
+- Translators only ever need the editor at `https://<owner>.github.io/<repo>/Editor/`
   and a fine-grained token with `Contents: Read and write`.
 
 ## 5. Ship the mobile app (optional)
