@@ -138,6 +138,8 @@ app:
   machineTranslate: Machine translate
   mtBusy: Translating...
   useSuggestion: Use suggestion
+  mtAll: Machine-translate all untranslated
+  mtAllDone: "Machine-translated {count} entries."
 
 settings:
   title: Settings

@@ -5,6 +5,7 @@ import {
   actions,
   hasChanges,
   issuesByKey,
+  neighborsMap,
   repoLabel,
   state,
   stats,
@@ -82,7 +83,12 @@ function onEdit(key: string, event: Event): void {
       </div>
     </section>
 
-    <p class="glz-progress">{{ progress }}</p>
+    <div class="glz-toolbar">
+      <p class="glz-progress">{{ progress }}</p>
+      <button class="glz-mini" :disabled="state.mtBusy !== null" @click="actions.applyMtAll()">
+        {{ state.mtBusy === '__all__' ? t('app.mtBusy') : t('app.mtAll') }}
+      </button>
+    </div>
 
     <section class="glz-entries">
       <article
@@ -91,7 +97,16 @@ function onEdit(key: string, event: Event): void {
         class="glz-entry"
         :class="{ 'glz-entry--done': entry.translated, 'glz-entry--touched': state.overrides[entry.key] !== undefined }"
       >
-        <p class="glz-entry__key">{{ entry.key }}</p>
+        <p class="glz-entry__key">
+          {{ entry.key }}
+          <span
+            v-if="neighborsMap.get(entry.key)?.prev || neighborsMap.get(entry.key)?.next"
+            class="glz-entry__context"
+          >
+            ⇠ {{ neighborsMap.get(entry.key)!.prev?.key ?? '—' }} ·
+            {{ neighborsMap.get(entry.key)!.next?.key ?? '—' }} ⇢
+          </span>
+        </p>
         <p class="glz-entry__source">{{ entry.source }}</p>
         <textarea
           :value="entry.translation"

@@ -215,6 +215,21 @@ export const suggestions = computed<Map<string, string>>(() => {
   return map
 })
 
+/* Weblate-style nearby-strings context: what sits directly around each key in the file. */
+export const neighborsMap = computed(() => {
+  const map = new Map<string, { prev: { key: string; source: string } | null; next: { key: string; source: string } | null }>()
+  for (let index = 0; index < entries.value.length; index += 1) {
+    const entry = entries.value[index]
+    const before = entries.value[index - 1]
+    const after = entries.value[index + 1]
+    map.set(entry.key, {
+      prev: before ? { key: before.key, source: before.source } : null,
+      next: after ? { key: after.key, source: after.source } : null,
+    })
+  }
+  return map
+})
+
 export const repoLabel = computed(() => (state.target ? `${state.target.owner}/${state.target.repo}` : ''))
 
 function describe(error: unknown): string {
@@ -445,6 +460,28 @@ async function applyMt(key: string): Promise<void> {
   }
 }
 
+/* One request at a time: the free Google endpoint throttles hard under parallel load. */
+async function applyMtAll(): Promise<void> {
+  if (state.mtBusy) return
+  const targets = entries.value.filter((entry) => !entry.translated && entry.source.trim() !== '')
+  if (targets.length === 0) return
+  state.mtBusy = '__all__'
+  state.error = ''
+  let count = 0
+  try {
+    for (const entry of targets) {
+      const value = await translate(entry.source, state.language, state.mt)
+      setTranslation(entry.key, value)
+      count += 1
+    }
+    state.notice = t('app.mtAllDone', { count })
+  } catch (error) {
+    state.error = describe(error)
+  } finally {
+    state.mtBusy = null
+  }
+}
+
 function applySuggestion(key: string): void {
   const value = suggestions.value.get(key)
   if (value !== undefined) setTranslation(key, value)
@@ -481,6 +518,7 @@ export const actions = {
   toggleSettings,
   updateMt,
   applyMt,
+  applyMtAll,
   applySuggestion,
   downloadFile,
 }

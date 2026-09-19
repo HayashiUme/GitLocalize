@@ -291,6 +291,24 @@ body {
   word-break: break-all;
 }
 
+.glz-entry__context {
+  display: block;
+  font-family: inherit;
+  opacity: 0.75;
+}
+
+.glz-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.glz-toolbar .glz-progress {
+  margin: 0;
+}
+
 .glz-entry__source {
   margin: 0 0 10px;
   font-size: 14px;
