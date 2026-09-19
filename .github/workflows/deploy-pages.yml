@@ -38,10 +38,7 @@ jobs:
         run: |
           npm ci
           npm run editor:build
-          cd docs
-          npm ci
-          npx vuepress build
-          cd ../..
+          npm run build
           cp -r editor/dist "docs/.vuepress/dist/Editor"
 
       - name: Upload artifact
