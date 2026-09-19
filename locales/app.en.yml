@@ -149,7 +149,6 @@ editor:
     commentNew: New comment (the current key is added as a prefix)
     commentPlaceholder: Your comment
     commentPost: Post comment
-    langTotal: "language total: {total}"
 message:
   nothingToCommit: Nothing to commit.
   noContentChange: No content changes detected, nothing was committed.

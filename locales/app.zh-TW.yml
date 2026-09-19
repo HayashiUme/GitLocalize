@@ -145,7 +145,6 @@ editor:
     commentNew: 寫評論（自動帶上目前鍵名前綴）
     commentPlaceholder: 評論內容
     commentPost: 發表
-    langTotal: 語言合計：{total}
 message:
   nothingToCommit: 沒有需要提交的內容。
   noContentChange: 內容沒有變化，未建立提交。

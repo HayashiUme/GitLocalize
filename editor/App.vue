@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { AVAILABLE_UI_LOCALES, setUiLocale, t, uiLocale } from '@/i18n'
-import { flatten, getParser } from '@/parser'
+import { getParser } from '@/parser'
 import { translate, type MtSettings } from '@/mt'
 import { remember, suggest } from '@/mt/memory'
 import { downloadTextFile } from '@/storage/download'
@@ -54,7 +54,6 @@ interface LangStat {
   translated: number
   readonlyStrings: number
   files: string[]
-  perFile: { path: string; strings: number; translated: number }[]
 }
 
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -354,7 +353,6 @@ async function loadOverview(): Promise<void> {
       let words = 0
       let chars = 0
       let translated = 0
-      const perFile: { path: string; strings: number; translated: number }[] = []
       const keyMap = new Map<string, string>()
       for (const file of files) {
         try {
@@ -362,20 +360,15 @@ async function loadOverview(): Promise<void> {
             `/repos/${state.target!.owner}/${state.target!.repo}/contents/${file.path}?ref=${state.target!.translationBranch}`,
             { accept: 'application/vnd.github.raw', raw: true },
           )
-          const parsed = flatten(getParser(file.path).parse(raw))
-          let fileStrings = 0
-          let fileTranslated = 0
+          const parsed = getParser(file.path).parse(raw)
           for (const item of parsed) {
             const value = (item.value ?? '').trim()
             strings += 1
-            fileStrings += 1
             words += value === '' ? 0 : value.split(/\s+/).length
             chars += value.length
             if (value !== '') translated += 1
-            fileTranslated += value === '' ? 0 : 1
             keyMap.set(item.key, item.value ?? '')
           }
-          perFile.push({ path: file.path, strings: fileStrings, translated: fileTranslated })
         } catch (error) {
           overviewFailures.value.push(`${file.path}: ${error instanceof Error ? error.message : String(error)}`)
         }
@@ -390,7 +383,6 @@ async function loadOverview(): Promise<void> {
         translated,
         readonlyStrings: language === sourceLanguage ? strings : 0,
         files: files.map((file) => file.path),
-        perFile,
       })
       finished += 1
       overviewProgress.value = `${finished}/${jobs.length}`
@@ -574,9 +566,6 @@ watch(() => state.status, (status) => {
                   {{ stat.strings ? Math.round((stat.translated / stat.strings) * 100) : 0 }}% ·
                   {{ stat.translated }}/{{ stat.strings }} {{ t('editor.pro.strings') }}
                 </span>
-                <span v-for="entry in stat.perFile" :key="entry.path" class="wz-lang__meta wz-lang__file">
-                  {{ entry.path.split('/').pop() }}: {{ entry.translated }}/{{ entry.strings }}
-                </span>
               </button>
               <p v-if="overviewLoaded && langStats.length === 0" class="wz-side__muted">{{ t('editor.pro.noLangs') }}</p>
               <ul v-if="overviewFailures.length" class="wz-diag">
@@ -693,10 +682,7 @@ watch(() => state.status, (status) => {
           <div class="wz-nav__pager">
             <button class="wz-iconbtn" :disabled="position === 0" @click="position = 0">|◀</button>
             <button class="wz-iconbtn" :disabled="position === 0" @click="move(-1)">◀</button>
-            <span class="wz-nav__position">
-            {{ position + 1 }} / {{ filteredEntries.length }}
-            <span class="wz-nav__scope" v-if="statFor(activeLang)">{{ t('editor.pro.langTotal', { total: statFor(activeLang)!.strings }) }}</span>
-          </span>
+            <span class="wz-nav__position">{{ position + 1 }} / {{ filteredEntries.length }}</span>
             <button class="wz-iconbtn" :disabled="position >= filteredEntries.length - 1" @click="move(1)">▶</button>
             <button
               class="wz-iconbtn"

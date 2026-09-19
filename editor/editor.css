@@ -56,9 +56,6 @@ body {
 .wz-comment__meta { display: flex; gap: 10px; font-size: 12px; color: var(--wz-ink-muted); margin-bottom: 4px; }
 .wz-comment__meta a { color: var(--wz-green); }
 .wz-comment__body { margin: 0; white-space: pre-wrap; font-size: 14px; }
-.wz-topbar__select option { color: #1c2321; background: #ffffff; }
-.wz-lang__file { opacity: 0.85; }
-.wz-nav__scope { color: var(--wz-ink-muted); font-size: 11px; }
 .wz-topbar__badge {
   margin-left: auto;
   background: var(--wz-green);

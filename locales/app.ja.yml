@@ -145,7 +145,6 @@ editor:
     commentNew: コメントを書く（現在のキー名を接頭辞として付加）
     commentPlaceholder: コメント内容
     commentPost: 投稿
-    langTotal: 言語合計：{total}
 message:
   nothingToCommit: コミットする内容がありません。
   noContentChange: 内容に変更がないため、コミットは作成されませんでした。
