@@ -72,6 +72,9 @@ export function classifyError(status: number, bodyText: string, apiMessage: stri
 
 export function toApiError(error: unknown): GitHubApiError {
   if (error instanceof GitHubApiError) return error
-  const detail = error instanceof Error ? error.message : String(error)
+  const timedOut = error instanceof DOMException && (error.name === 'AbortError' || error.name === 'TimeoutError')
+  const detail = timedOut
+    ? 'the request was aborted after the 15s timeout (a proxy or firewall may be stalling this request)'
+    : error instanceof Error ? error.message : String(error)
   return new GitHubApiError(0, 'network', detail)
 }

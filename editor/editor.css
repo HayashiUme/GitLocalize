@@ -271,5 +271,13 @@ body {
   font-size: 13px;
 }
 .wz-commitbar__notice { color: var(--wz-green); }
+.wz-diag__detail {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  word-break: break-all;
+  opacity: 0.8;
+}
+
 .wz-error { color: #c0392b; font-size: 13px; padding: 0 18px 12px; }
 .wz-error--bar { margin: 0; }
