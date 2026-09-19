@@ -48,7 +48,9 @@ export type QaCode =
   | 'placeholder-missing'
   | 'placeholder-extra'
   | 'html-tag-missing'
+  | 'html-tag-extra'
   | 'empty-translation'
+  | 'length-out-of-range'
 
 export interface QaIssue {
   key: string

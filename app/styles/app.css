@@ -308,6 +308,32 @@ body {
   color: var(--glz-warn);
 }
 
+.glz-entry__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.glz-mini {
+  border: 1px solid var(--glz-border);
+  border-radius: 8px;
+  background: var(--glz-brand-soft);
+  color: var(--glz-brand);
+  font-size: 12px;
+  padding: 6px 10px;
+  max-width: 100%;
+  text-align: left;
+  word-break: break-all;
+}
+
+.glz-app__header > div:last-child,
+.glz-app__buttons {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
 .glz-commit {
   position: sticky;
   bottom: 0;

@@ -133,6 +133,11 @@ app:
   signOut: Disconnect
   settings: Settings
   restored: Local edits were restored.
+  download: Download file
+  downloaded: "Saved to {path}"
+  machineTranslate: Machine translate
+  mtBusy: Translating...
+  useSuggestion: Use suggestion
 
 settings:
   title: Settings
@@ -142,3 +147,15 @@ settings:
   themeDark: Dark
   themeSystem: Follow the system
   close: Close
+
+mt:
+  title: Machine translation
+  provider: Provider
+  providerGoogle: Google Translate (free endpoint)
+  providerDeepl: DeepL (free API key)
+  providerNone: Off
+  deeplKey: DeepL API key
+  deeplKeyPlaceholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx
+  deeplKeyHint: Create a free key at deepl.com/pro#developer. Stored on this device only.
+  error:
+    noKey: A DeepL API key is required; set it in Settings.
