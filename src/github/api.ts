@@ -9,6 +9,8 @@ export interface RequestOptions {
   signal?: AbortSignal
   accept?: string
   allowEmpty?: boolean
+  /** Return the raw response text instead of parsing it as JSON. */
+  raw?: boolean
 }
 
 export interface RateLimitInfo {
@@ -43,6 +45,7 @@ export class GitHubClient {
   }
 
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+    const method = options.method ?? 'GET'
     const headers: Record<string, string> = {
       Accept: options.accept ?? 'application/vnd.github+json',
       'X-GitHub-Api-Version': API_VERSION,
@@ -51,39 +54,65 @@ export class GitHubClient {
     if (this.token) headers.Authorization = `Bearer ${this.token}`
     if (options.body !== undefined) headers['Content-Type'] = 'application/json'
 
-    let response: Response
-    try {
-      response = await this.transport.fetch(`${this.baseUrl}${path}`, {
-        method: options.method ?? 'GET',
-        headers,
-        body: options.body === undefined ? undefined : JSON.stringify(options.body),
-        signal: options.signal,
-      })
-    } catch (error) {
-      throw toApiError(error)
-    }
+    /* GETs are idempotent: ride out transient network failures and server hiccups. */
+    const attempts = method === 'GET' ? 3 : 1
+    let lastError: unknown
 
-    this.captureRateLimit(response)
-
-    if (!response.ok) {
-      const bodyText = await response.text().catch(() => '')
-      let apiMessage = ''
-      let documentationUrl: string | undefined
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
       try {
-        const parsed = JSON.parse(bodyText) as { message?: string; documentation_url?: string }
-        apiMessage = parsed.message ?? ''
-        documentationUrl = parsed.documentation_url
-      } catch {
-        apiMessage = bodyText.slice(0, 300)
+        const signal = options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+        const response = await this.transport.fetch(`${this.baseUrl}${path}`, {
+          method,
+          headers,
+          body: options.body === undefined ? undefined : JSON.stringify(options.body),
+          signal,
+        })
+
+        this.captureRateLimit(response)
+
+        if (!response.ok) {
+          const bodyText = await response.text().catch(() => '')
+          let apiMessage = ''
+          let documentationUrl: string | undefined
+          try {
+            const parsed = JSON.parse(bodyText) as { message?: string; documentation_url?: string }
+            apiMessage = parsed.message ?? ''
+            documentationUrl = parsed.documentation_url
+          } catch {
+            apiMessage = bodyText.slice(0, 300)
+          }
+          if (response.headers.get('x-ratelimit-remaining') === '0') {
+            const resetAt = new Date(Number(response.headers.get('x-ratelimit-reset')) * 1000)
+            apiMessage +=
+              ` (anonymous quota is 60 requests/hour per IP; signing in raises it to 5,000/hour. ` +
+              `Quota resets at ${resetAt.toLocaleTimeString()})`
+          }
+          const code = classifyError(response.status, bodyText, apiMessage)
+          const retryable = method === 'GET' && (response.status >= 500 || response.status === 429)
+          if (retryable && attempt < attempts - 1) {
+            await delay(RETRY_DELAY_MS * (attempt + 1))
+            continue
+          }
+          throw new GitHubApiError(response.status, code, apiMessage || bodyText.slice(0, 300), documentationUrl)
+        }
+
+        if (response.status === 204 || options.allowEmpty) return undefined as T
+        const text = await response.text()
+        if (text.trim() === '') return undefined as T
+        if (options.raw) return text as T
+        return JSON.parse(text) as T
+      } catch (error) {
+        if (error instanceof GitHubApiError) throw error
+        lastError = error
+        if (attempt < attempts - 1) {
+          await delay(RETRY_DELAY_MS * (attempt + 1))
+          continue
+        }
+        throw toApiError(error)
       }
-      const code = classifyError(response.status, bodyText, apiMessage)
-      throw new GitHubApiError(response.status, code, apiMessage || bodyText.slice(0, 300), documentationUrl)
     }
 
-    if (response.status === 204 || options.allowEmpty) return undefined as T
-    const text = await response.text()
-    if (text.trim() === '') return undefined as T
-    return JSON.parse(text) as T
+    throw toApiError(lastError)
   }
 
   get<T>(path: string, options: RequestOptions = {}): Promise<T> {

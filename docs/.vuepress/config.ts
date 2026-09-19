@@ -29,7 +29,6 @@ export default defineUserConfig({
   base,
   head: [
     ['script', {}, `window.__GITLOCALIZE_CONFIG__=${JSON.stringify(siteTarget)}`],
-    ['meta', { name: 'color-scheme', content: 'light' }],
     ['meta', { name: 'theme-color', content: '#226d4e' }],
     ['link', { rel: 'icon', href: `${base}favicon.ico`, sizes: 'any' }],
     ['link', { rel: 'icon', type: 'image/png', href: `${base}logo.png` }],
@@ -58,10 +57,10 @@ export default defineUserConfig({
   }),
   theme: defaultTheme({
     logo: '/logo.png',
-    colorMode: 'light',
-    colorModeSwitch: false,
+    colorMode: 'auto',
+    colorModeSwitch: true,
     navbar: [
-      { text: 'Editor', link: '/editor.md' },
+      { text: 'Editor', link: `${base}Editor/` },
       { text: 'Get a token', link: '/guide/token.md' },
       { text: 'Deploy', link: '/guide/deploy.md' },
       { text: 'Architecture', link: '/guide/architecture.md' },

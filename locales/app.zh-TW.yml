@@ -1,10 +1,7 @@
-# GitLocalize 介面文案 — 繁體中文。
 name: GitLocalize
 tagline: 就在 GitHub 上一起翻譯
-
 locale:
   label: 介面語言
-
 login:
   title: 登入後開始翻譯
   privacy: |
@@ -24,7 +21,6 @@ login:
   deviceOpenPage: 開啟裝置頁面
   deviceCancel: 取消
   mock: 使用模擬資料繼續
-
 status:
   signedInAs: 已登入為 @{login}
   branch: 分支
@@ -36,7 +32,6 @@ status:
   reload: 從分支重新載入
   signOut: 登出
   mock: 模擬
-
 permission:
   none: 無權限
   read: 唯讀
@@ -44,14 +39,12 @@ permission:
   write: 寫入
   maintain: 維護
   admin: 管理員
-
 toolbar:
   language: 語言
   file: 檔案
   searchPlaceholder: 搜尋鍵名或文字
   untranslatedOnly: 只顯示未翻譯
   discard: 捨棄 {count}
-
 table:
   key: 鍵名
   source: 英語（來源語言）
@@ -61,21 +54,19 @@ table:
   progress: "{visible} / {total} 筆"
   untranslatedCount: "{count} 筆未翻譯"
   modifiedCount: 已修改 {count} 筆
-
 qa:
   empty-translation: 未翻譯
   placeholder-missing: 缺少佔位符：{detail}
   placeholder-extra: 多出佔位符：{detail}
   html-tag-missing: 缺少 HTML 標籤：<{detail}>
   html-tag-extra: 多出 HTML 標籤：<{detail}>
-  punctuation-missing: "句尾標點與原文不一致（{detail}）"
-  newline-count: "換行數與原文不一致（原文 {detail} 個）"
-  space-mismatch: "首尾空格與原文不一致（{detail}）"
-  zero-width-space: "譯文中含有不可見的零寬字元"
-  repeated-word: "譯文中出現連續重複的詞：{detail}"
-  same-as-source: "譯文與原文完全相同，疑似未翻譯"
-  inconsistent: "同一原文在本檔案中有 {detail} 種不同譯文"
-
+  punctuation-missing: 句尾標點與原文不一致（{detail}）
+  newline-count: 換行數與原文不一致（原文 {detail} 個）
+  space-mismatch: 首尾空格與原文不一致（{detail}）
+  zero-width-space: 譯文中含有不可見的零寬字元
+  repeated-word: 譯文中出現連續重複的詞：{detail}
+  same-as-source: 譯文與原文完全相同，疑似未翻譯
+  inconsistent: 同一原文在本檔案中有 {detail} 種不同譯文
 diff:
   review:
     one: 確認 1 處變更
@@ -88,7 +79,6 @@ diff:
     other: 仍有 {count} 處佔位符或 HTML 標籤警告。
   cancel: 取消
   confirm: 提交至 {branch}
-
 editor:
   loading: 正在從 GitHub 載入翻譯……
   submit:
@@ -99,7 +89,6 @@ editor:
   viewCommit: 檢視提交
   pullRequest: "翻譯 PR #{number}"
   openOnGitHub: 在 GitHub 上開啟
-
   rememberToken: 在此裝置上記住
   pro:
     translate: 翻譯
@@ -117,6 +106,34 @@ editor:
     useMt: 採用
     translated: 已翻譯
     untranslated: 未翻譯
+    overview: 語言總覽
+    noLangs: 未在該儲存庫中發現語言。
+    strings: 字串
+    words: 單詞
+    allStrings: 所有字串
+    readonly: 唯讀
+    sourceLang: 原始語言
+    browse: 瀏覽
+    translateHint: 逐條翻譯；Enter 儲存並跳到下一條。
+    searchInTranslations: 在譯文中搜尋
+    runDiagnostics: 執行網路診斷
+    commentsPlaceholder: 字串評論需要 GitHub issue 支援，暫未開放。
+    openHistory: 在 GitHub 上檢視此檔案的提交歷史
+    tab:
+      overview: 概覽
+      translate: 翻譯
+      search: 搜尋
+      insights: 洞察
+      files: 檔案
+      actions: 操作
+    panel:
+      nearby: 附近字串
+      similar: 相似鍵
+      occurrences: 其它的出現位置
+      comments: 評論
+      suggestions: 自動建議
+      otherLangs: 其它語言
+      history: 歷史記錄
 message:
   nothingToCommit: 沒有需要提交的內容。
   noContentChange: 內容沒有變化，未建立提交。
@@ -128,7 +145,6 @@ message:
   noSourceFiles: 沒有符合設定的來源語言檔案。
   noTarget: 無法確定目標儲存庫。請從 GitHub Pages 開啟本頁，或手動填寫 owner 與 repository。
   sourceMissing: 找不到來源檔案：{path}
-
 onboarding:
   title: 連接一個儲存庫
   repositoryLabel: 儲存庫
@@ -136,11 +152,10 @@ onboarding:
   connect: 連接
   connecting: 正在下載……
   guideTitle: 三步拿到權杖
-  guideStep1: "GitHub → 設定 → 開發者設定 → 個人存取權杖 → 精細權杖。"
+  guideStep1: GitHub → 設定 → 開發者設定 → 個人存取權杖 → 精細權杖。
   guideStep2: 把權限限定在這一個儲存庫。
   guideStep3: "勾選「Contents: Read and write」，再貼到上面。"
   guideLink: 怎麼取得權杖？
-
 connect:
   connected: 儲存庫已就緒。
   warning:
@@ -150,7 +165,6 @@ connect:
     token: 需要填寫個人存取權杖。
     noLocales: 這個儲存庫裡沒有找到 locales/en.* 檔案。
     noLanguages: 這個儲存庫還沒有宣告目標語言。
-
 app:
   commit: 提交並推送
   pushed: 已推送到 {branch}。
@@ -164,7 +178,6 @@ app:
   useSuggestion: 採用建議
   mtAll: 機翻全部未翻譯
   mtAllDone: 已機翻 {count} 條。
-
 settings:
   title: 設定
   appearance: 外觀
@@ -173,7 +186,6 @@ settings:
   themeDark: 深色
   themeSystem: 跟隨系統
   close: 關閉
-
 mt:
   title: 機器翻譯
   provider: 服務商
