@@ -1,10 +1,7 @@
-# GitLocalize 界面文案 — 简体中文。
 name: GitLocalize
 tagline: 就在 GitHub 上一起翻译
-
 locale:
   label: 界面语言
-
 login:
   title: 登录后开始翻译
   privacy: |
@@ -24,7 +21,6 @@ login:
   deviceOpenPage: 打开设备页
   deviceCancel: 取消
   mock: 用模拟数据继续
-
 status:
   signedInAs: 已登录为 @{login}
   branch: 分支
@@ -36,7 +32,6 @@ status:
   reload: 从分支重新加载
   signOut: 退出登录
   mock: 模拟
-
 permission:
   none: 无权限
   read: 只读
@@ -44,14 +39,12 @@ permission:
   write: 写入
   maintain: 维护
   admin: 管理员
-
 toolbar:
   language: 语言
   file: 文件
   searchPlaceholder: 搜索键名或文本
   untranslatedOnly: 只看未翻译
   discard: 撤销 {count}
-
 table:
   key: 键名
   source: 英语（源语言）
@@ -61,21 +54,19 @@ table:
   progress: "{visible} / {total} 条"
   untranslatedCount: "{count} 条未翻译"
   modifiedCount: 已修改 {count} 条
-
 qa:
   empty-translation: 未翻译
   placeholder-missing: 缺少占位符：{detail}
   placeholder-extra: 多出占位符：{detail}
   html-tag-missing: 缺少 HTML 标签：<{detail}>
   html-tag-extra: 多出 HTML 标签：<{detail}>
-  punctuation-missing: "句尾标点与原文不一致（{detail}）"
-  newline-count: "换行数与原文不一致（原文 {detail} 个）"
-  space-mismatch: "首尾空格与原文不一致（{detail}）"
-  zero-width-space: "译文中含有不可见的零宽字符"
-  repeated-word: "译文中出现连续重复的词：{detail}"
-  same-as-source: "译文与原文完全相同，疑似未翻译"
-  inconsistent: "同一原文在本文件中有 {detail} 种不同译文"
-
+  punctuation-missing: 句尾标点与原文不一致（{detail}）
+  newline-count: 换行数与原文不一致（原文 {detail} 个）
+  space-mismatch: 首尾空格与原文不一致（{detail}）
+  zero-width-space: 译文中含有不可见的零宽字符
+  repeated-word: 译文中出现连续重复的词：{detail}
+  same-as-source: 译文与原文完全相同，疑似未翻译
+  inconsistent: 同一原文在本文件中有 {detail} 种不同译文
 diff:
   review:
     one: 确认 1 处改动
@@ -88,7 +79,6 @@ diff:
     other: 仍有 {count} 处占位符或 HTML 标签警告。
   cancel: 取消
   confirm: 提交到 {branch}
-
 editor:
   loading: 正在从 GitHub 加载翻译……
   submit:
@@ -99,7 +89,6 @@ editor:
   viewCommit: 查看提交
   pullRequest: "翻译 PR #{number}"
   openOnGitHub: 在 GitHub 上打开
-
   rememberToken: 在此设备上记住
   pro:
     translate: 翻译
@@ -117,6 +106,34 @@ editor:
     useMt: 采用
     translated: 已翻译
     untranslated: 未翻译
+    overview: 语言总览
+    noLangs: 未在该仓库中发现语言。
+    strings: 字符串
+    words: 单词
+    allStrings: 所有字符串
+    readonly: 只读
+    sourceLang: 源语言
+    browse: 浏览
+    translateHint: 逐条翻译；回车保存并跳到下一条。
+    searchInTranslations: 在译文中搜索
+    runDiagnostics: 运行网络诊断
+    commentsPlaceholder: 字符串评论需要 GitHub issue 支持，暂未开放。
+    openHistory: 在 GitHub 上查看此文件的提交历史
+    tab:
+      overview: 概览
+      translate: 翻译
+      search: 搜索
+      insights: 洞察
+      files: 文件
+      actions: 操作
+    panel:
+      nearby: 附近字符串
+      similar: 相似键
+      occurrences: 其它的出现位置
+      comments: 评论
+      suggestions: 自动建议
+      otherLangs: 其它语言
+      history: 历史记录
 message:
   nothingToCommit: 没有需要提交的内容。
   noContentChange: 内容没有变化，未创建提交。
@@ -128,7 +145,6 @@ message:
   noSourceFiles: 没有匹配配置的源语言文件。
   noTarget: 无法确定目标仓库。请从 GitHub Pages 打开本页，或手动填写 owner 与 repository。
   sourceMissing: 找不到源文件：{path}
-
 onboarding:
   title: 连接一个仓库
   repositoryLabel: 仓库
@@ -136,11 +152,10 @@ onboarding:
   connect: 连接
   connecting: 正在下载……
   guideTitle: 三步拿到令牌
-  guideStep1: "GitHub → 设置 → 开发者设置 → 个人访问令牌 → 细粒度令牌。"
+  guideStep1: GitHub → 设置 → 开发者设置 → 个人访问令牌 → 细粒度令牌。
   guideStep2: 把权限限定在这一个仓库。
   guideStep3: "勾选「Contents: Read and write」，再粘贴到上面。"
   guideLink: 怎么获取令牌？
-
 connect:
   connected: 仓库已就绪。
   warning:
@@ -150,7 +165,6 @@ connect:
     token: 需要填写个人访问令牌。
     noLocales: 这个仓库里没有找到 locales/en.* 文件。
     noLanguages: 这个仓库还没有声明目标语言。
-
 app:
   commit: 提交并推送
   pushed: 已推送到 {branch}。
@@ -164,7 +178,6 @@ app:
   useSuggestion: 采用建议
   mtAll: 机翻全部未翻译
   mtAllDone: 已机翻 {count} 条。
-
 settings:
   title: 设置
   appearance: 外观
@@ -173,7 +186,6 @@ settings:
   themeDark: 深色
   themeSystem: 跟随系统
   close: 关闭
-
 mt:
   title: 机器翻译
   provider: 服务商

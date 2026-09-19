@@ -230,6 +230,34 @@ body {
 }
 .wz-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--wz-ink-muted); }
 
+/* Language overview + dashboard states */
+.wz-langs { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.wz-lang {
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius);
+  background: var(--wz-surface);
+  padding: 12px;
+  cursor: pointer;
+  color: var(--wz-ink);
+}
+.wz-lang:hover { border-color: var(--wz-green); }
+.wz-lang__name { font-weight: 600; }
+.wz-lang__bar { display: block; height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--wz-ink) 10%, transparent); overflow: hidden; }
+.wz-lang__fill { display: block; height: 100%; background: var(--wz-green); border-radius: 999px; transition: width 0.3s ease; }
+.wz-lang__meta { font-size: 12px; color: var(--wz-ink-muted); }
+.wz-states { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.wz-state { border: 1px solid var(--wz-border); border-radius: var(--wz-radius); padding: 12px; display: grid; gap: 4px; }
+.wz-state strong { font-size: 22px; }
+.wz-state span { font-size: 13px; color: var(--wz-ink-muted); }
+.wz-file { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 0; }
+.wz-file code { font-size: 12px; word-break: break-all; }
+.wz-diag { list-style: none; margin: 0; padding: 0; font-size: 13px; display: grid; gap: 4px; }
+.wz-diag--ok { color: var(--wz-green); }
+.wz-diag--fail { color: #c0392b; }
+
 /* Commit bar + errors */
 .wz-commitbar {
   position: sticky;
