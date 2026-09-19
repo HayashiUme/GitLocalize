@@ -1,10 +1,7 @@
-# GitLocalize インターフェース文言 — 日本語。
 name: GitLocalize
 tagline: GitHub の中でそのまま翻訳する
-
 locale:
   label: 表示言語
-
 login:
   title: ログインして翻訳を始める
   privacy: |
@@ -24,7 +21,6 @@ login:
   deviceOpenPage: デバイスページを開く
   deviceCancel: キャンセル
   mock: モックデータで続ける
-
 status:
   signedInAs: "@{login} としてログイン中"
   branch: ブランチ
@@ -36,7 +32,6 @@ status:
   reload: ブランチから再読み込み
   signOut: ログアウト
   mock: モック
-
 permission:
   none: 権限なし
   read: 読み取り
@@ -44,14 +39,12 @@ permission:
   write: 書き込み
   maintain: メンテナンス
   admin: 管理者
-
 toolbar:
   language: 言語
   file: ファイル
   searchPlaceholder: キーまたはテキストを検索
   untranslatedOnly: 未翻訳のみ表示
   discard: "{count} 件を破棄"
-
 table:
   key: キー
   source: 英語（原文）
@@ -61,21 +54,19 @@ table:
   progress: "{visible} / {total} 件"
   untranslatedCount: "{count} 件が未翻訳"
   modifiedCount: "{count} 件を変更"
-
 qa:
   empty-translation: 未翻訳
   placeholder-missing: "プレースホルダーがありません: {detail}"
   placeholder-extra: "想定外のプレースホルダー: {detail}"
   html-tag-missing: "HTML タグがありません: <{detail}>"
   html-tag-extra: "想定外の HTML タグ: <{detail}>"
-  punctuation-missing: "文末の句読点が原文と一致しません（{detail}）"
-  newline-count: "改行数が原文と一致しません（原文 {detail} 個）"
-  space-mismatch: "前後の空白が原文と一致しません（{detail}）"
-  zero-width-space: "翻訳に不可視のゼロ幅文字が含まれています"
-  repeated-word: "翻訳に繰り返しの単語があります：{detail}"
-  same-as-source: "翻訳が原文と同一です。未翻訳の可能性があります"
-  inconsistent: "同じ原文に {detail} 通りの翻訳があります"
-
+  punctuation-missing: 文末の句読点が原文と一致しません（{detail}）
+  newline-count: 改行数が原文と一致しません（原文 {detail} 個）
+  space-mismatch: 前後の空白が原文と一致しません（{detail}）
+  zero-width-space: 翻訳に不可視のゼロ幅文字が含まれています
+  repeated-word: 翻訳に繰り返しの単語があります：{detail}
+  same-as-source: 翻訳が原文と同一です。未翻訳の可能性があります
+  inconsistent: 同じ原文に {detail} 通りの翻訳があります
 diff:
   review:
     one: 1 件の変更を確認
@@ -88,18 +79,16 @@ diff:
     other: プレースホルダーまたは HTML タグの警告が {count} 件残っています。
   cancel: キャンセル
   confirm: "{branch} にコミット"
-
 editor:
   loading: GitHub から翻訳を読み込んでいます...
   submit:
     one: 翻訳を 1 件送信
-    other: "翻訳を {count} 件送信"
+    other: 翻訳を {count} 件送信
   progress: "{translated} / {total} 件翻訳済み（{language}）"
   reloadNow: 今すぐ再読み込み
   viewCommit: コミットを表示
   pullRequest: "翻訳 PR #{number}"
   openOnGitHub: GitHub で開く
-
   rememberToken: この端末で記憶する
   pro:
     translate: 翻訳
@@ -117,6 +106,34 @@ editor:
     useMt: 使用
     translated: 翻訳済み
     untranslated: 未翻訳
+    overview: 言語一覧
+    noLangs: このリポジトリでは言語が見つかりませんでした。
+    strings: 文字列
+    words: 単語
+    allStrings: すべての文字列
+    readonly: 読み取り専用
+    sourceLang: ソース言語
+    browse: 閲覧
+    translateHint: 1件ずつ翻訳。Enter で保存して次へ進みます。
+    searchInTranslations: 翻訳内を検索
+    runDiagnostics: ネットワーク診断を実行
+    commentsPlaceholder: 文字列コメントには GitHub issue の連携が必要で、まだ未対応です。
+    openHistory: GitHub でこのファイルのコミット履歴を開く
+    tab:
+      overview: 概要
+      translate: 翻訳
+      search: 検索
+      insights: インサイト
+      files: ファイル
+      actions: 操作
+    panel:
+      nearby: 近くの文字列
+      similar: 類似キー
+      occurrences: 他の箇所
+      comments: コメント
+      suggestions: 自動提案
+      otherLangs: 他の言語
+      history: 履歴
 message:
   nothingToCommit: コミットする内容がありません。
   noContentChange: 内容に変更がないため、コミットは作成されませんでした。
@@ -128,7 +145,6 @@ message:
   noSourceFiles: 設定に一致する原文ファイルがありません。
   noTarget: 対象リポジトリを特定できません。GitHub Pages から開くか、owner と repository を入力してください。
   sourceMissing: "原文ファイルが見つかりません: {path}"
-
 onboarding:
   title: リポジトリを接続
   repositoryLabel: リポジトリ
@@ -136,11 +152,11 @@ onboarding:
   connect: 接続
   connecting: ダウンロード中...
   guideTitle: トークンを取得する 3 ステップ
-  guideStep1: "GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens。"
+  guideStep1: GitHub → Settings → Developer settings → Personal access tokens →
+    Fine-grained tokens。
   guideStep2: 権限はこのリポジトリだけに限定します。
   guideStep3: "「Contents: Read and write」を選び、上に貼り付けます。"
   guideLink: トークンの取得方法
-
 connect:
   connected: リポジトリの準備ができました。
   warning:
@@ -150,7 +166,6 @@ connect:
     token: 個人アクセストークンが必要です。
     noLocales: locales/en.* ファイルが見つかりませんでした。
     noLanguages: このリポジトリには対象言語がまだありません。
-
 app:
   commit: コミットしてプッシュ
   pushed: "{branch} にプッシュしました。"
@@ -164,7 +179,6 @@ app:
   useSuggestion: 提案を使用
   mtAll: 未翻訳をすべて機械翻訳
   mtAllDone: "{count} 件を機械翻訳しました。"
-
 settings:
   title: 設定
   appearance: 外観
@@ -173,7 +187,6 @@ settings:
   themeDark: ダーク
   themeSystem: システムに従う
   close: 閉じる
-
 mt:
   title: 機械翻訳
   provider: プロバイダー
