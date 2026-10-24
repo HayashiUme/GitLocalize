@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import appEn from '../locales/app.en.yml?raw'
@@ -47,7 +47,8 @@ function walk(directory: string, extension: RegExp): string[] {
 function keysUsedInSource(): { plain: Set<string>; plural: Set<string> } {
   const plain = new Set<string>()
   const plural = new Set<string>()
-  for (const root of ['src', 'app']) {
+  /* source/ only exists in a checkout that fetched the editor branch; skip it otherwise. */
+  for (const root of ['src', 'source'].filter((name) => existsSync(join(process.cwd(), name)))) {
     for (const file of walk(join(process.cwd(), root), /\.(ts|vue)$/)) {
       const text = readFileSync(file, 'utf8')
       for (const match of text.matchAll(/(?<![\w$.])(t|tp)\(\s*'([^']+)'/g)) {

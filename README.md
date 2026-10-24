@@ -30,28 +30,24 @@ GitHub Actions
   CODEOWNERS                  review routing
   workflows/
     translation-pr.yml        i18n push  → one pull request, reused afterwards
-    sync-main-to-i18n.yml     main push  → copy app paths into i18n
+    sync-main-to-i18n.yml     main push  → copy shared paths into i18n
     deploy-pages.yml          i18n push  → build and publish Pages
-    build-apk.yml             tag push   → attach the Android apk to a release
 locales/                      the editor's own interface strings, in YAML and JSON
 src/                          editor, parsers, GitHub API client, QA checks
-app/                          the Android shell: mobile UI, native git adapters
-android/                      Capacitor-generated Android project
 src/i18n/                     loads locales/ and renders the editor in four languages
 tests/                        unit tests for the non-UI layers
 scripts/setup-repo.sh         branch rulesets for main and i18n
 ```
 
 The docs directory lives on the `i18n` branch only — that is the branch Pages builds from, and it
-is where the documentation itself gets translated. `main` holds the app and its locale files as
-the source of truth.
+is where the documentation itself gets translated. `main` holds the editor sources and its
+locale files as the source of truth.
 
 ## Quickstart
 
 ```bash
 npm install
 npm test
-npm run app:build  # build the Android web bundle into app/dist
 
 # the editor sources live on the editor branch; fetch them before building
 git archive origin/editor source | tar -x -C .

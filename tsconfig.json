@@ -19,18 +19,13 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.vue",
-    "app/**/*.ts",
-    "app/**/*.vue",
     "tests/**/*.ts",
-    "docs/.vuepress/**/*.ts",
-    "capacitor.config.ts"
+    "docs/.vuepress/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "docs/.vuepress/dist",
     "docs/.vuepress/.temp",
     "docs/.vuepress/.cache",
-    "app/dist",
-    "android"
   ]
 }
