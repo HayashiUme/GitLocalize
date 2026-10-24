@@ -2,8 +2,11 @@ import type { ProjectConfig, TranslationFile } from './types'
 import type { GitHubClient } from './github/api'
 import { readTextFile } from './github/contents'
 import { getParser } from './parser'
+import { directoryFromMask, normalizeMask, validateMask } from './config/filemask'
 
-export const I18N_CONFIG_PATH = '.github/i18n.yml'
+/** Looked up in order: the declarative project file first, the legacy YAML for one release. */
+export const CONFIG_PATHS = ['.gitlocalize/config.json', '.github/i18n.yml'] as const
+export const I18N_CONFIG_PATH = CONFIG_PATHS[1]
 
 export const DEFAULT_PROJECT_CONFIG: ProjectConfig = {
   source: { language: 'en', directory: 'locales' },
@@ -11,6 +14,7 @@ export const DEFAULT_PROJECT_CONFIG: ProjectConfig = {
   files: ['locales/*.yml'],
   branch: { translation: 'i18n', main: 'main' },
   pullRequest: { title: 'i18n: update translations' },
+  commitMessage: 'i18n(%language%): update translations',
 }
 
 export interface SiteTarget {
@@ -25,23 +29,97 @@ export interface SiteTarget {
   resolvedFrom: 'injected' | 'url' | 'manual'
 }
 
-export function normalizeConfig(raw: unknown): ProjectConfig {
-  const input = (raw ?? {}) as Partial<ProjectConfig>
+function asString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined
+}
+
+/** Weblate-style project file: filemask + push_branch + languages[]. */
+function normalizeV2(input: Record<string, unknown>): ProjectConfig {
+  const masks: string[] = []
+  const rawMask = asString(input.filemask)
+  if (rawMask && validateMask(rawMask) === null) masks.push(normalizeMask(rawMask))
+
+  /* Multi-component projects declare one mask per file family. */
+  const components = Array.isArray(input.components) ? input.components : []
+  for (const item of components) {
+    if (!item || typeof item !== 'object') continue
+    const componentMask = asString((item as { filemask?: unknown }).filemask)
+    if (componentMask && validateMask(componentMask) === null) masks.push(normalizeMask(componentMask))
+  }
+
+  const files = masks.length > 0 ? masks : DEFAULT_PROJECT_CONFIG.files
+  const directory =
+    asString(input.source_directory) ??
+    (masks.length > 0 ? directoryFromMask(masks[0]) : DEFAULT_PROJECT_CONFIG.source.directory)
+
+  const declared = Array.isArray(input.languages) ? input.languages : []
+  const languages: string[] = []
+  const languageNames: Record<string, string> = {}
+  for (const item of declared) {
+    if (typeof item === 'string') {
+      languages.push(item)
+      continue
+    }
+    if (item && typeof item === 'object') {
+      const entry = item as { code?: unknown; name?: unknown }
+      const code = asString(entry.code)
+      if (!code) continue
+      languages.push(code)
+      const name = asString(entry.name)
+      if (name) languageNames[code] = name
+    }
+  }
+
+  const editor = (input.editor ?? {}) as { remember_token?: unknown; device_flow_client_id?: unknown }
   return {
     source: {
-      language: input.source?.language ?? DEFAULT_PROJECT_CONFIG.source.language,
-      directory: input.source?.directory ?? DEFAULT_PROJECT_CONFIG.source.directory,
+      language: asString(input.source_language) ?? DEFAULT_PROJECT_CONFIG.source.language,
+      directory,
     },
-    languages: Array.isArray(input.languages) ? input.languages.filter((item) => typeof item === 'string') : [],
-    files: Array.isArray(input.files) && input.files.length > 0 ? input.files : DEFAULT_PROJECT_CONFIG.files,
+    languages,
+    languageNames: Object.keys(languageNames).length > 0 ? languageNames : undefined,
+    files,
     branch: {
-      translation: input.branch?.translation ?? DEFAULT_PROJECT_CONFIG.branch.translation,
-      main: input.branch?.main ?? DEFAULT_PROJECT_CONFIG.branch.main,
+      main: asString(input.branch) ?? DEFAULT_PROJECT_CONFIG.branch.main,
+      translation: asString(input.push_branch) ?? asString(input.branch) ?? DEFAULT_PROJECT_CONFIG.branch.translation,
     },
     pullRequest: {
-      title: input.pullRequest?.title ?? DEFAULT_PROJECT_CONFIG.pullRequest.title,
+      title: asString(input.pull_message) ?? DEFAULT_PROJECT_CONFIG.pullRequest.title,
     },
-    editor: input.editor,
+    commitMessage: asString(input.commit_message) ?? DEFAULT_PROJECT_CONFIG.commitMessage,
+    editor: {
+      rememberToken: editor.remember_token === true,
+      deviceFlowClientId: asString(editor.device_flow_client_id),
+    },
+  }
+}
+
+function isV2(raw: Record<string, unknown>): boolean {
+  return 'filemask' in raw || 'push_branch' in raw || 'source_language' in raw || 'pushBranch' in raw
+}
+
+export function normalizeConfig(raw: unknown): ProjectConfig {
+  const input = (raw ?? {}) as Record<string, unknown>
+  if (isV2(input)) return normalizeV2(input)
+
+  const legacy = input as Partial<ProjectConfig>
+  return {
+    source: {
+      language: legacy.source?.language ?? DEFAULT_PROJECT_CONFIG.source.language,
+      directory: legacy.source?.directory ?? DEFAULT_PROJECT_CONFIG.source.directory,
+    },
+    languages: Array.isArray(legacy.languages) ? legacy.languages.filter((item) => typeof item === 'string') : [],
+    languageNames: legacy.languageNames,
+    files: Array.isArray(legacy.files) && legacy.files.length > 0 ? legacy.files : DEFAULT_PROJECT_CONFIG.files,
+    branch: {
+      translation: legacy.branch?.translation ?? DEFAULT_PROJECT_CONFIG.branch.translation,
+      main: legacy.branch?.main ?? DEFAULT_PROJECT_CONFIG.branch.main,
+    },
+    pullRequest: {
+      title: legacy.pullRequest?.title ?? DEFAULT_PROJECT_CONFIG.pullRequest.title,
+    },
+    commitMessage: legacy.commitMessage ?? DEFAULT_PROJECT_CONFIG.commitMessage,
+    editor: legacy.editor,
   }
 }
 
@@ -51,13 +129,17 @@ export async function loadProjectConfig(
   repo: string,
   ref: string,
 ): Promise<ProjectConfig> {
-  try {
-    const content = await readTextFile(client, owner, repo, I18N_CONFIG_PATH, ref)
-    if (!content) return DEFAULT_PROJECT_CONFIG
-    return normalizeConfig(getParser('yaml').parse(content))
-  } catch {
-    return DEFAULT_PROJECT_CONFIG
+  for (const path of CONFIG_PATHS) {
+    try {
+      const content = await readTextFile(client, owner, repo, path, ref)
+      if (!content) continue
+      const raw = path.endsWith('.json') ? JSON.parse(content) : getParser('yaml').parse(content)
+      return normalizeConfig(raw)
+    } catch {
+      /* try the next location */
+    }
   }
+  return DEFAULT_PROJECT_CONFIG
 }
 
 const LANGUAGE_SUFFIX = /\.([A-Za-z]{2}(?:-[A-Za-z]{2,4})?)\.(ya?ml|json)$/
