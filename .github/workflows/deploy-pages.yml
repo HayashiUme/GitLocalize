@@ -1,9 +1,5 @@
 name: Deploy Pages
 
-# The editor sources live on the editor branch and the documentation on the i18n branch.
-# Both are built here: the editor into its own directory, the docs with the manifest that
-# sits next to them, and the two outputs end up in one Pages artifact.
-
 on:
   push:
     branches:
@@ -23,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the documentation
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Checkout the editor sources
