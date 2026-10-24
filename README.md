@@ -32,16 +32,18 @@ GitHub Actions
     translation-pr.yml        i18n push  → one pull request, reused afterwards
     sync-main-to-i18n.yml     main push  → copy shared paths into i18n
     deploy-pages.yml          i18n push  → build and publish Pages
-locales/                      the editor's own interface strings, in YAML and JSON
+locales/                      example strings to translate, in YAML
 scripts/setup-repo.sh         branch rulesets for main and i18n
 ```
 
 Three branches carry the work:
 
-- `main` — the automation, the deploy CLI and the interface strings. It is also the branch the
-  translation pipeline treats as the source of truth.
-- `editor` — the editor itself: the page sources under `source/`, the core library under `src/`
-  and the tests. Nothing rewrites this branch, so it is safe to commit to.
+- `main` — the automation, the deploy CLI and a small set of example strings under `locales/`
+  that show what a project hands to GitLocalize. It is also the branch the translation pipeline
+  treats as the source of truth.
+- `editor` — the editor itself: the page sources under `source/`, the core library under `src/`,
+  the tests and the interface strings the editor renders itself in four languages. Nothing
+  rewrites this branch, so it is safe to commit to.
 - `i18n` — the documentation and the translation workspace. Pages builds from here: it checks
   out the editor sources, builds them next to the docs and publishes both.
 

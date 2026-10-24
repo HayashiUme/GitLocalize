@@ -1,188 +1,24 @@
-name: GitLocalize
-tagline: Translate together, right inside GitHub
-locale:
-  label: Interface language
-login:
-  title: Sign in to translate
-  privacy: >
-    The token stays in this browser. It is never sent to any server other than
-    api.github.com,
+# The strings this repository demonstrates translating. The editor's own interface
+# language lives on the editor branch; what follows is a plain example of the kind
+# of file a project hands to GitLocalize.
 
-    never written to the repository, and never placed in the URL.
-  owner: Owner
-  repository: Repository
-  branch: Translation branch
-  tokenLabel: Personal access token
-  tokenPlaceholder: github_pat_...
-  scopeHint: "Needs Contents: Read and write on this repository only."
-  tokenGuide: How do I get one?
-  remember: Keep the token in this tab only (sessionStorage). Leave off for
-    memory-only sessions.
-  signIn: Sign in
-  deviceFlow: Use GitHub device flow
-  devicePrompt: Enter the code {code} on the GitHub device page, then approve.
-  deviceOpenPage: Open the device page
-  deviceCancel: Cancel
-  mock: Continue with mock data
-status:
-  signedInAs: Signed in as @{login}
-  branch: Branch
-  head: HEAD
-  file: File
-  modified: Modified
-  untranslated: Untranslated
-  warnings: Warnings
-  reload: Reload from branch
-  signOut: Sign out
-  mock: mock
-permission:
-  none: No access
-  read: Read
-  triage: Triage
-  write: Write
-  maintain: Maintain
-  admin: Admin
-toolbar:
-  language: Language
-  file: File
-  searchPlaceholder: Search keys or text
-  untranslatedOnly: Untranslated only
-  discard: Discard {count}
-table:
-  key: Key
-  source: English (source)
-  target: Translation
-  empty: No entries match the current filter.
-  untranslated: Untranslated
-  progress: "{visible} / {total} entries"
-  untranslatedCount: "{count} untranslated"
-  modifiedCount: "{count} modified"
-qa:
-  empty-translation: Untranslated
-  placeholder-missing: "Missing placeholder: {detail}"
-  placeholder-extra: "Unexpected placeholder: {detail}"
-  html-tag-missing: "Missing HTML tag: <{detail}>"
-  html-tag-extra: "Unexpected HTML tag: <{detail}>"
-  punctuation-missing: The sentence-ending punctuation does not match the source ({detail})
-  newline-count: The number of line breaks differs from the source (source has {detail})
-  space-mismatch: Edge whitespace differs from the source ({detail})
-  zero-width-space: The translation contains invisible zero-width characters
-  repeated-word: "The translation repeats a word: {detail}"
-  same-as-source: The translation is identical to the source - possibly untranslated
-  inconsistent: The same source string is translated {detail} different ways in this file
-diff:
-  review:
-    one: Review 1 change
-    other: Review {count} changes
-  committing: Committing to {branch} as @{login}
-  oldEmpty: (empty)
-  newEmpty: (removed)
-  warnings:
-    one: "{count} placeholder or HTML tag warning is still present."
-    other: "{count} placeholder or HTML tag warnings are still present."
-  cancel: Cancel
-  confirm: Commit to {branch}
-editor:
-  loading: Loading translations from GitHub...
-  submit:
-    one: Submit 1 translation
-    other: Submit {count} translations
-  progress: "{translated} / {total} translated in {language}"
-  reloadNow: Reload now
-  viewCommit: View commit
-  pullRequest: "Translation pull request #{number}"
-  openOnGitHub: Open on GitHub
-  rememberToken: Remember on this device
-  pro:
-    translate: Translate
-    chars: chars
-    saveAndStay: Save and stay
-    saveAndNext: Save and continue
-    suggest: Suggest
-    skip: Skip
-    nearby: Nearby strings
-    suggestions: Automatic suggestions
-    checks: Things to check
-    noChecks: No warnings
-    stringInfo: String information
-    mtGenerate: Machine translate
-    useMt: Use
-    translated: Translated
-    untranslated: Untranslated
-    overview: Language overview
-    noLangs: No languages discovered in this repository.
-    strings: strings
-    words: words
-    allStrings: All strings
-    readonly: Read-only
-    sourceLang: source language
-    browse: Browse
-    translateHint: Translate string by string; Enter saves and moves on.
-    searchInTranslations: Search in translations
-    runDiagnostics: Run network diagnostics
-    commentsPlaceholder: String comments need GitHub issue backing and are not wired up yet.
-    openHistory: Open the commit history for this file on GitHub
-    tab:
-      overview: Overview
-      translate: Translate
-      search: Search
-      insights: Insights
-      files: Files
-      actions: Actions
-    panel:
-      nearby: Nearby strings
-      similar: Similar keys
-      occurrences: Other occurrences
-      comments: Comments
-      suggestions: Automatic suggestions
-      otherLangs: Other languages
-      history: History
-    theme: Toggle dark mode
-    uiLocale: Interface language
-    mtFailed: "Machine translation failed: {detail}"
-    loadingHistory: Loading history…
-    noHistory: No commits touch this file yet.
-    loadingComments: Loading comments…
-    noComments: No comments on this file yet. Write one below - it becomes a GitHub
-      comment on the translation pull request.
-    commentsIntro: Comments live on the translation pull request as GitHub review comments.
-    commentNew: New comment (the current key is added as a prefix)
-    commentPlaceholder: Your comment
-    commentPost: Post comment
-  state:
-    needsEditing: Needs editing
-    needsRewriting: Needs rewriting
-    needsChecking: Needs checking
-    translated: Translated
-    approved: Approved
-    readOnly: Read only
-    filterAll: All states
-    markNeedsEditing: Toggle needs editing
-message:
-  nothingToCommit: Nothing to commit.
-  noContentChange: No content changes detected, nothing was committed.
-  committed: Committed {sha} to {branch}.
-  notSignedIn: You are not signed in.
-  tokenEmpty: Enter a personal access token first.
-  targetFirst: Set the target repository before signing in.
-  noLanguages: No target languages found. Check .github/i18n.yml.
-  noSourceFiles: No source translation files matched the configured patterns.
-  noTarget: Could not determine the repository. Open this page from GitHub Pages,
-    or fill in owner and repository.
-  sourceMissing: "Source file not found: {path}"
 app:
-  commit: Commit and push
-  signOut: Disconnect
-  download: Download file
-  mtBusy: Translating...
-mt:
-  title: Machine translation
-  provider: Provider
-  providerGoogle: Google Translate (free endpoint)
-  providerDeepl: DeepL (free API key)
-  providerNone: Off
-  deeplKey: DeepL API key
-  deeplKeyPlaceholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx
-  deeplKeyHint: Create a free key at deepl.com/pro#developer. Stored on this device only.
-  error:
-    noKey: A DeepL API key is required; set it in Settings.
+  name: Acme Notes
+  tagline: Your notes, everywhere
+  nav:
+    home: Home
+    notes: Notes
+    settings: Settings
+  actions:
+    newNote: New note
+    save: Save
+    cancel: Cancel
+    delete: Delete
+  messages:
+    welcome: "Welcome back, {name}!"
+    empty: No notes yet. Create your first one.
+    saved: "{count} notes saved"
+    unsaved: You have unsaved changes.
+  errors:
+    offline: You are offline. Changes will sync later.
+    notFound: That note no longer exists.

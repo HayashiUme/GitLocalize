@@ -4,12 +4,9 @@ source:
 
 languages:
   - zh-CN
-  - zh-TW
-  - ja
 
 files:
   - "locales/*.yml"
-  - "locales/*.json"
 
 branch:
   translation: i18n
