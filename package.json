@@ -10,25 +10,14 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "app:dev": "vite --config app/vite.config.ts",
-    "app:build": "vite build --config app/vite.config.ts",
-    "app:sync": "npm run app:build && cap sync android",
-    "app:apk": "npm run app:sync && cd android && ./gradlew assembleDebug",
-    "editor:build": "vite build --config editor/vite.config.ts",
     "dev": "vuepress dev docs",
     "build": "vuepress build docs",
     "preview": "vuepress build docs && npx serve docs/.vuepress/dist"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.2",
-    "@capacitor/core": "^8.5.2",
-    "@capacitor/filesystem": "^8.1.3",
-    "buffer": "^6.0.3",
-    "isomorphic-git": "^1.42.2",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.5.2",
     "typescript": "^5.9.3",
     "vitest": "^5.0.1",
     "vue": "^3.5.43",
