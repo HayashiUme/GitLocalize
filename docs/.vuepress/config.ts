@@ -48,7 +48,6 @@ export default defineUserConfig({
   bundler: viteBundler({
     viteOptions: {
       resolve: {
-        alias: { '@': path.join(rootDir, 'src') },
       },
       server: {
         fs: { allow: [rootDir] },
