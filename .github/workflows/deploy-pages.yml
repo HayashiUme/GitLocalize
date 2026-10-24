@@ -29,10 +29,11 @@ jobs:
           path: _editor
 
       - name: Add the interface strings
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          path: _editor/locales
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin main
+          git archive FETCH_HEAD locales | tar -x -C _editor
+          test -f _editor/locales/app.en.yml
 
       - name: Set up Node
         uses: actions/setup-node@v4
