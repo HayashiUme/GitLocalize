@@ -146,6 +146,7 @@ editor:
     commentPlaceholder: 評論內容
     commentPost: 發表
   state:
+    empty: 空
     needsEditing: 待編輯
     needsRewriting: 待重寫
     needsChecking: 待檢查

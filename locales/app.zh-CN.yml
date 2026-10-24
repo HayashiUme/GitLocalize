@@ -146,6 +146,7 @@ editor:
     commentPlaceholder: 评论内容
     commentPost: 发表
   state:
+    empty: 空
     needsEditing: 待编辑
     needsRewriting: 待重写
     needsChecking: 待检查

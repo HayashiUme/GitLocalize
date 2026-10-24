@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { AVAILABLE_UI_LOCALES, setUiLocale, t, uiLocale } from '@/i18n'
 import { flatten, getParser } from '@/parser'
+import { unitKey } from '@/state/unitState'
 import { translate, type MtSettings } from '@/mt'
 import { remember, suggest } from '@/mt/memory'
 import { downloadTextFile } from '@/storage/download'
@@ -118,9 +119,9 @@ const STATE_LABELS: Record<string, string> = {
   'read-only': 'editor.state.readOnly',
 }
 function stateOf(entry: TranslationEntry): string {
-  const recorded = state.unitStates[entry.path + '#' + entry.key]
+  const recorded = state.unitStates[unitKey(state.file, entry.key)]
   if (recorded) return recorded.state
-  return entry.value && entry.value.trim() !== '' ? 'translated' : 'empty'
+  return entry.translation && entry.translation.trim() !== '' ? 'translated' : 'empty'
 }
 const currentState = computed(() => (current.value ? stateOf(current.value) : null))
 const stateFilter = ref('')

@@ -150,6 +150,7 @@ editor:
     commentPlaceholder: Your comment
     commentPost: Post comment
   state:
+    empty: Empty
     needsEditing: Needs editing
     needsRewriting: Needs rewriting
     needsChecking: Needs checking

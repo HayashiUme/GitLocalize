@@ -146,6 +146,7 @@ editor:
     commentPlaceholder: コメント内容
     commentPost: 投稿
   state:
+    empty: 未翻訳
     needsEditing: 編集が必要
     needsRewriting: 書き直しが必要
     needsChecking: 確認が必要
