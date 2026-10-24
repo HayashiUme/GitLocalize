@@ -145,6 +145,15 @@ editor:
     commentNew: コメントを書く（現在のキー名を接頭辞として付加）
     commentPlaceholder: コメント内容
     commentPost: 投稿
+  state:
+    needsEditing: 編集が必要
+    needsRewriting: 書き直しが必要
+    needsChecking: 確認が必要
+    translated: 翻訳済み
+    approved: 承認済み
+    readOnly: 読み取り専用
+    filterAll: すべての状態
+    markNeedsEditing: 編集必要を切り替え
 message:
   nothingToCommit: コミットする内容がありません。
   noContentChange: 内容に変更がないため、コミットは作成されませんでした。
