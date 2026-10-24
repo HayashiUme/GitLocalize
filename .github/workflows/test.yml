@@ -1,0 +1,34 @@
+name: Test
+
+# The editor sources and their tests live on the editor branch; main only keeps the
+# automation that publishes them.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '41 2 * * *'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: editor
+          fetch-depth: 0
+
+      - name: Bring the interface strings from main
+        run: |
+          git fetch --depth=1 origin main
+          git archive FETCH_HEAD locales | tar -x -C .
+          test -d locales
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test

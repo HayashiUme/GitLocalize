@@ -45,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --depth=1 origin editor
-          git archive FETCH_HEAD source | tar -x -C .
+          git archive FETCH_HEAD source src package.json package-lock.json | tar -x -C .
           test -f source/vite.config.ts
           test -f src/env.d.ts
           test -d locales
@@ -58,7 +58,7 @@ jobs:
           set -euo pipefail
           mkdir -p _release
           cp -r source/dist/. _release/
-          git archive FETCH_HEAD source | tar -x -C _release
+          git archive FETCH_HEAD source src | tar -x -C _release
           touch _release/.nojekyll
           test -f _release/index.html
           test -f _release/source/vite.config.ts
