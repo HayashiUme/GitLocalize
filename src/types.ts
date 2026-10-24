@@ -73,6 +73,8 @@ export interface ProjectConfig {
     directory: string
   }
   languages: string[]
+  /** Display names declared in the project config, keyed by language code. */
+  languageNames?: Record<string, string>
   files: string[]
   branch: {
     translation: string
@@ -81,6 +83,8 @@ export interface ProjectConfig {
   pullRequest: {
     title: string
   }
+  /** Commit template; %language% (or {language}) is replaced with the language being edited. */
+  commitMessage?: string
   editor?: {
     rememberToken?: boolean
     deviceFlowClientId?: string

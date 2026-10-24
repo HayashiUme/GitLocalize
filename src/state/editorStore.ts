@@ -10,6 +10,7 @@ import {
   toTranslationFile,
   type SiteTarget,
 } from '../config'
+import { directoriesFromGlobs } from '../config/filemask'
 import { GitHubClient, type ClientTransport } from '../github/api'
 import { noreplyEmail, signInWithToken, signOut, tokenStore } from '../github/auth'
 import { listDirectory, readFile } from '../github/contents'
@@ -301,7 +302,11 @@ async function loadAll(): Promise<void> {
     state.headSha = await getRefSha(api, target.owner, target.repo, branch)
     state.baseSha = state.headSha
 
-    const listing = await listDirectory(api, target.owner, target.repo, state.config.source.directory, branch)
+    const directories = directoriesFromGlobs(state.config.files)
+    const listings = await Promise.all(
+      directories.map((directory) => listDirectory(api, target.owner, target.repo, directory, branch)),
+    )
+    const listing = listings.flat()
     const candidates = listing
       .filter((item) => item.type === 'file')
       .map((item) => item.path)
@@ -418,7 +423,7 @@ async function submit(): Promise<void> {
   try {
     const api = apiClient()
     const content = buildTargetContent()
-    const message = `i18n(${state.language}): update translations\n\nTranslation-By: @${user.login}\n`
+    const message = `${(state.config.commitMessage ?? 'i18n(%language%): update translations').replace(/%language%|\{language\}/g, state.language)}\n\nTranslation-By: @${user.login}\n`
     const result = await commitFiles(api, {
       owner: target.owner,
       repo: target.repo,
