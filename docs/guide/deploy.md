@@ -1,66 +1,89 @@
-# Deploy GitLocalize for your own repository
+# Deploy GitLocalize in your own repository
 
-GitLocalize is designed to be copied. Everything it needs lives inside the repository itself, so
-turning it into your own translation workspace takes one copy and one script.
+GitLocalize turns an ordinary GitHub repository into a translation workspace. Nothing needs hosting:
+the editor is a static app on GitHub Pages, translations are commits on a translation branch, and
+Actions open the pull request for review.
 
-## 1. Copy the repository
+`deploy.mjs` wires an existing repository in one interactive run. It does not copy a template and
+does not touch your application code.
 
-Open the repository on GitHub and press **Use this template**. You get a fresh repository with the
-editor, the workflows, the branch layout and the locale files — no forks, no history to clean up.
+## Before you start
 
-If you prefer the command line, any plain clone works too; the rest of this guide does not care
-where the copy came from.
+- A GitHub repository whose translation files translators should edit.
+- Source-language files in that repository, for example `locales/app.en.yml`.
+- Write access to the repository, and `gh` signed in (`gh auth login`) if you want the script to
+  enable Pages and branch protection for you.
 
-## 2. Point the scripts at your repository
+## 1. Get the script
 
-Everything is driven by environment variables, so the same files serve any owner and repo name:
+Copy it from this repository:
 
-| Variable | Default | Used for |
+```bash
+mkdir -p .gitlocalize/scripts
+curl -fsSL https://raw.githubusercontent.com/HayashiUme/GitLocalize/main/.gitlocalize/scripts/deploy.mjs \
+  -o .gitlocalize/scripts/deploy.mjs
+```
+
+A `git clone` of this repository and a manual copy work just as well.
+
+## 2. Run it
+
+```bash
+node .gitlocalize/scripts/deploy.mjs
+```
+
+Answers, in order:
+
+| Question | What it means | Default |
 | --- | --- | --- |
-| `GITLOCALIZE_OWNER` | `HayashiUme` | site config, og URLs |
-| `GITLOCALIZE_REPO` | `GitLocalize` | Pages base path |
-| `GITLOCALIZE_BRANCH` | `i18n` | translation branch |
-| `GITLOCALIZE_SITE_URL` | derived | custom domains |
+| Main branch | where reviewed translations land | `main` |
+| Translation branch | where translators commit | `i18n` |
+| Language files | for each group: the source file and a translation pattern containing `{language}`, then `code = display name` lines | `locales/app.en.yml` → `locales/app.{language}.yml` |
+| Source language | language code of the source files | `en` |
+| PR title / body, commit message | templates; `{language}` becomes the languages touched by the push | sensible defaults |
+| Deploy the editor to Pages | publish the editor on this repository's Pages | yes |
+| Branch protection | create rulesets for both branches | no |
 
-## 3. Run the setup script
+Everything is validated before anything is written: branch names are checked, and a translation
+pattern without `{language}` is rejected. Answers are stored in `.gitlocalize/config.json`, in the
+same shape as a Weblate component or a Crowdin file mapping.
 
-With `gh` signed in against your own account:
+## 3. What it creates
 
-```bash
-export GITLOCALIZE_OWNER=your-name
-export GITLOCALIZE_REPO=your-repo
-bash scripts/setup-repo.sh
+```
+.gitlocalize/config.json          the answers
+.gitlocalize/editor/              the editor build, downloaded from the upstream Pages
+.github/i18n.yml                  language inventory
+.github/workflows/gitlocalize.yml the only workflow added
 ```
 
-The script wires up, in order: the `i18n` branch, the branch rulesets that protect `main`, the
-`github-pages` environment restricted to `i18n`, and the Actions permissions the three workflows
-need. Re-running it is safe; each step checks before it changes.
+`gitlocalize.yml` runs two jobs, gated by branch:
 
-## 4. What runs automatically afterwards
+- push to the translation branch — open or refresh the pull request against the main branch, with
+  `{language}` replaced by the languages whose files changed in that push;
+- push to the main branch, or a manual run — publish `.gitlocalize/editor` to Pages under `/Editor/`,
+  with a redirect from the site root.
 
-- A push to `main` is merged into `i18n` by `sync-main-to-i18n.yml`.
-- A push to `i18n` opens or refreshes one pull request back to `main`
-  (`translation-pr.yml`), and rebuilds the Pages site (`deploy-pages.yml`).
-- Translators only ever need the editor at `https://<owner>.github.io/<repo>/Editor/`
-  and a fine-grained token with `Contents: Read and write`.
+With branch protection accepted, two rulesets are created: the main branch requires a pull request,
+the translation branch forbids deletion and force pushes.
 
-## 5. Ship the mobile app (optional)
+## 4. Translate
 
-The Android shell is built by CI, so nobody installing your copy needs an Android SDK:
+If Pages was enabled the editor is served at:
 
-```bash
-git tag v0.1.0
-git push origin v0.1.0
+```
+https://<owner>.github.io/<repository>/Editor/
 ```
 
-`build-apk.yml` runs on the tag, produces `GitLocalize-debug.apk` and attaches it to a GitHub
-release. `workflow_dispatch` on the same workflow produces a test build without a release.
+Translators sign in with a fine-grained token that has `Contents: Read and write`
+([getting a token](/guide/token.md)). Each save and commit lands on the translation branch, and the
+workflow opens the pull request for a maintainer to merge.
 
-## 6. Customising the experience
+## Limits worth knowing
 
-- Interface strings live in `locales/app.*.yml` and `locales/errors.*.json`; add a language by
-  copying the `en` files with the right suffix and adding the language to `.github/i18n.yml`.
-- Per-repository settings live in `.github/i18n.yml` (source language, directory, file globs,
-  branch names, pull request title).
-- The size warning for mobile clones triggers past 50 MB of repository payload; the limit lives in
-  `app/store.ts` as `SIZE_WARNING_KB`.
+- The editor binary is downloaded from the upstream Pages; this repository gets no front-end build
+  chain and no `node_modules`.
+- The workflow only moves locale files. It does not run schema checks or tests on translations.
+- On a custom domain the editor cannot infer the repository from the host name; the sign-in form
+  then asks for `owner/repo` once.
+- Updating the editor means re-running the script: it overwrites `.gitlocalize/editor/`.
