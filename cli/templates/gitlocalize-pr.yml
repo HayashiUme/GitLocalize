@@ -1,0 +1,67 @@
+name: GitLocalize translations
+
+on:
+  push:
+    branches: ["__PUSH_BRANCH__"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: gitlocalize-translations
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Export the translated files onto a branch off __BRANCH__
+        id: export
+        env:
+          BASE: __BRANCH__
+          PUSH_BRANCH: __PUSH_BRANCH__
+          FILEMASK: "__FILEMASK__"
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin "$BASE" "$PUSH_BRANCH"
+          git checkout -B translation-export "origin/$BASE"
+          # Only the configured file family travels back to the base branch.
+          rm -rf "$(dirname "$FILEMASK")"
+          git checkout "origin/$PUSH_BRANCH" -- "$FILEMASK" || true
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Nothing to review: the translations already match $BASE."
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "i18n: export translations"
+          git push --force origin HEAD:translation-export
+
+      - name: Open or refresh the pull request
+        if: steps.export.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: __BRANCH__
+          PUSH_BRANCH: __PUSH_BRANCH__
+          PR_TITLE: "__PR_TITLE__"
+        run: |
+          set -euo pipefail
+          langs="$(git diff --name-only "origin/$BASE" HEAD | grep -oE '\.[A-Za-z]{2}(-[A-Za-z]{2,4})?\.(ya?ml|json)$' | sed 's/^\.//' | sort -u | tr '\n' ',' | sed 's/,$//')"
+          langs="${langs:-$PUSH_BRANCH}"
+          title="${PR_TITLE//\%language\%/$langs}"
+          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --base "$BASE" --head translation-export --state open --json number --jq '.[0].number')"
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --repo "$GITHUB_REPOSITORY" --title "$title"
+            echo "Refreshed pull request #$existing"
+            exit 0
+          fi
+          gh pr create --repo "$GITHUB_REPOSITORY" --base "$BASE" --head translation-export --title "$title" --body "Translations reviewed in the GitLocalize editor."
