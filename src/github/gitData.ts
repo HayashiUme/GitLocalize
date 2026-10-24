@@ -63,7 +63,14 @@ export async function getBranchHeadCommit(
   repo: string,
   branch: string,
 ): Promise<CommitPayload> {
-  return client.get<CommitPayload>(`/repos/${owner}/${repo}/commits/${encodeURIComponent(branch)}`)
+  /* The plain commits endpoint answers with the commit summary, which has no tree.
+     The git database endpoint is the one that carries the tree the caller needs. */
+  const head = await getRefSha(client, owner, repo, branch)
+  const payload = await client.get<CommitPayload>(`/repos/${owner}/${repo}/git/commits/${head}`)
+  if (!payload?.tree?.sha) {
+    throw new Error('The branch head commit came back without a tree')
+  }
+  return payload
 }
 
 export async function getTree(
