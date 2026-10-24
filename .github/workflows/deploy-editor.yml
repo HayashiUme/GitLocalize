@@ -1,0 +1,23 @@
+name: Deploy editor
+
+# The editor sources live on this branch. Publishing them is the docs branch's job, so this
+# only asks that job to run; a push here would otherwise start no workflow at all.
+
+on:
+  push:
+    branches:
+      - editor
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the Pages job to run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-pages.yml --ref i18n
