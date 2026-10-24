@@ -74,7 +74,7 @@ Then open the published editor at `https://<owner>.github.io/<repository>/Editor
 - Warns about missing `{placeholders}` and dropped `<b>` tags as you type.
 - Commits every changed file as **one** commit through the Git database API, with the translator as the commit author.
 - Refuses to commit when the branch head changed underneath you; the ref update is `force: false`.
-- Renders its own interface from `locales/`, so the platform is translated with the platform. Switch language in the editor header, or pass `?lang=zh-CN`.
+- Renders its own interface from the strings on the `editor` branch, in four languages. Switch language in the editor header, or pass `?lang=zh-CN`.
 
 ![Diff preview](https://hayashiume.github.io/GitLocalize/diff-preview.png)
 
@@ -82,14 +82,23 @@ Then open the published editor at `https://<owner>.github.io/<repository>/Editor
 
 ![The editor rendering its own Chinese strings](https://hayashiume.github.io/GitLocalize/editor-zh-CN.png)
 
-`locales/app.*.yml` and `locales/errors.*.json` are not samples: they are the strings the editor renders. The screenshot above is the editor editing `locales/app.zh-CN.yml` while displaying itself in Chinese — the row `locale.label` reads "Interface language" on the left and "界面语言" on the right, and the header above it is rendered from that same file.
+## An example to translate
 
-Change `locales/app.zh-CN.yml`, open the editor in Chinese, and the interface follows. That makes the repository a working example of the thing it hosts, and it means a translator can learn the workflow by translating the tool they are looking at.
+The `locales/` folder on this branch is a sample: the kind of file a project hands to GitLocalize.
+`app.en.yml` is the source, `app.zh-CN.yml` a translation of it, and the pull request automation
+moves them exactly the way it would for a real project. Point the file mask at your own strings
+and the same flow applies.
+
+The editor's own interface language lives on the `editor` branch, so the strings the tool renders
+and the strings it translates never mix.
 
 ```yaml
 # locales/app.zh-CN.yml
-login:
-  title: 登录后开始翻译
+app:
+  nav:
+    home: 首页
+  messages:
+    welcome: "欢迎回来，{name}！"
   tokenLabel: 个人访问令牌
 
 status:
