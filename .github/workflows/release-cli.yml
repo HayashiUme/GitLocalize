@@ -1,0 +1,62 @@
+name: Release CLI
+
+on:
+  push:
+    tags: ['cli-v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, target: x86_64-pc-windows-msvc, name: windows-x64 }
+          - { os: macos-latest, target: aarch64-apple-darwin, name: macos-arm64 }
+          - { os: macos-13, target: x86_64-apple-darwin, name: macos-x64 }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-musl, name: linux-x64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli -> target
+
+      - name: Build
+        run: cargo build --release --manifest-path cli/Cargo.toml --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          if [[ "${{ matrix.target }}" == *windows* ]]; then
+            cp "cli/target/${{ matrix.target }}/release/gitlocalize.exe" dist/
+            (cd dist && 7z a "gitlocalize-${{ matrix.name }}.zip" gitlocalize.exe)
+            rm dist/gitlocalize.exe
+          else
+            cp "cli/target/${{ matrix.target }}/release/gitlocalize" dist/
+            tar -C dist -czf "gitlocalize-${{ matrix.name }}.tar.gz" gitlocalize
+            rm dist/gitlocalize
+          fi
+          cd dist && sha256sum gitlocalize-* > "SHA256-${{ matrix.name }}.txt"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-${{ matrix.name }}
+          path: dist/*
+          retention-days: 7
+
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/cli-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
