@@ -1,0 +1,32 @@
+{
+  "vcs": "github",
+  "repo": "HayashiUme/GitLocalize",
+  "branch": "main",
+  "push_branch": "i18n",
+  "file_format": "yaml",
+  "filemask": "locales/app.*.yml",
+  "template": "locales/app.en.yml",
+  "source_language": "en",
+  "source_directory": "locales",
+  "components": [
+    { "filemask": "locales/app.*.yml", "template": "locales/app.en.yml" },
+    { "filemask": "locales/errors.*.json", "file_format": "json" }
+  ],
+  "languages": [
+    { "code": "zh-CN", "name": "简体中文" },
+    { "code": "zh-TW", "name": "中文（繁体）" },
+    { "code": "ja", "name": "日本語" }
+  ],
+  "commit_message": "i18n(%language%): update translations",
+  "pull_message": "i18n: update translations",
+  "create_merge_request": true,
+  "editor": {
+    "remember_token": false,
+    "device_flow_client_id": ""
+  },
+  "pages": {
+    "mode": "artifact",
+    "branch": "editor",
+    "version": "latest"
+  }
+}
