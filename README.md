@@ -78,9 +78,12 @@ Then open the published editor at `https://<owner>.github.io/<repository>/Editor
 
 ![Diff preview](https://hayashiume.github.io/GitLocalize/diff-preview.png)
 
-## The editor translates itself
+## The editor interface
 
 ![The editor rendering its own Chinese strings](https://hayashiume.github.io/GitLocalize/editor-zh-CN.png)
+
+The four interface languages come from the `editor` branch, so the tool always renders in the
+reader's language no matter which repository it is pointed at.
 
 ## An example to translate
 
