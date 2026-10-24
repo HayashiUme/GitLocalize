@@ -26,6 +26,7 @@ android/app/build/
 android/local.properties
 android/.idea/
 android/capacitor-cordova-android-plugins/
+source/
 
 # Rust build output
 cli/target/

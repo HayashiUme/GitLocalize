@@ -58,11 +58,24 @@ jobs:
             xargs -a /tmp/removed-files git rm --quiet --
           fi
 
+          # Paths that main dropped after the last sync are still on i18n. Left alone they
+          # make every translation pull request conflict with main.
+          previous=$(git log --format=%H --grep="chore: sync app sources from main (" -1 origin/i18n || true)
+          if [ -n "$previous" ]; then
+            old_main=$(git log -1 --format=%B "$previous" | sed -n 's/.*main (\([0-9a-f]\{40\}\)).*/\1/p')
+            if [ -n "$old_main" ] && git cat-file -e "$old_main^{commit}" 2>/dev/null; then
+              git diff --diff-filter=D --name-only "$old_main" origin/main > /tmp/dropped-files || true
+              if [ -s /tmp/dropped-files ]; then
+                xargs -a /tmp/dropped-files git rm --quiet --ignore-unmatch -- || true
+              fi
+            fi
+          fi
+
           if git diff --cached --quiet; then
             echo "The synced paths already match main. Nothing to do."
             exit 0
           fi
-          git commit -m "chore: sync app sources from main"
+          git commit -m "chore: sync app sources from main (${GITHUB_SHA})"
           git push origin HEAD:i18n
           echo "pushed=true" >> "$GITHUB_OUTPUT"
 
