@@ -11,9 +11,17 @@ import {
   type SiteTarget,
 } from '../config'
 import { directoriesFromGlobs } from '../config/filemask'
+import {
+  parseStateFile,
+  pruneStateFile,
+  serializeStateFile,
+  statePathForLanguage,
+  type UnitStateRecord,
+} from './stateStore'
+import { stateForTranslation, unitKey, type UnitStateName } from './unitState'
 import { GitHubClient, type ClientTransport } from '../github/api'
 import { noreplyEmail, signInWithToken, signOut, tokenStore } from '../github/auth'
-import { listDirectory, readFile } from '../github/contents'
+import { listDirectory, readFile, readTextFile } from '../github/contents'
 import { toApiError, type GitHubApiError, type GitHubErrorCode } from '../github/errors'
 import { commitFiles, getRefSha } from '../github/gitData'
 import { createMockTransport } from '../github/mockTransport'
@@ -82,6 +90,8 @@ interface EditorState {
   lastCommitSha: string | null
   lastCommitUrl: string | null
   pullRequest: PullRequestInfo | null
+  unitStates: Record<string, UnitStateRecord>
+  statesDirty: boolean
   mock: boolean
 }
 
@@ -112,6 +122,8 @@ const state = reactive<EditorState>({
   lastCommitSha: null,
   lastCommitUrl: null,
   pullRequest: null,
+  unitStates: {},
+  statesDirty: false,
   mock: false,
 })
 
@@ -322,6 +334,7 @@ async function loadAll(): Promise<void> {
     state.language = state.languages.includes(state.language) ? state.language : state.languages[0]
     const preferred = state.files.find((file) => file.path === state.file) ?? state.files[0]
     state.file = preferred.path
+    await loadUnitStates()
     await loadFile()
     state.status = 'ready'
   } catch (error) {
@@ -332,8 +345,60 @@ async function loadAll(): Promise<void> {
   }
 }
 
-async function loadFile(): Promise<void> {
+/* Per-language unit states, read from the translation branch like the project config. */
+async function loadUnitStates(): Promise<void> {
   const target = state.target
+  if (!target || state.mock) {
+    state.unitStates = {}
+    return
+  }
+  try {
+    const api = apiClient()
+    const text = await readTextFile(
+      api,
+      target.owner,
+      target.repo,
+      statePathForLanguage(state.language),
+      target.translationBranch,
+    )
+    state.unitStates = text ? parseStateFile(text).units : {}
+    state.statesDirty = false
+  } catch {
+    state.unitStates = {}
+  }
+}
+
+function liveUnitKeys(): Set<string> {
+  const keys = new Set<string>()
+  for (const entry of state.sourceEntries) keys.add(unitKey(state.file, entry.key))
+  return keys
+}
+
+/** The state of one unit: the recorded one, or derived from the value when nothing was recorded. */
+function unitStateOf(path: string, key: string, value: string | undefined): UnitStateName {
+  const recorded = state.unitStates[unitKey(path, key)]
+  if (recorded) return recorded.state
+  return stateForTranslation(value ?? '', 'empty', false)
+}
+
+function setUnitState(path: string, key: string, next: UnitStateName): void {
+  const id = unitKey(path, key)
+  const previous = state.unitStates[id]
+  if (previous && previous.state === next) {
+    delete state.unitStates[id]
+    state.statesDirty = true
+    return
+  }
+  state.unitStates[id] = { state: next, by: state.user?.login, at: new Date().toISOString() }
+  state.statesDirty = true
+}
+
+/** The state file content for the current language, with entries for keys that vanished dropped. */
+function buildStateContent(): string {
+  return serializeStateFile(pruneStateFile({ version: 1, units: state.unitStates }, liveUnitKeys()))
+}
+
+async function loadFile(): Promise<void> {  const target = state.target
   if (!target || !client || !state.file) return
   const api = apiClient()
   const branch = target.translationBranch
@@ -424,12 +489,16 @@ async function submit(): Promise<void> {
     const api = apiClient()
     const content = buildTargetContent()
     const message = `${(state.config.commitMessage ?? 'i18n(%language%): update translations').replace(/%language%|\{language\}/g, state.language)}\n\nTranslation-By: @${user.login}\n`
+    const files: { path: string; content: string }[] = [{ path: targetPath.value, content }]
+    if (state.statesDirty && Object.keys(state.unitStates).length > 0) {
+      files.push({ path: statePathForLanguage(state.language), content: buildStateContent() })
+    }
     const result = await commitFiles(api, {
       owner: target.owner,
       repo: target.repo,
       branch: target.translationBranch,
       baseSha: state.baseSha,
-      files: [{ path: targetPath.value, content }],
+      files,
       message,
       author: { name: user.login, email: noreplyEmail(user) },
     })
@@ -510,6 +579,7 @@ export const actions = {
   revertAll,
   submit,
   ensureTranslationPullRequest,
+  setUnitState,
 }
 
 export function useEditor() {
