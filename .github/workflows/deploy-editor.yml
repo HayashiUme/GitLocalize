@@ -20,4 +20,4 @@ jobs:
       - name: Ask the Pages job to run
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run deploy-pages.yml --ref i18n
+        run: gh workflow run deploy-pages.yml --ref i18n --repo "${{ github.repository }}"
