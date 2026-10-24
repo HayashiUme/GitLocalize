@@ -19,7 +19,7 @@ import {
   type UnitStateRecord,
 } from './stateStore'
 import { stateForTranslation, unitKey, type UnitStateName } from './unitState'
-import { apiBaseHost, GITHUB_API_BASE, GitHubClient, rememberApiBase, resolveApiBase, type ClientTransport } from '../github/api'
+import { apiBaseHost, GITHUB_API_BASE, GitHubClient, rememberApiBase, resolveApiBase, takeApiLog, type ClientTransport } from '../github/api'
 import { noreplyEmail, signInWithToken, signOut, tokenStore } from '../github/auth'
 import { listDirectory, readFile, readTextFile } from '../github/contents'
 import { toApiError, type GitHubApiError, type GitHubErrorCode } from '../github/errors'
@@ -155,10 +155,11 @@ function fail(error: unknown): void {
     return
   }
   const apiError = toApiError(error)
+  const log = takeApiLog()
   state.error = {
     key: ERROR_KEYS[apiError.code],
     params: { ...errorParams(apiError), host: apiBaseHost() },
-    detail: apiError.detail,
+    detail: [apiError.detail, ...log].filter(Boolean).join('\n'),
   }
 }
 

@@ -148,6 +148,8 @@ editor:
     apiBase: 進階：API 位址
     apiBaseHint: 當 api.github.com 被阻擋時，可把編輯器指向代理或鏡像。留空則使用預設位址。
     apiBaseApply: 使用此位址
+    copyDiagnostics: 複製診斷資訊
+    copied: 已複製
   state:
     empty: 空
     needsEditing: 待編輯

@@ -153,6 +153,8 @@ editor:
     apiBaseHint: Point the editor at a proxy or mirror when api.github.com is
       blocked. Leave empty to use the default.
     apiBaseApply: Use this address
+    copyDiagnostics: Copy diagnostics
+    copied: Copied
   state:
     empty: Empty
     needsEditing: Needs editing

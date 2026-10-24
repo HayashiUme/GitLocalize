@@ -148,6 +148,8 @@ editor:
     apiBase: "詳細: API アドレス"
     apiBaseHint: api.github.com がブロックされている場合は、プロキシやミラーを指定します。空欄なら既定値を使います。
     apiBaseApply: このアドレスを使う
+    copyDiagnostics: 診断情報をコピー
+    copied: コピーしました
   state:
     empty: 未翻訳
     needsEditing: 編集が必要

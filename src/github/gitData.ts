@@ -51,6 +51,9 @@ export async function getRefSha(client: GitHubClient, owner: string, repo: strin
   const payload = await client.get<RefPayload>(
     `/repos/${owner}/${repo}/git/ref/heads/${encodeURIComponent(branch)}`,
   )
+  if (!payload?.object?.sha) {
+    throw new Error('GitHub answered the branch reference with an unexpected payload')
+  }
   return payload.object.sha
 }
 

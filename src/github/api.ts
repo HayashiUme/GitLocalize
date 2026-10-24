@@ -89,12 +89,15 @@ export class GitHubClient {
     for (let attempt = 0; attempt < attempts; attempt += 1) {
       try {
         const signal = options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+        const started = Date.now()
+        logRequest(`-> ${method} ${path}`)
         const response = await this.transport.fetch(`${this.baseUrl}${path}`, {
           method,
           headers,
           body: options.body === undefined ? undefined : JSON.stringify(options.body),
           signal,
         })
+        logRequest(`<- ${response.status} ${method} ${path} (${Date.now() - started}ms)`)
 
         this.captureRateLimit(response)
 
@@ -124,13 +127,28 @@ export class GitHubClient {
           throw new GitHubApiError(response.status, code, apiMessage || bodyText.slice(0, 300), documentationUrl)
         }
 
-        if (response.status === 204 || options.allowEmpty) return undefined as T
+        if (response.status === 204 || options.allowEmpty) {
+          logRequest(`   (no body expected for ${method} ${path})`)
+          return undefined as T
+        }
         const text = await response.text()
-        if (text.trim() === '') return undefined as T
+        if (text.trim() === '') {
+          logRequest(`   (empty body for ${method} ${path})`)
+          throw new Error(`${method} ${path} answered ${response.status} with an empty body`)
+        }
         if (options.raw) return text as T
-        return JSON.parse(text) as T
+        try {
+          return JSON.parse(text) as T
+        } catch (error) {
+          logRequest(`   (unparsable body: ${text.slice(0, 200)})`)
+          throw new Error(`${method} ${path} answered with a body that is not JSON: ${text.slice(0, 200)}`)
+        }
       } catch (error) {
-        if (error instanceof GitHubApiError) throw error
+        if (error instanceof GitHubApiError) {
+          logRequest(`!! ${method} ${path} -> ${error.status} ${error.detail ?? ''}`)
+          throw error
+        }
+        logRequest(`!! ${method} ${path} -> ${error instanceof Error ? error.message : String(error)}`)
         lastError = error
         if (attempt < attempts - 1) {
           await delay(RETRY_DELAY_MS * (attempt + 1))
@@ -171,6 +189,19 @@ export class GitHubClient {
       this.lastRateLimit = { limit, remaining, resetAt: reset * 1000 }
     }
   }
+}
+
+const LOG_LIMIT = 80
+const requestLog: string[] = []
+
+function logRequest(line: string): void {
+  requestLog.push(line)
+  if (requestLog.length > LOG_LIMIT) requestLog.shift()
+}
+
+/* Hands over the recent request log so the interface can show what actually happened. */
+export function takeApiLog(): string[] {
+  return requestLog.splice(0, requestLog.length)
 }
 
 export function createClient(token: string, options?: { transport?: ClientTransport; baseUrl?: string }): GitHubClient {

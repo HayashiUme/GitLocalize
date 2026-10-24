@@ -15,6 +15,18 @@ const repoInput = ref('')
 const tokenInput = ref('')
 const rememberToken = ref(false)
 const apiBaseInput = ref('')
+const copied = ref(false)
+async function copyDiagnostics(): Promise<void> {
+  if (!state.error) return
+  const text = [state.error.key, JSON.stringify(state.error.params), state.error.detail].filter(Boolean).join('\n')
+  try {
+    await navigator.clipboard.writeText(text)
+    copied.value = true
+    setTimeout(() => (copied.value = false), 2000)
+  } catch {
+    copied.value = false
+  }
+}
 const defaultApiBase = 'https://api.github.com'
 function applyApiBase(): void {
   actions.setApiBase(apiBaseInput.value)
@@ -500,6 +512,13 @@ async function runDiagnostics(): Promise<void> {
       },
     },
     {
+      name: 'api.github.com (no-cors)',
+      run: async () => {
+        await fetch('https://api.github.com/zen', { mode: 'no-cors', signal: AbortSignal.timeout(8000) })
+        return 'reachable, but the response carries no CORS headers: the host or the DNS answer is at fault'
+      },
+    },
+    {
       name: 'github.com',
       run: async () => {
         await fetch('https://github.com/favicon.ico', { mode: 'no-cors', signal: AbortSignal.timeout(8000) })
@@ -944,6 +963,9 @@ watch(() => state.status, (status) => {
         <p v-if="state.error" class="wz-error wz-error--bar">
           {{ errorText }}
           <code v-if="state.error.detail" class="wz-diag__detail">{{ state.error.detail }}</code>
+          <button class="wz-minibtn" @click="copyDiagnostics">
+            {{ copied ? t('editor.pro.copied') : t('editor.pro.copyDiagnostics') }}
+          </button>
         </p>
       </template>
     </template>

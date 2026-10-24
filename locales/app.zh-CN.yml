@@ -148,6 +148,8 @@ editor:
     apiBase: 高级：API 地址
     apiBaseHint: 当 api.github.com 被拦截时，可把编辑器指向代理或镜像。留空则使用默认地址。
     apiBaseApply: 使用此地址
+    copyDiagnostics: 复制诊断信息
+    copied: 已复制
   state:
     empty: 空
     needsEditing: 待编辑
