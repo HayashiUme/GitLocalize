@@ -9,13 +9,16 @@
   "source_language": "en",
   "source_directory": "locales",
   "components": [
-    { "filemask": "locales/app.*.yml", "template": "locales/app.en.yml" },
-    { "filemask": "locales/errors.*.json", "file_format": "json" }
+    {
+      "filemask": "locales/app.*.yml",
+      "template": "locales/app.en.yml"
+    }
   ],
   "languages": [
-    { "code": "zh-CN", "name": "简体中文" },
-    { "code": "zh-TW", "name": "中文（繁体）" },
-    { "code": "ja", "name": "日本語" }
+    {
+      "code": "zh-CN",
+      "name": "简体中文"
+    }
   ],
   "commit_message": "i18n(%language%): update translations",
   "pull_message": "i18n: update translations",

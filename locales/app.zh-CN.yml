@@ -1,183 +1,23 @@
-name: GitLocalize
-tagline: 就在 GitHub 上一起翻译
-locale:
-  label: 界面语言
-login:
-  title: 登录后开始翻译
-  privacy: |
-    令牌只留在你的浏览器里。除了 api.github.com，它不会被发送到任何服务器，
-    不会写入仓库，也不会出现在 URL 里。
-  owner: 仓库所有者
-  repository: 仓库名
-  branch: 翻译分支
-  tokenLabel: 个人访问令牌
-  tokenPlaceholder: github_pat_...
-  scopeHint: "只需对该仓库授予「Contents: Read and write」。"
-  tokenGuide: 怎么获取？
-  remember: 仅在当前标签页保留令牌（sessionStorage）。不勾选则只存在内存中。
-  signIn: 登录
-  deviceFlow: 使用 GitHub 设备流
-  devicePrompt: 在 GitHub 设备页输入验证码 {code}，然后确认授权。
-  deviceOpenPage: 打开设备页
-  deviceCancel: 取消
-  mock: 用模拟数据继续
-status:
-  signedInAs: 已登录为 @{login}
-  branch: 分支
-  head: 提交
-  file: 文件
-  modified: 已修改
-  untranslated: 未翻译
-  warnings: 警告
-  reload: 从分支重新加载
-  signOut: 退出登录
-  mock: 模拟
-permission:
-  none: 无权限
-  read: 只读
-  triage: 分类
-  write: 写入
-  maintain: 维护
-  admin: 管理员
-toolbar:
-  language: 语言
-  file: 文件
-  searchPlaceholder: 搜索键名或文本
-  untranslatedOnly: 只看未翻译
-  discard: 撤销 {count}
-table:
-  key: 键名
-  source: 英语（源语言）
-  target: 译文
-  empty: 当前筛选条件下没有条目。
-  untranslated: 未翻译
-  progress: "{visible} / {total} 条"
-  untranslatedCount: "{count} 条未翻译"
-  modifiedCount: 已修改 {count} 条
-qa:
-  empty-translation: 未翻译
-  placeholder-missing: 缺少占位符：{detail}
-  placeholder-extra: 多出占位符：{detail}
-  html-tag-missing: 缺少 HTML 标签：<{detail}>
-  html-tag-extra: 多出 HTML 标签：<{detail}>
-  punctuation-missing: 句尾标点与原文不一致（{detail}）
-  newline-count: 换行数与原文不一致（原文 {detail} 个）
-  space-mismatch: 首尾空格与原文不一致（{detail}）
-  zero-width-space: 译文中含有不可见的零宽字符
-  repeated-word: 译文中出现连续重复的词：{detail}
-  same-as-source: 译文与原文完全相同，疑似未翻译
-  inconsistent: 同一原文在本文件中有 {detail} 种不同译文
-diff:
-  review:
-    one: 确认 1 处改动
-    other: 确认 {count} 处改动
-  committing: 将以 @{login} 的身份提交到 {branch}
-  oldEmpty: （空）
-  newEmpty: （已删除）
-  warnings:
-    one: 仍有 {count} 处占位符或 HTML 标签警告。
-    other: 仍有 {count} 处占位符或 HTML 标签警告。
-  cancel: 取消
-  confirm: 提交到 {branch}
-editor:
-  loading: 正在从 GitHub 加载翻译……
-  submit:
-    one: 提交 1 条翻译
-    other: 提交 {count} 条翻译
-  progress: 已翻译 {translated} / {total}（{language}）
-  reloadNow: 立即重新加载
-  viewCommit: 查看提交
-  pullRequest: "翻译 PR #{number}"
-  openOnGitHub: 在 GitHub 上打开
-  rememberToken: 在此设备上记住
-  pro:
-    translate: 翻译
-    chars: 字符
-    saveAndStay: 保存不跳转
-    saveAndNext: 保存并继续
-    suggest: 建议
-    skip: 跳过
-    nearby: 邻近字符串
-    suggestions: 自动建议
-    checks: 质量检查
-    noChecks: 没有警告
-    stringInfo: 字符串信息
-    mtGenerate: 机器翻译
-    useMt: 采用
-    translated: 已翻译
-    untranslated: 未翻译
-    overview: 语言总览
-    noLangs: 未在该仓库中发现语言。
-    strings: 字符串
-    words: 单词
-    allStrings: 所有字符串
-    readonly: 只读
-    sourceLang: 源语言
-    browse: 浏览
-    translateHint: 逐条翻译；回车保存并跳到下一条。
-    searchInTranslations: 在译文中搜索
-    runDiagnostics: 运行网络诊断
-    commentsPlaceholder: 字符串评论需要 GitHub issue 支持，暂未开放。
-    openHistory: 在 GitHub 上查看此文件的提交历史
-    tab:
-      overview: 概览
-      translate: 翻译
-      search: 搜索
-      insights: 洞察
-      files: 文件
-      actions: 操作
-    panel:
-      nearby: 附近字符串
-      similar: 相似键
-      occurrences: 其它的出现位置
-      comments: 评论
-      suggestions: 自动建议
-      otherLangs: 其它语言
-      history: 历史记录
-    theme: 切换深色模式
-    uiLocale: 界面语言
-    mtFailed: 机器翻译失败：{detail}
-    loadingHistory: 正在加载历史……
-    noHistory: 此文件暂无提交记录。
-    loadingComments: 正在加载评论……
-    noComments: 此文件暂无评论。在下方撰写，将以 GitHub 评论形式发表到翻译 PR。
-    commentsIntro: 评论以 GitHub 代码评论的形式保存在翻译 PR 上。
-    commentNew: 写评论（自动带上当前键名前缀）
-    commentPlaceholder: 评论内容
-    commentPost: 发表
-  state:
-    needsEditing: 待编辑
-    needsRewriting: 待重写
-    needsChecking: 待检查
-    translated: 已翻译
-    approved: 已批准
-    readOnly: 只读
-    filterAll: 全部状态
-    markNeedsEditing: 切换待编辑
-message:
-  nothingToCommit: 没有需要提交的内容。
-  noContentChange: 内容没有变化，未创建提交。
-  committed: 已提交 {sha} 到 {branch}。
-  notSignedIn: 尚未登录。
-  tokenEmpty: 请先填写个人访问令牌。
-  targetFirst: 请先设置目标仓库再登录。
-  noLanguages: 没有找到目标语言，请检查 .github/i18n.yml。
-  noSourceFiles: 没有匹配配置的源语言文件。
-  noTarget: 无法确定目标仓库。请从 GitHub Pages 打开本页，或手动填写 owner 与 repository。
-  sourceMissing: 找不到源文件：{path}
+# 本仓库用于演示翻译的文件。编辑器自己的界面文案在 editor 分支上，这里只是一个
+# 普通的、交给 GitLocalize 翻译的示例文件。
+
 app:
-  commit: 提交并推送
-  signOut: 断开连接
-  download: 下载文件
-  mtBusy: 翻译中……
-mt:
-  title: 机器翻译
-  provider: 服务商
-  providerGoogle: 谷歌翻译（免费接口）
-  providerDeepl: DeepL（免费 API 密钥）
-  providerNone: 关闭
-  deeplKey: DeepL API 密钥
-  deeplKeyPlaceholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx
-  deeplKeyHint: 在 deepl.com/pro#developer 免费申请，仅保存在本机。
-  error:
-    noKey: 需要填写 DeepL API 密钥，请在设置中填写。
+  name: Acme 笔记
+  tagline: 随处可记的笔记
+  nav:
+    home: 首页
+    notes: 笔记
+    settings: 设置
+  actions:
+    newNote: 新建笔记
+    save: 保存
+    cancel: 取消
+    delete: 删除
+  messages:
+    welcome: "欢迎回来，{name}！"
+    empty: 还没有笔记，先创建一条吧。
+    saved: "已保存 {count} 条笔记"
+    unsaved: 你有未保存的修改。
+  errors:
+    offline: 当前处于离线状态，修改稍后会自动同步。
+    notFound: 这条笔记已不存在。
