@@ -149,6 +149,15 @@ editor:
     commentNew: New comment (the current key is added as a prefix)
     commentPlaceholder: Your comment
     commentPost: Post comment
+  state:
+    needsEditing: Needs editing
+    needsRewriting: Needs rewriting
+    needsChecking: Needs checking
+    translated: Translated
+    approved: Approved
+    readOnly: Read only
+    filterAll: All states
+    markNeedsEditing: Toggle needs editing
 message:
   nothingToCommit: Nothing to commit.
   noContentChange: No content changes detected, nothing was committed.

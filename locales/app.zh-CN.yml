@@ -145,6 +145,15 @@ editor:
     commentNew: 写评论（自动带上当前键名前缀）
     commentPlaceholder: 评论内容
     commentPost: 发表
+  state:
+    needsEditing: 待编辑
+    needsRewriting: 待重写
+    needsChecking: 待检查
+    translated: 已翻译
+    approved: 已批准
+    readOnly: 只读
+    filterAll: 全部状态
+    markNeedsEditing: 切换待编辑
 message:
   nothingToCommit: 没有需要提交的内容。
   noContentChange: 内容没有变化，未创建提交。
