@@ -45,6 +45,7 @@ jobs:
             exit 0
           fi
           git diff --cached --name-only
+          git commit -m "i18n: update translations"
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Ensure pull request exists

@@ -41,7 +41,7 @@ jobs:
           echo "pushed=false" >> "$GITHUB_OUTPUT"
 
           if git ls-remote --exit-code --heads origin i18n >/dev/null 2>&1; then
-            git checkout -B i18n origin/i18n
+            git checkout -f -B i18n origin/i18n
           else
             echo "The i18n branch does not exist yet, creating it from main."
             git checkout -B i18n origin/main
