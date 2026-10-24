@@ -565,7 +565,6 @@ watch(() => state.status, (status) => {
       <details class="wz-advanced">
         <summary>{{ t('editor.pro.apiBase') }}</summary>
         <label class="wz-field">
-          <span>{{ t('editor.pro.apiBase') }}</span>
           <input v-model="apiBaseInput" spellcheck="false" :placeholder="defaultApiBase" />
         </label>
         <p class="wz-field__hint">{{ t('editor.pro.apiBaseHint') }}</p>
