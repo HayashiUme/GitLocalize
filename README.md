@@ -33,9 +33,6 @@ GitHub Actions
     sync-main-to-i18n.yml     main push  → copy shared paths into i18n
     deploy-pages.yml          i18n push  → build and publish Pages
 locales/                      the editor's own interface strings, in YAML and JSON
-src/                          editor, parsers, GitHub API client, QA checks
-src/i18n/                     loads locales/ and renders the editor in four languages
-tests/                        unit tests for the non-UI layers
 scripts/setup-repo.sh         branch rulesets for main and i18n
 ```
 
@@ -45,12 +42,14 @@ locale files as the source of truth.
 
 ## Quickstart
 
+The editor sources, its core library and the tests live on the `editor` branch:
+
 ```bash
+git clone --branch editor https://github.com/HayashiUme/GitLocalize.git
+cd GitLocalize
+git archive origin/main locales | tar -x -C .   # the interface strings come from main
 npm install
 npm test
-
-# the editor sources live on the editor branch; fetch them before building
-git archive origin/editor source | tar -x -C .
 npm run editor:build
 ```
 
