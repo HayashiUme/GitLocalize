@@ -1,19 +1,23 @@
 name: Release editor
 
-# The editor is published on its own orphan branch so that the app repository carries no build
-# output and the i18n branch does not need the editor toolchain. Consumers (other repositories
-# running the deploy CLI) only ever see index.html + assets on that branch.
+# The editor sources live on the editor branch under source/, the build output sits at its root
+# (it is the Pages source). This workflow borrows the shared src/ and locales/ from main, builds,
+# and force-pushes the combined tree back to the editor branch.
 
 on:
   push:
     branches: [main]
     paths:
-      - 'editor/**'
       - 'src/**'
       - 'locales/**'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
+      - '.github/workflows/release-editor.yml'
+  schedule:
+    # Daily safety net: catches editor-branch source edits, which cannot trigger a workflow
+    # themselves (that branch carries no .github directory).
+    - cron: '17 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +41,15 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Check out the editor sources
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin editor
+          git archive FETCH_HEAD source | tar -x -C .
+          test -f source/vite.config.ts
+          test -f src/env.d.ts
+          test -d locales
+
       - run: npm ci
       - run: npm run editor:build
 
@@ -44,10 +57,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _release
-          cp -r editor/dist/. _release/
+          cp -r source/dist/. _release/
+          git archive FETCH_HEAD source | tar -x -C _release
           touch _release/.nojekyll
-          node -e "const fs=require('fs');fs.writeFileSync('_release/VERSION',JSON.stringify({sha:process.env.GITHUB_SHA,builtAt:new Date().toISOString()},null,2)+'\n')"
           test -f _release/index.html
+          test -f _release/source/vite.config.ts
+          test ! -e _release/source/dist
 
       - name: Skip when the tree is unchanged
         id: diff
