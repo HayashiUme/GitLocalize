@@ -77,6 +77,7 @@ jobs:
             echo "Please review before merging."
           } > pr-body.md
 
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head translation-export \
-            || echo "locales match main - nothing to review"
-            --title "i18n: update translations" --body-file pr-body.md
+          if ! gh pr create --repo "$GITHUB_REPOSITORY" --base main --head translation-export \
+            --title "i18n: update translations" --body-file pr-body.md; then
+            echo "locales match main - nothing to review"
+          fi
