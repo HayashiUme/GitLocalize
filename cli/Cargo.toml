@@ -1,0 +1,20 @@
+[package]
+name = "gitlocalize"
+version = "0.1.0"
+edition = "2021"
+description = "Deploy GitLocalize into an existing repository"
+license = "MIT"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+crossterm = "0.28"
+ratatui = "0.29"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml_ng = "0.10"
+unicode-width = "0.2"
+
+[profile.release]
+lto = "thin"
+strip = true

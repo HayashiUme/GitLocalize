@@ -1,0 +1,54 @@
+name: GitLocalize editor
+
+on:
+  push:
+    branches: ["__BRANCH__"]
+    paths:
+      - ".gitlocalize/config.json"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gitlocalize-editor
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch the published editor
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git clone --quiet --depth 1 --branch editor \
+            "https://x-access-token:${GH_TOKEN}@github.com/__UPSTREAM__.git" _editor
+          mkdir -p _site
+          cp -r _editor/. _site/
+          rm -rf _site/.git
+          touch _site/.nojekyll
+          test -f _site/index.html
+
+      - name: Publish __PAGES_BRANCH__
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git init -q _site
+          git -C _site config user.name "github-actions[bot]"
+          git -C _site config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C _site checkout -B "__PAGES_BRANCH__"
+          git -C _site add -A
+          if git -C _site diff --cached --quiet; then
+            echo "The editor is already up to date."
+            exit 0
+          fi
+          git -C _site commit -m "chore: update the editor build"
+          git -C _site push --force \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "__PAGES_BRANCH__"
