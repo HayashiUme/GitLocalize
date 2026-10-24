@@ -145,6 +145,15 @@ editor:
     commentNew: 寫評論（自動帶上目前鍵名前綴）
     commentPlaceholder: 評論內容
     commentPost: 發表
+  state:
+    needsEditing: 待編輯
+    needsRewriting: 待重寫
+    needsChecking: 待檢查
+    translated: 已翻譯
+    approved: 已批准
+    readOnly: 唯讀
+    filterAll: 全部狀態
+    markNeedsEditing: 切換待編輯
 message:
   nothingToCommit: 沒有需要提交的內容。
   noContentChange: 內容沒有變化，未建立提交。
