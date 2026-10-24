@@ -36,11 +36,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
       - name: Check out the editor sources
         run: |
           set -euo pipefail
@@ -48,7 +43,13 @@ jobs:
           git archive FETCH_HEAD source src package.json package-lock.json | tar -x -C .
           test -f source/vite.config.ts
           test -f src/env.d.ts
+          test -f package-lock.json
           test -d locales
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
       - run: npm ci
       - run: npm run editor:build
