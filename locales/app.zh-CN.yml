@@ -2,7 +2,7 @@
 # 普通的、交给 GitLocalize 翻译的示例文件。
 
 app:
-  name: Acme 笔记
+  name: 极客笔记
   tagline: 随处可记的笔记
   nav:
     home: 首页
