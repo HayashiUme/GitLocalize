@@ -1,6 +1,31 @@
 import { GitHubApiError, classifyError, toApiError } from './errors'
 
 export const GITHUB_API_BASE = 'https://api.github.com'
+
+const API_BASE_KEY = 'gitlocalize.api.base'
+
+/* The API host can be pointed elsewhere with ?api=... or a stored choice, which is what
+   machines behind a proxy that blocks api.github.com need. */
+export function resolveApiBase(): string {
+  const query = new URLSearchParams(globalThis.location?.search ?? '').get('api')
+  const stored = globalThis.localStorage?.getItem(API_BASE_KEY)
+  const picked = (query || stored || '').trim()
+  return picked ? picked.replace(/\/+$/, '') : GITHUB_API_BASE
+}
+
+export function rememberApiBase(value: string): void {
+  const trimmed = value.trim().replace(/\/+$/, '')
+  if (trimmed) globalThis.localStorage?.setItem(API_BASE_KEY, trimmed)
+  else globalThis.localStorage?.removeItem(API_BASE_KEY)
+}
+
+export function apiBaseHost(): string {
+  try {
+    return new URL(resolveApiBase()).host
+  } catch {
+    return GITHUB_API_BASE
+  }
+}
 const API_VERSION = '2022-11-28'
 const REQUEST_TIMEOUT_MS = 15000
 const RETRY_DELAY_MS = 600
@@ -44,7 +69,7 @@ export class GitHubClient {
   constructor(token: string, options: { transport?: ClientTransport; baseUrl?: string } = {}) {
     this.token = token
     this.transport = options.transport ?? { fetch: (input, init) => fetch(input, init) }
-    this.baseUrl = options.baseUrl ?? GITHUB_API_BASE
+    this.baseUrl = options.baseUrl ?? resolveApiBase()
   }
 
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {

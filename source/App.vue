@@ -14,6 +14,12 @@ const { state, entries, filteredEntries, issuesByKey, stats, errorText, noticeTe
 const repoInput = ref('')
 const tokenInput = ref('')
 const rememberToken = ref(false)
+const apiBaseInput = ref('')
+const defaultApiBase = 'https://api.github.com'
+function applyApiBase(): void {
+  actions.setApiBase(apiBaseInput.value)
+  apiBaseInput.value = ''
+}
 
 /* ---- Theme (dark/light) and editor UI language ---- */
 const THEME_KEY = 'gitlocalize.editor.theme'
@@ -556,6 +562,15 @@ watch(() => state.status, (status) => {
         <input v-model="repoInput" autocapitalize="off" spellcheck="false" placeholder="owner/repo" />
       </label>
       <label class="wz-check"><input v-model="rememberToken" type="checkbox" />{{ t('editor.rememberToken') }}</label>
+      <details class="wz-advanced">
+        <summary>{{ t('editor.pro.apiBase') }}</summary>
+        <label class="wz-field">
+          <span>{{ t('editor.pro.apiBase') }}</span>
+          <input v-model="apiBaseInput" spellcheck="false" :placeholder="defaultApiBase" />
+        </label>
+        <p class="wz-field__hint">{{ t('editor.pro.apiBaseHint') }}</p>
+        <button class="wz-button" @click="applyApiBase">{{ t('editor.pro.apiBaseApply') }}</button>
+      </details>
       <button class="wz-button wz-button--primary" :disabled="state.busy" @click="signIn">
         {{ state.busy ? t('editor.loading') : t('login.signIn') }}
       </button>
@@ -927,7 +942,10 @@ watch(() => state.status, (status) => {
             {{ t('app.commit') }}
           </button>
         </footer>
-        <p v-if="state.error" class="wz-error wz-error--bar">{{ errorText }}</p>
+        <p v-if="state.error" class="wz-error wz-error--bar">
+          {{ errorText }}
+          <code v-if="state.error.detail" class="wz-diag__detail">{{ state.error.detail }}</code>
+        </p>
       </template>
     </template>
   </div>

@@ -149,6 +149,10 @@ editor:
     commentNew: New comment (the current key is added as a prefix)
     commentPlaceholder: Your comment
     commentPost: Post comment
+    apiBase: "Advanced: API address"
+    apiBaseHint: Point the editor at a proxy or mirror when api.github.com is
+      blocked. Leave empty to use the default.
+    apiBaseApply: Use this address
   state:
     empty: Empty
     needsEditing: Needs editing

@@ -145,6 +145,9 @@ editor:
     commentNew: 写评论（自动带上当前键名前缀）
     commentPlaceholder: 评论内容
     commentPost: 发表
+    apiBase: 高级：API 地址
+    apiBaseHint: 当 api.github.com 被拦截时，可把编辑器指向代理或镜像。留空则使用默认地址。
+    apiBaseApply: 使用此地址
   state:
     empty: 空
     needsEditing: 待编辑

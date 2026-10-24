@@ -25,5 +25,6 @@
       "请勿翻译产品名称。"
     ]
   },
-  "unknown": "GitHub API 返回了预期之外的错误。"
+  "unknown": "GitHub API 返回了预期之外的错误。",
+  "unreachable": "无法连接 {host}，请检查网络或代理设置。"
 }

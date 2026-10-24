@@ -19,7 +19,7 @@ import {
   type UnitStateRecord,
 } from './stateStore'
 import { stateForTranslation, unitKey, type UnitStateName } from './unitState'
-import { GitHubClient, type ClientTransport } from '../github/api'
+import { apiBaseHost, GITHUB_API_BASE, GitHubClient, rememberApiBase, resolveApiBase, type ClientTransport } from '../github/api'
 import { noreplyEmail, signInWithToken, signOut, tokenStore } from '../github/auth'
 import { listDirectory, readFile, readTextFile } from '../github/contents'
 import { toApiError, type GitHubApiError, type GitHubErrorCode } from '../github/errors'
@@ -90,6 +90,7 @@ interface EditorState {
   lastCommitSha: string | null
   lastCommitUrl: string | null
   pullRequest: PullRequestInfo | null
+  apiBase: string
   unitStates: Record<string, UnitStateRecord>
   statesDirty: boolean
   mock: boolean
@@ -122,6 +123,7 @@ const state = reactive<EditorState>({
   lastCommitSha: null,
   lastCommitUrl: null,
   pullRequest: null,
+  apiBase: GITHUB_API_BASE,
   unitStates: {},
   statesDirty: false,
   mock: false,
@@ -153,7 +155,11 @@ function fail(error: unknown): void {
     return
   }
   const apiError = toApiError(error)
-  state.error = { key: ERROR_KEYS[apiError.code], params: errorParams(apiError), detail: apiError.detail }
+  state.error = {
+    key: ERROR_KEYS[apiError.code],
+    params: { ...errorParams(apiError), host: apiBaseHost() },
+    detail: apiError.detail,
+  }
 }
 
 function errorParams(apiError: GitHubApiError): Record<string, string> {
@@ -248,7 +254,10 @@ async function bootstrap(): Promise<void> {
   if (bootstrapped) return
   bootstrapped = true
   initialiseUiLocale(globalThis.location?.href ?? '')
-  state.mock = new URLSearchParams(globalThis.location?.search ?? '').has('mock')
+  const query = new URLSearchParams(globalThis.location?.search ?? '')
+  state.mock = query.has('mock')
+  if (query.get('api')) rememberApiBase(query.get('api') ?? '')
+  state.apiBase = resolveApiBase()
   const resolved = await resolveTarget()
   if (!resolved) {
     state.status = 'signed-out'
@@ -580,6 +589,10 @@ export const actions = {
   submit,
   ensureTranslationPullRequest,
   setUnitState,
+  setApiBase(value: string): void {
+    rememberApiBase(value)
+    state.apiBase = resolveApiBase()
+  },
 }
 
 export function useEditor() {

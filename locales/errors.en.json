@@ -25,5 +25,6 @@
       "Do not translate product names."
     ]
   },
-  "unknown": "Unexpected error from the GitHub API."
+  "unknown": "Unexpected error from the GitHub API.",
+  "unreachable": "Cannot reach {host}. Check your connection or proxy."
 }

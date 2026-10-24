@@ -303,3 +303,9 @@ body {
 .wz-unitstate[data-state="needs-checking"] { border-color: #d9a03c; color: #d9a03c; }
 .wz-unitstate[data-state="read-only"] { border-color: #9aa4a0; color: #9aa4a0; }
 .wz-stateselect { background: var(--wz-surface, transparent); color: inherit; border: 1px solid var(--wz-border); border-radius: var(--wz-radius); padding: 4px 8px; font-size: 12px; }
+
+/* Advanced settings on the sign-in page: the API host is rarely needed. */
+.wz-advanced { margin: 4px 0 2px; }
+.wz-advanced summary { cursor: pointer; font-size: 12px; color: var(--wz-ink-muted); }
+.wz-advanced[open] summary { margin-bottom: 8px; }
+.wz-field__hint { margin: 2px 0 8px; font-size: 12px; color: var(--wz-ink-muted); }

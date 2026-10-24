@@ -145,6 +145,9 @@ editor:
     commentNew: コメントを書く（現在のキー名を接頭辞として付加）
     commentPlaceholder: コメント内容
     commentPost: 投稿
+    apiBase: "詳細: API アドレス"
+    apiBaseHint: api.github.com がブロックされている場合は、プロキシやミラーを指定します。空欄なら既定値を使います。
+    apiBaseApply: このアドレスを使う
   state:
     empty: 未翻訳
     needsEditing: 編集が必要

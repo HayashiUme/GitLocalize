@@ -145,6 +145,9 @@ editor:
     commentNew: 寫評論（自動帶上目前鍵名前綴）
     commentPlaceholder: 評論內容
     commentPost: 發表
+    apiBase: 進階：API 位址
+    apiBaseHint: 當 api.github.com 被阻擋時，可把編輯器指向代理或鏡像。留空則使用預設位址。
+    apiBaseApply: 使用此位址
   state:
     empty: 空
     needsEditing: 待編輯
