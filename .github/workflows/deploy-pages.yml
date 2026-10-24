@@ -43,8 +43,12 @@ jobs:
           test -f _editor/index.html
           npm ci
           npm run build
+          # Only the build output is published: source/ and .git stay off the site.
           rm -rf docs/.vuepress/dist/Editor
-          cp -r _editor docs/.vuepress/dist/Editor
+          mkdir -p docs/.vuepress/dist/Editor
+          cp _editor/index.html docs/.vuepress/dist/Editor/index.html
+          cp -r _editor/assets docs/.vuepress/dist/Editor/assets
+          touch docs/.vuepress/dist/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

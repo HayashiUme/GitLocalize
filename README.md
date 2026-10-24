@@ -50,9 +50,12 @@ the source of truth.
 
 ```bash
 npm install
-npm run dev      # local docs site; the editor runs separately via npm run editor:build
 npm test
 npm run app:build  # build the Android web bundle into app/dist
+
+# the editor sources live on the editor branch; fetch them before building
+git archive origin/editor source | tar -x -C .
+npm run editor:build
 ```
 
 `npm run build` (the docs site) only works on a checkout of the `i18n` branch, where `docs/` lives.
