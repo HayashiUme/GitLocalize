@@ -190,7 +190,7 @@ name: GitLocalize
 
 on:
   push:
-    branches: ["${translationBranch}"]
+    branches: ["${translationBranch}", "${mainBranch}"]
   workflow_dispatch:
 
 permissions:
@@ -203,6 +203,7 @@ concurrency:
 
 jobs:
   pull-request:
+    if: github.ref == 'refs/heads/${translationBranch}'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -230,14 +231,15 @@ jobs:
             gh pr create --base "$MAIN_BRANCH" --head "$TRANSLATION_BRANCH" --title "$title" --body "$body"
           fi
 ${enablePages ? `  deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/${mainBranch}'
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/${mainBranch}'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Stage the editor as the Pages artifact
         run: |
-          mkdir -p _site
-          cp -r .gitlocalize/editor/* _site/
+          mkdir -p _site/Editor
+          cp -r .gitlocalize/editor/* _site/Editor/
+          printf '<meta http-equiv="refresh" content="0; url=./Editor/">' > _site/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
