@@ -1,5 +1,9 @@
 name: Deploy Pages
 
+# The editor sources live on the editor branch and the documentation on the i18n branch.
+# Both are built here: the editor into its own directory, the docs with the manifest that
+# sits next to them, and the two outputs end up in one Pages artifact.
+
 on:
   push:
     branches:
@@ -19,35 +23,48 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout the documentation
         uses: actions/checkout@v4
 
-      - name: Checkout the published editor
+      - name: Checkout the editor sources
         uses: actions/checkout@v4
         with:
           ref: editor
           path: _editor
+
+      - name: Add the interface strings
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: _editor/locales
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: _editor/package-lock.json
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Build the editor
+        run: |
+          set -euo pipefail
+          test -f _editor/source/vite.config.ts
+          test -d _editor/locales
+          npm ci --prefix _editor
+          npm run editor:build --prefix _editor
+          test -f _editor/source/dist/index.html
+
       - name: Build the docs and stage the editor
         run: |
           set -euo pipefail
-          test -f _editor/index.html
           npm ci
           npm run build
-          # Only the build output is published: source/ and .git stay off the site.
           rm -rf docs/.vuepress/dist/Editor
           mkdir -p docs/.vuepress/dist/Editor
-          cp _editor/index.html docs/.vuepress/dist/Editor/index.html
-          cp -r _editor/assets docs/.vuepress/dist/Editor/assets
+          cp -r _editor/source/dist/. docs/.vuepress/dist/Editor/
           touch docs/.vuepress/dist/.nojekyll
 
       - name: Upload artifact
