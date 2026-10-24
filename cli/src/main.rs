@@ -216,6 +216,8 @@ fn publish_editor(branch: Option<String>) -> Result<()> {
     git::run(&["clone", "--quiet", "--depth", "1", "--branch", "editor", &upstream, &temp_str])
         .context("cannot fetch the upstream editor branch")?;
     std::fs::remove_dir_all(temp.join(".git")).ok();
+    /* The editor branch keeps its sources under source/; only the build output is published. */
+    std::fs::remove_dir_all(temp.join("source")).ok();
     std::fs::write(temp.join(".nojekyll"), b"")?;
     if !temp.join("index.html").exists() {
         bail!("the upstream editor branch has no index.html");
