@@ -59,7 +59,7 @@ jobs:
           set -euo pipefail
           mkdir -p _release
           cp -r source/dist/. _release/
-          git archive FETCH_HEAD source src | tar -x -C _release
+          git archive FETCH_HEAD source src tests package.json package-lock.json tsconfig.json vitest.config.ts .gitignore | tar -x -C _release
           touch _release/.nojekyll
           test -f _release/index.html
           test -f _release/source/vite.config.ts
