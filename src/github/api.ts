@@ -97,7 +97,7 @@ export class GitHubClient {
           body: options.body === undefined ? undefined : JSON.stringify(options.body),
           signal,
         })
-        logRequest(`<- ${response.status} ${method} ${path} (${Date.now() - started}ms)`)
+        const elapsed = Date.now() - started
 
         this.captureRateLimit(response)
 
@@ -128,12 +128,12 @@ export class GitHubClient {
         }
 
         if (response.status === 204 || options.allowEmpty) {
-          logRequest(`   (no body expected for ${method} ${path})`)
+          logRequest(`<- ${response.status} ${method} ${path} (${elapsed}ms, no body expected)`)
           return undefined as T
         }
         const text = await response.text()
+        logRequest(`<- ${response.status} ${method} ${path} (${elapsed}ms) ${text.slice(0, 240).replace(/\s+/g, ' ')}`)
         if (text.trim() === '') {
-          logRequest(`   (empty body for ${method} ${path})`)
           throw new Error(`${method} ${path} answered ${response.status} with an empty body`)
         }
         if (options.raw) return text as T

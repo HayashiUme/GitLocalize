@@ -82,6 +82,9 @@ export async function createBlob(client: GitHubClient, owner: string, repo: stri
     content,
     encoding: 'utf-8',
   })
+  if (!payload?.sha) {
+    throw new Error('GitHub created the blob but the answer carried no sha')
+  }
   return payload.sha
 }
 
@@ -114,6 +117,9 @@ export async function commitFiles(client: GitHubClient, request: CommitRequest):
     base_tree: baseCommit.tree.sha,
     tree: entries,
   })
+  if (!tree?.sha) {
+    throw new Error('GitHub took the tree but the answer carried no sha')
+  }
 
   if (tree.sha === baseCommit.tree.sha) {
     return { commitSha: null, treeSha: tree.sha, baseSha: request.baseSha, unchanged: true }
