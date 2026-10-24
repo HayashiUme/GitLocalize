@@ -36,9 +36,14 @@ locales/                      the editor's own interface strings, in YAML and JS
 scripts/setup-repo.sh         branch rulesets for main and i18n
 ```
 
-The docs directory lives on the `i18n` branch only — that is the branch Pages builds from, and it
-is where the documentation itself gets translated. `main` holds the editor sources and its
-locale files as the source of truth.
+Three branches carry the work:
+
+- `main` — the automation, the deploy CLI and the interface strings. It is also the branch the
+  translation pipeline treats as the source of truth.
+- `editor` — the editor itself: the page sources under `source/`, the core library under `src/`
+  and the tests. Nothing rewrites this branch, so it is safe to commit to.
+- `i18n` — the documentation and the translation workspace. Pages builds from here: it checks
+  out the editor sources, builds them next to the docs and publishes both.
 
 ## Quickstart
 
