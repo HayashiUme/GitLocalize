@@ -1,5 +1,3 @@
-import { Capacitor } from '@capacitor/core'
-import { nativeHttp } from '../native/httpAdapter'
 
 export type MtProvider = 'none' | 'google' | 'deepl'
 
@@ -35,28 +33,9 @@ async function collectBody(body: AsyncIterableIterator<Uint8Array> | undefined):
 
 /* Native builds must leave the WebView for these calls: DeepL sends no CORS headers at all. */
 async function requestJson(url: string, init: RequestInit): Promise<unknown> {
-  if (Capacitor.isNativePlatform()) {
-    const headers = Object.fromEntries(new Headers(init.headers as HeadersInit).entries())
-    let payload: string | undefined
-    if (typeof init.body === 'string') payload = init.body
-    const response = await nativeHttp.request({
-      url,
-      method: init.method ?? 'GET',
-      headers,
-      bodyBase64: payload ? bytesToBase64(new TextEncoder().encode(payload)) : undefined,
-    })
-    const bytes = await collectBody(response.body)
-    return JSON.parse(new TextDecoder().decode(bytes))
-  }
   const response = await fetch(url, init)
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
   return response.json()
-}
-
-function bytesToBase64(bytes: Uint8Array): string {
-  let binary = ''
-  for (const byte of bytes) binary += String.fromCharCode(byte)
-  return btoa(binary)
 }
 
 async function googleTranslate(text: string, target: string): Promise<string> {
