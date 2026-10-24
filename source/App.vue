@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { AVAILABLE_UI_LOCALES, setUiLocale, t, uiLocale } from '@/i18n'
-import { getParser } from '@/parser'
+import { flatten, getParser } from '@/parser'
 import { translate, type MtSettings } from '@/mt'
 import { remember, suggest } from '@/mt/memory'
 import { downloadTextFile } from '@/storage/download'
@@ -402,7 +402,7 @@ async function loadOverview(): Promise<void> {
             { accept: 'application/vnd.github.raw', raw: true },
           )
           const parsed = getParser(file.path).parse(raw)
-          for (const item of parsed) {
+          for (const item of flatten(parsed)) {
             const value = (item.value ?? '').trim()
             strings += 1
             words += value === '' ? 0 : value.split(/\s+/).length
